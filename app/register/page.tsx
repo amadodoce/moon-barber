@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Scissors, Loader2 } from "lucide-react";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -25,7 +24,9 @@ export default function RegisterPage() {
     resolver: zodResolver(registerSchema),
   });
 
-  const handleRegister = async () => {
+  const handleRegister = useCallback(async () => {
+    if (loading) return;
+
     const valid = await trigger();
     if (!valid) return;
 
@@ -60,7 +61,7 @@ export default function RegisterPage() {
       setError("خطای ارتباط با سرور");
       setLoading(false);
     }
-  };
+  }, [loading, trigger, getValues, router]);
 
   if (success) {
     return (
@@ -162,15 +163,20 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <Button
+          <button
             type="button"
             disabled={loading}
             onClick={handleRegister}
-            className="w-full bg-amber-500 hover:bg-amber-600"
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              handleRegister();
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 active:bg-amber-700 disabled:pointer-events-none disabled:opacity-50"
+            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
           >
             {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
             ثبت‌نام
-          </Button>
+          </button>
         </div>
 
         <p className="mt-6 text-center text-sm text-zinc-500">
