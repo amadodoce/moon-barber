@@ -89,7 +89,7 @@ export default function RegisterPage() {
           حساب کاربری جدید بسازید
         </p>
 
-        <form action="#" onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
+        <div className="mt-8 space-y-4">
           <div>
             <Label htmlFor="name">نام</Label>
             <Input
@@ -158,14 +158,15 @@ export default function RegisterPage() {
           )}
 
           <Button
-            type="submit"
+            type="button"
             disabled={loading}
+            onClick={handleSubmit(onSubmit)}
             className="w-full bg-amber-500 hover:bg-amber-600"
           >
             {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
             ثبت‌نام
           </Button>
-        </form>
+        </div>
 
         <p className="mt-6 text-center text-sm text-zinc-500">
           قبلاً ثبت‌نام کرده‌اید؟{" "}

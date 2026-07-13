@@ -72,7 +72,7 @@ export default function LoginPage() {
           شماره موبایل و رمز عبور خود را وارد کنید
         </p>
 
-        <form action="#" onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
+        <div className="mt-8 space-y-4">
           <div>
             <Label htmlFor="phone">شماره موبایل</Label>
             <Input
@@ -111,14 +111,15 @@ export default function LoginPage() {
           )}
 
           <Button
-            type="submit"
+            type="button"
             disabled={loading}
+            onClick={handleSubmit(onSubmit)}
             className="w-full bg-amber-500 hover:bg-amber-600"
           >
             {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
             ورود
           </Button>
-        </form>
+        </div>
 
         <p className="mt-6 text-center text-sm text-zinc-500">
           حساب ندارید؟{" "}
