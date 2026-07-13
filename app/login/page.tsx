@@ -1,22 +1,103 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Scissors } from "lucide-react";
+import { Suspense, useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Scissors, Loader2 } from "lucide-react";
+import { loginSchema, type LoginInput } from "@/lib/validations/auth";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function LoginPage() {
+function LoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const [error, setError] = useState<string | null>(null);
-  const [callbackUrl, setCallbackUrl] = useState("/");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setCallbackUrl(params.get("callbackUrl") || "/");
-    if (params.get("error")) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = async (data: LoginInput) => {
+    setLoading(true);
+    setError(null);
+
+    const result = await signIn("credentials", {
+      phone: data.phone,
+      password: data.password,
+      redirect: false,
+    });
+
+    if (result?.error) {
       setError("شماره موبایل یا رمز عبور اشتباه است");
+      setLoading(false);
+      return;
     }
-  }, []);
 
+    router.push(callbackUrl);
+    router.refresh();
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
+      <div>
+        <Label htmlFor="phone">شماره موبایل</Label>
+        <Input
+          id="phone"
+          placeholder="09123456789"
+          {...register("phone")}
+          className="mt-1"
+          dir="ltr"
+        />
+        {errors.phone && (
+          <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
+        )}
+      </div>
+
+      <div>
+        <Label htmlFor="password">رمز عبور</Label>
+        <Input
+          id="password"
+          type="password"
+          placeholder="••••••"
+          {...register("password")}
+          className="mt-1"
+          dir="ltr"
+        />
+        {errors.password && (
+          <p className="mt-1 text-xs text-red-500">
+            {errors.password.message}
+          </p>
+        )}
+      </div>
+
+      {error && (
+        <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+          {error}
+        </div>
+      )}
+
+      <Button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-amber-500 hover:bg-amber-600"
+      >
+        {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+        ورود
+      </Button>
+    </form>
+  );
+}
+
+export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
       <div className="w-full max-w-sm">
@@ -31,53 +112,15 @@ export default function LoginPage() {
           شماره موبایل و رمز عبور خود را وارد کنید
         </p>
 
-        {error && (
-          <div className="mt-4 rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
-            {error}
-          </div>
-        )}
-
-        <form
-          method="post"
-          action="/api/auth/callback/credentials"
-          className="mt-8 space-y-4"
+        <Suspense
+          fallback={
+            <div className="mt-8 flex justify-center">
+              <Loader2 className="h-6 w-6 animate-spin text-amber-500" />
+            </div>
+          }
         >
-          <input type="hidden" name="csrfToken" value="" />
-          <input type="hidden" name="callbackUrl" value={callbackUrl} />
-
-          <div>
-            <Label htmlFor="phone">شماره موبایل</Label>
-            <Input
-              id="phone"
-              name="phone"
-              placeholder="09123456789"
-              className="mt-1"
-              dir="ltr"
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="password">رمز عبور</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="••••••"
-              className="mt-1"
-              dir="ltr"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-3 text-base font-semibold text-white hover:bg-amber-600 active:bg-amber-700"
-            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent", minHeight: "48px" }}
-          >
-            ورود
-          </button>
-        </form>
+          <LoginForm />
+        </Suspense>
 
         <p className="mt-6 text-center text-sm text-zinc-500">
           حساب ندارید؟{" "}

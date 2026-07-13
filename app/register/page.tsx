@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Scissors } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Scissors, Loader2 } from "lucide-react";
+import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -12,34 +16,28 @@ export default function RegisterPage() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterInput>({
+    resolver: zodResolver(registerSchema),
+  });
+
+  const onSubmit = async (data: RegisterInput) => {
     setLoading(true);
     setError(null);
-
-    const formData = new FormData(e.currentTarget);
-    const name = formData.get("name") as string;
-    const phone = formData.get("phone") as string;
-    const password = formData.get("password") as string;
-    const confirmPassword = formData.get("confirmPassword") as string;
-
-    if (password !== confirmPassword) {
-      setError("رمز عبور و تکرار آن مطابقت ندارند");
-      setLoading(false);
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("رمز عبور باید حداقل ۶ کاراکتر باشد");
-      setLoading(false);
-      return;
-    }
 
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, password, confirmPassword }),
+        body: JSON.stringify({
+          name: data.name,
+          phone: data.phone,
+          password: data.password,
+          confirmPassword: data.confirmPassword,
+        }),
       });
 
       const result = await res.json();
@@ -90,70 +88,82 @@ export default function RegisterPage() {
           حساب کاربری جدید بسازید
         </p>
 
-        {error && (
-          <div className="mt-4 rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
           <div>
             <Label htmlFor="name">نام</Label>
             <Input
               id="name"
-              name="name"
               placeholder="نام خود را وارد کنید"
+              {...register("name")}
               className="mt-1"
-              required
             />
+            {errors.name && (
+              <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+            )}
           </div>
 
           <div>
             <Label htmlFor="phone">شماره موبایل</Label>
             <Input
               id="phone"
-              name="phone"
               placeholder="09123456789"
+              {...register("phone")}
               className="mt-1"
               dir="ltr"
-              required
             />
+            {errors.phone && (
+              <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
+            )}
           </div>
 
           <div>
             <Label htmlFor="password">رمز عبور</Label>
             <Input
               id="password"
-              name="password"
               type="password"
               placeholder="حداقل ۶ کاراکتر"
+              {...register("password")}
               className="mt-1"
               dir="ltr"
-              required
             />
+            {errors.password && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <div>
             <Label htmlFor="confirmPassword">تکرار رمز عبور</Label>
             <Input
               id="confirmPassword"
-              name="confirmPassword"
               type="password"
               placeholder="رمز عبور را دوباره وارد کنید"
+              {...register("confirmPassword")}
               className="mt-1"
               dir="ltr"
-              required
             />
+            {errors.confirmPassword && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.confirmPassword.message}
+              </p>
+            )}
           </div>
 
-          <button
+          {error && (
+            <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+              {error}
+            </div>
+          )}
+
+          <Button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-3 text-base font-semibold text-white hover:bg-amber-600 active:bg-amber-700 disabled:opacity-50"
-            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent", minHeight: "48px" }}
+            className="w-full bg-amber-500 hover:bg-amber-600"
           >
-            {loading ? "در حال ثبت‌نام..." : "ثبت‌نام"}
-          </button>
+            {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+            ثبت‌نام
+          </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-zinc-500">
