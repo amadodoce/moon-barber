@@ -1,82 +1,22 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import { signIn, getSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Scissors, Loader2 } from "lucide-react";
-import { loginSchema, type LoginInput } from "@/lib/validations/auth";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { Scissors } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [callbackUrl, setCallbackUrl] = useState("/");
-  const btnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setCallbackUrl(params.get("callbackUrl") || "/");
-  }, []);
-
-  const {
-    register,
-    trigger,
-    getValues,
-    formState: { errors },
-  } = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
-  });
-
-  const handleLogin = useCallback(async () => {
-    if (loading) return;
-
-    const valid = await trigger();
-    if (!valid) return;
-
-    setLoading(true);
-    setError(null);
-
-    const data = getValues();
-    const result = await signIn("credentials", {
-      phone: data.phone,
-      password: data.password,
-      redirect: false,
-    });
-
-    if (result?.error) {
+    if (params.get("error")) {
       setError("شماره موبایل یا رمز عبور اشتباه است");
-      setLoading(false);
-      return;
     }
-
-    const session = await getSession();
-    const role = session?.user?.role;
-
-    if (role === "ADMIN") {
-      router.push("/admin");
-    } else {
-      router.push(callbackUrl);
-    }
-    router.refresh();
-  }, [loading, trigger, getValues, router, callbackUrl]);
-
-  // Direct DOM event listener as fallback for iOS Safari
-  useEffect(() => {
-    const btn = btnRef.current;
-    if (!btn) return;
-
-    const handler = (e: Event) => {
-      e.preventDefault();
-      handleLogin();
-    };
-
-    btn.addEventListener("pointerdown", handler, { passive: false });
-    return () => btn.removeEventListener("pointerdown", handler);
-  }, [handleLogin]);
+  }, []);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
@@ -92,58 +32,53 @@ export default function LoginPage() {
           شماره موبایل و رمز عبور خود را وارد کنید
         </p>
 
-        <div className="mt-8 space-y-4">
+        {error && (
+          <div className="mt-4 rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+            {error}
+          </div>
+        )}
+
+        <form
+          method="post"
+          action="/api/auth/callback/credentials"
+          className="mt-8 space-y-4"
+        >
+          <input type="hidden" name="csrfToken" value="" />
+          <input type="hidden" name="callbackUrl" value={callbackUrl} />
+
           <div>
             <Label htmlFor="phone">شماره موبایل</Label>
             <Input
               id="phone"
+              name="phone"
               placeholder="09123456789"
-              {...register("phone")}
               className="mt-1"
               dir="ltr"
+              required
             />
-            {errors.phone && (
-              <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
-            )}
           </div>
 
           <div>
             <Label htmlFor="password">رمز عبور</Label>
             <Input
               id="password"
+              name="password"
               type="password"
               placeholder="••••••"
-              {...register("password")}
               className="mt-1"
               dir="ltr"
+              required
             />
-            {errors.password && (
-              <p className="mt-1 text-xs text-red-500">
-                {errors.password.message}
-              </p>
-            )}
           </div>
 
-          {error && (
-            <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
-              {error}
-            </div>
-          )}
-
           <button
-            ref={btnRef}
-            type="button"
-            disabled={loading}
-            onClick={handleLogin}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-3 text-base font-semibold text-white hover:bg-amber-600 active:bg-amber-700 disabled:opacity-50"
+            type="submit"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-3 text-base font-semibold text-white hover:bg-amber-600 active:bg-amber-700"
             style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent", minHeight: "48px" }}
           >
-            {loading ? (
-              <Loader2 className="ml-2 h-5 w-5 animate-spin" />
-            ) : null}
             ورود
           </button>
-        </div>
+        </form>
 
         <p className="mt-6 text-center text-sm text-zinc-500">
           حساب ندارید؟{" "}

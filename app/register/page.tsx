@@ -1,11 +1,8 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Scissors, Loader2 } from "lucide-react";
-import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
+import { Scissors } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -14,38 +11,35 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const btnRef = useRef<HTMLButtonElement>(null);
 
-  const {
-    register,
-    trigger,
-    getValues,
-    formState: { errors },
-  } = useForm<RegisterInput>({
-    resolver: zodResolver(registerSchema),
-  });
-
-  const handleRegister = useCallback(async () => {
-    if (loading) return;
-
-    const valid = await trigger();
-    if (!valid) return;
-
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const data = getValues();
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
+    const phone = formData.get("phone") as string;
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    if (password !== confirmPassword) {
+      setError("رمز عبور و تکرار آن مطابقت ندارند");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("رمز عبور باید حداقل ۶ کاراکتر باشد");
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: data.name,
-          phone: data.phone,
-          password: data.password,
-          confirmPassword: data.confirmPassword,
-        }),
+        body: JSON.stringify({ name, phone, password, confirmPassword }),
       });
 
       const result = await res.json();
@@ -62,20 +56,7 @@ export default function RegisterPage() {
       setError("خطای ارتباط با سرور");
       setLoading(false);
     }
-  }, [loading, trigger, getValues, router]);
-
-  useEffect(() => {
-    const btn = btnRef.current;
-    if (!btn) return;
-
-    const handler = (e: Event) => {
-      e.preventDefault();
-      handleRegister();
-    };
-
-    btn.addEventListener("pointerdown", handler, { passive: false });
-    return () => btn.removeEventListener("pointerdown", handler);
-  }, [handleRegister]);
+  };
 
   if (success) {
     return (
@@ -109,88 +90,71 @@ export default function RegisterPage() {
           حساب کاربری جدید بسازید
         </p>
 
-        <div className="mt-8 space-y-4">
+        {error && (
+          <div className="mt-4 rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
             <Label htmlFor="name">نام</Label>
             <Input
               id="name"
+              name="name"
               placeholder="نام خود را وارد کنید"
-              {...register("name")}
               className="mt-1"
+              required
             />
-            {errors.name && (
-              <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
-            )}
           </div>
 
           <div>
             <Label htmlFor="phone">شماره موبایل</Label>
             <Input
               id="phone"
+              name="phone"
               placeholder="09123456789"
-              {...register("phone")}
               className="mt-1"
               dir="ltr"
+              required
             />
-            {errors.phone && (
-              <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
-            )}
           </div>
 
           <div>
             <Label htmlFor="password">رمز عبور</Label>
             <Input
               id="password"
+              name="password"
               type="password"
               placeholder="حداقل ۶ کاراکتر"
-              {...register("password")}
               className="mt-1"
               dir="ltr"
+              required
             />
-            {errors.password && (
-              <p className="mt-1 text-xs text-red-500">
-                {errors.password.message}
-              </p>
-            )}
           </div>
 
           <div>
             <Label htmlFor="confirmPassword">تکرار رمز عبور</Label>
             <Input
               id="confirmPassword"
+              name="confirmPassword"
               type="password"
               placeholder="رمز عبور را دوباره وارد کنید"
-              {...register("confirmPassword")}
               className="mt-1"
               dir="ltr"
+              required
             />
-            {errors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-500">
-                {errors.confirmPassword.message}
-              </p>
-            )}
           </div>
 
-          {error && (
-            <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
-              {error}
-            </div>
-          )}
-
           <button
-            ref={btnRef}
-            type="button"
+            type="submit"
             disabled={loading}
-            onClick={handleRegister}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-3 text-base font-semibold text-white hover:bg-amber-600 active:bg-amber-700 disabled:opacity-50"
             style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent", minHeight: "48px" }}
           >
-            {loading ? (
-              <Loader2 className="ml-2 h-5 w-5 animate-spin" />
-            ) : null}
-            ثبت‌نام
+            {loading ? "در حال ثبت‌نام..." : "ثبت‌نام"}
           </button>
-        </div>
+        </form>
 
         <p className="mt-6 text-center text-sm text-zinc-500">
           قبلاً ثبت‌نام کرده‌اید؟{" "}
