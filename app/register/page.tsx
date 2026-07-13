@@ -89,7 +89,7 @@ export default function RegisterPage() {
           حساب کاربری جدید بسازید
         </p>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
+        <form action="#" onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
           <div>
             <Label htmlFor="name">نام</Label>
             <Input

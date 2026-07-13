@@ -72,7 +72,7 @@ export default function LoginPage() {
           شماره موبایل و رمز عبور خود را وارد کنید
         </p>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
+        <form action="#" onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
           <div>
             <Label htmlFor="phone">شماره موبایل</Label>
             <Input
