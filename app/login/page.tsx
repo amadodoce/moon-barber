@@ -24,16 +24,21 @@ export default function LoginPage() {
 
   const {
     register,
-    handleSubmit,
+    trigger,
+    getValues,
     formState: { errors },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: LoginInput) => {
+  const handleLogin = async () => {
+    const valid = await trigger();
+    if (!valid) return;
+
     setLoading(true);
     setError(null);
 
+    const data = getValues();
     const result = await signIn("credentials", {
       phone: data.phone,
       password: data.password,
@@ -60,7 +65,6 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500">
           <Scissors className="h-8 w-8 text-white" />
         </div>
@@ -113,7 +117,7 @@ export default function LoginPage() {
           <Button
             type="button"
             disabled={loading}
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleLogin}
             className="w-full bg-amber-500 hover:bg-amber-600"
           >
             {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}

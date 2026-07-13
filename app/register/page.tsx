@@ -18,15 +18,21 @@ export default function RegisterPage() {
 
   const {
     register,
-    handleSubmit,
+    trigger,
+    getValues,
     formState: { errors },
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = async (data: RegisterInput) => {
+  const handleRegister = async () => {
+    const valid = await trigger();
+    if (!valid) return;
+
     setLoading(true);
     setError(null);
+
+    const data = getValues();
 
     try {
       const res = await fetch("/api/auth/register", {
@@ -77,7 +83,6 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500">
           <Scissors className="h-8 w-8 text-white" />
         </div>
@@ -160,7 +165,7 @@ export default function RegisterPage() {
           <Button
             type="button"
             disabled={loading}
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleRegister}
             className="w-full bg-amber-500 hover:bg-amber-600"
           >
             {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
