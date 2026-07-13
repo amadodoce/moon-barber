@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +14,7 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   const {
     register,
@@ -62,6 +63,19 @@ export default function RegisterPage() {
       setLoading(false);
     }
   }, [loading, trigger, getValues, router]);
+
+  useEffect(() => {
+    const btn = btnRef.current;
+    if (!btn) return;
+
+    const handler = (e: Event) => {
+      e.preventDefault();
+      handleRegister();
+    };
+
+    btn.addEventListener("pointerdown", handler, { passive: false });
+    return () => btn.removeEventListener("pointerdown", handler);
+  }, [handleRegister]);
 
   if (success) {
     return (
@@ -164,17 +178,16 @@ export default function RegisterPage() {
           )}
 
           <button
+            ref={btnRef}
             type="button"
             disabled={loading}
             onClick={handleRegister}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              handleRegister();
-            }}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 active:bg-amber-700 disabled:pointer-events-none disabled:opacity-50"
-            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-3 text-base font-semibold text-white hover:bg-amber-600 active:bg-amber-700 disabled:opacity-50"
+            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent", minHeight: "48px" }}
           >
-            {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+            {loading ? (
+              <Loader2 className="ml-2 h-5 w-5 animate-spin" />
+            ) : null}
             ثبت‌نام
           </button>
         </div>

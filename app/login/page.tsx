@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [callbackUrl, setCallbackUrl] = useState("/");
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -62,6 +63,20 @@ export default function LoginPage() {
     }
     router.refresh();
   }, [loading, trigger, getValues, router, callbackUrl]);
+
+  // Direct DOM event listener as fallback for iOS Safari
+  useEffect(() => {
+    const btn = btnRef.current;
+    if (!btn) return;
+
+    const handler = (e: Event) => {
+      e.preventDefault();
+      handleLogin();
+    };
+
+    btn.addEventListener("pointerdown", handler, { passive: false });
+    return () => btn.removeEventListener("pointerdown", handler);
+  }, [handleLogin]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
@@ -116,17 +131,16 @@ export default function LoginPage() {
           )}
 
           <button
+            ref={btnRef}
             type="button"
             disabled={loading}
             onClick={handleLogin}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              handleLogin();
-            }}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 active:bg-amber-700 disabled:pointer-events-none disabled:opacity-50"
-            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-3 text-base font-semibold text-white hover:bg-amber-600 active:bg-amber-700 disabled:opacity-50"
+            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent", minHeight: "48px" }}
           >
-            {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+            {loading ? (
+              <Loader2 className="ml-2 h-5 w-5 animate-spin" />
+            ) : null}
             ورود
           </button>
         </div>
