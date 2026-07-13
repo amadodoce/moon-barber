@@ -1,0 +1,226 @@
+// ─── Generator & Datasource ───────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  ADMIN
+  CUSTOMER
+  BARBER
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  ZARINPAL
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum HolidayType {
+  FULL_DAY
+  TIME_RANGE
+}
+
+enum ContentType {
+  TEXT
+  RICH_TEXT
+  IMAGE
+  JSON
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+/// Core user identity. Phone + password auth. Soft-deletable.
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  password  String
+  name      String
+  role      UserRole @default(CUSTOMER)
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  barber      Barber?       @relation("UserBarber")
+  appointments Appointment[]
+}
+
+/// Extended profile for staff members. Linked 1:1 to a User with role=BARBER.
+/// Each barber has their own working hours and appointments.
+model Barber {
+  id              String  @id @default(cuid())
+  userId          String  @unique
+  bio             String?
+  experienceYears Int?
+  isActive        Boolean @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user         User           @relation("UserBarber", fields: [userId], references: [id])
+  workingHours WorkingHour[]
+  holidays     Holiday[]
+  appointments Appointment[]
+}
+
+/// Barbershop services with duration and price. Soft-deletable.
+/// Admin defines these; customers select them when booking.
+model Service {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?
+  durationMinutes Int      // e.g. 30, 45, 60
+  price           Decimal  @db.Decimal(10, 2)
+  imageUrl        String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  // Relations
+  appointmentServices AppointmentService[]
+}
+
+/// Working hours for the shop (barberId=null) or a specific barber.
+/// Supports multiple time ranges per day (e.g. 09:00-12:00 and 14:00-18:00).
+/// Each record is one continuous time range on one day.
+model WorkingHour {
+  id          String    @id @default(cuid())
+  barberId    String?   // null = shop-wide hours
+  dayOfWeek   DayOfWeek
+  startTime   String    // "HH:mm" format, e.g. "09:00"
+  endTime     String    // "HH:mm" format, e.g. "12:00"
+  isRecurring Boolean   @default(true)
+  specificDate DateTime? // null for recurring; set for one-off overrides
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  barber Barber? @relation(fields: [barberId], references: [id])
+
+  @@index([barberId, dayOfWeek, specificDate])
+}
+
+/// Holidays — shop-wide (barberId=null) or barber-specific.
+/// FULL_DAY closes the entire day; TIME_RANGE closes only the given hours.
+model Holiday {
+  id          String      @id @default(cuid())
+  barberId    String?     // null = shop-wide holiday
+  title       String
+  date        DateTime    @db.Date
+  startTime   String?     // "HH:mm" — only for TIME_RANGE
+  endTime     String?     // "HH:mm" — only for TIME_RANGE
+  type        HolidayType @default(FULL_DAY)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  barber Barber? @relation(fields: [barberId], references: [id])
+
+  @@index([barberId, date])
+}
+
+/// A customer's booking. Links to a barber, a date, and a time range.
+/// Multiple services per appointment via AppointmentService.
+/// Overlap prevention is enforced at the application layer by querying
+/// existing appointments for the same barber + date and checking time ranges.
+model Appointment {
+  id        String            @id @default(cuid())
+  userId    String
+  barberId  String
+  date      DateTime          @db.Date
+  startTime String            // "HH:mm"
+  endTime   String            // "HH:mm"
+  status    AppointmentStatus @default(PENDING)
+  notes     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  user                User                @relation(fields: [userId], references: [id])
+  barber              Barber              @relation(fields: [barberId], references: [id])
+  appointmentServices AppointmentService[]
+  payment             Payment?
+
+  @@index([barberId, date]) // Fast overlap checks per barber per day
+  @@index([userId])
+  @@index([status])
+}
+
+/// Join table for many-to-many between Appointment and Service.
+/// Stores the price at booking time so historical appointments reflect
+/// the price when they were booked, even if service prices change later.
+model AppointmentService {
+  id             String  @id @default(cuid())
+  appointmentId  String
+  serviceId      String
+  priceAtBooking Decimal @db.Decimal(10, 2) // Snapshot of service.price at booking
+
+  // Relations
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+  service     Service     @relation(fields: [serviceId], references: [id])
+
+  @@unique([appointmentId, serviceId])
+}
+
+/// Payment record for an appointment. One-to-one relationship.
+/// Integrates with Zarinpal for online payment processing.
+model Payment {
+  id               String        @id @default(cuid())
+  appointmentId    String        @unique
+  amount           Decimal       @db.Decimal(10, 2)
+  status           PaymentStatus @default(PENDING)
+  method           PaymentMethod @default(ZARINPAL)
+  zarinpalAuthority String?      // Authority code from Zarinpal redirect
+  zarinpalRefId    String?       // Reference ID from Zarinpal verification
+  paidAt           DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  // Relations
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+}
+
+/// Simple CMS key-value store for the landing page content.
+/// Admin can update shop name, description, images, testimonials, etc.
+model LandingPageContent {
+  id        String      @id @default(cuid())
+  key       String      @unique // e.g. "shop_name", "hero_image", "about_text"
+  value     String      @db.Text
+  type      ContentType @default(TEXT)
+  updatedAt DateTime    @updatedAt
+}

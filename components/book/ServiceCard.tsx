@@ -1,0 +1,79 @@
+"use client";
+
+import { Clock, DollarSign, Check } from "lucide-react";
+import { useBookingStore } from "@/stores/booking";
+
+interface ServiceCardProps {
+  id: string;
+  name: string;
+  description: string | null;
+  durationMinutes: number;
+  price: number;
+  imageUrl: string | null;
+}
+
+export function ServiceCard({
+  id,
+  name,
+  description,
+  durationMinutes,
+  price,
+  imageUrl,
+}: ServiceCardProps) {
+  const { serviceIds, toggleService } = useBookingStore();
+  const isSelected = serviceIds.includes(id);
+
+  return (
+    <button
+      type="button"
+      onClick={() =>
+        toggleService({ id, name, durationMinutes, price: Number(price) })
+      }
+      className={`relative flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-right transition-all ${
+        isSelected
+          ? "border-amber-500 bg-amber-50 shadow-sm"
+          : "border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-sm"
+      }`}
+    >
+      {/* Checkbox indicator */}
+      <div
+        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors mt-0.5 ${
+          isSelected
+            ? "border-amber-500 bg-amber-500 text-white"
+            : "border-zinc-300 bg-white"
+        }`}
+      >
+        {isSelected && <Check className="h-4 w-4" />}
+      </div>
+
+      {/* Service image */}
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt={name}
+          className="h-16 w-16 rounded-xl object-cover"
+        />
+      )}
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <h3 className="font-semibold text-zinc-900">{name}</h3>
+        {description && (
+          <p className="mt-1 text-sm text-zinc-500 line-clamp-2">
+            {description}
+          </p>
+        )}
+        <div className="mt-2 flex items-center gap-4 text-sm text-zinc-500">
+          <span className="flex items-center gap-1">
+            <Clock className="h-4 w-4" />
+            {durationMinutes} دقیقه
+          </span>
+          <span className="flex items-center gap-1 font-semibold text-amber-600">
+            <DollarSign className="h-4 w-4" />
+            {Number(price).toLocaleString("fa-IR")} تومان
+          </span>
+        </div>
+      </div>
+    </button>
+  );
+}
