@@ -1,8 +1,8 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn, getSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Scissors, Loader2 } from "lucide-react";
@@ -11,12 +11,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-function LoginForm() {
+export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [callbackUrl, setCallbackUrl] = useState("/");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setCallbackUrl(params.get("callbackUrl") || "/");
+  }, []);
 
   const {
     register,
@@ -42,11 +46,9 @@ function LoginForm() {
       return;
     }
 
-    // Fetch session to get user role
     const session = await getSession();
     const role = session?.user?.role;
 
-    // Redirect based on role
     if (role === "ADMIN") {
       router.push("/admin");
     } else {
@@ -55,58 +57,6 @@ function LoginForm() {
     router.refresh();
   };
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
-      <div>
-        <Label htmlFor="phone">شماره موبایل</Label>
-        <Input
-          id="phone"
-          placeholder="09123456789"
-          {...register("phone")}
-          className="mt-1"
-          dir="ltr"
-        />
-        {errors.phone && (
-          <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="password">رمز عبور</Label>
-        <Input
-          id="password"
-          type="password"
-          placeholder="••••••"
-          {...register("password")}
-          className="mt-1"
-          dir="ltr"
-        />
-        {errors.password && (
-          <p className="mt-1 text-xs text-red-500">
-            {errors.password.message}
-          </p>
-        )}
-      </div>
-
-      {error && (
-        <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
-          {error}
-        </div>
-      )}
-
-      <Button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-amber-500 hover:bg-amber-600"
-      >
-        {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-        ورود
-      </Button>
-    </form>
-  );
-}
-
-export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
       <div className="w-full max-w-sm">
@@ -122,15 +72,53 @@ export default function LoginPage() {
           شماره موبایل و رمز عبور خود را وارد کنید
         </p>
 
-        <Suspense
-          fallback={
-            <div className="mt-8 flex justify-center">
-              <Loader2 className="h-6 w-6 animate-spin text-amber-500" />
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
+          <div>
+            <Label htmlFor="phone">شماره موبایل</Label>
+            <Input
+              id="phone"
+              placeholder="09123456789"
+              {...register("phone")}
+              className="mt-1"
+              dir="ltr"
+            />
+            {errors.phone && (
+              <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="password">رمز عبور</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••"
+              {...register("password")}
+              className="mt-1"
+              dir="ltr"
+            />
+            {errors.password && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+
+          {error && (
+            <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+              {error}
             </div>
-          }
-        >
-          <LoginForm />
-        </Suspense>
+          )}
+
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-amber-500 hover:bg-amber-600"
+          >
+            {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+            ورود
+          </Button>
+        </form>
 
         <p className="mt-6 text-center text-sm text-zinc-500">
           حساب ندارید؟{" "}
