@@ -145,7 +145,8 @@ export default function AppointmentsPage() {
 
       {/* Table */}
       <div className="rounded-2xl bg-white border border-zinc-200 overflow-hidden">
-        <Table>
+        <div className="overflow-x-auto">
+          <Table className="min-w-[800px]">
           <TableHeader>
             <TableRow>
               <TableHead>مشتری</TableHead>
@@ -229,6 +230,7 @@ export default function AppointmentsPage() {
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
     </div>
   );

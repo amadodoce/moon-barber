@@ -120,7 +120,8 @@ export default function PaymentsPage() {
       </div>
 
       <div className="rounded-2xl bg-white border border-zinc-200 overflow-hidden">
-        <Table>
+        <div className="overflow-x-auto">
+          <Table className="min-w-[700px]">
           <TableHeader>
             <TableRow>
               <TableHead>مشتری</TableHead>
@@ -180,6 +181,7 @@ export default function PaymentsPage() {
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
     </div>
   );

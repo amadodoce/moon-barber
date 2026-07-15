@@ -92,9 +92,9 @@ export default function SchedulePage() {
       </div>
 
       {/* Barber filter */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm text-zinc-500">فیتر:</span>
-        <div className="flex gap-1">
+        <div className="flex flex-wrap gap-1">
           <Button
             variant={selectedBarber === "shop" ? "default" : "outline"}
             size="sm"

@@ -87,7 +87,8 @@ export default function ServicesPage() {
       {error && <ErrorMessage message={error} />}
 
       <div className="rounded-2xl bg-white border border-zinc-200 overflow-hidden">
-        <Table>
+        <div className="overflow-x-auto">
+          <Table className="min-w-[500px]">
           <TableHeader>
             <TableRow>
               <TableHead>نام</TableHead>
@@ -154,6 +155,7 @@ export default function ServicesPage() {
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
 
       <ServiceDialog
