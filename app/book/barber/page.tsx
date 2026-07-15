@@ -12,6 +12,10 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 export default function BarberPage() {
   const router = useRouter();
   const { barberId, setBarber, setStep } = useBookingStore();
+
+  useEffect(() => {
+    setStep(2);
+  }, [setStep]);
   const [barbers, setBarbers] = useState<BarberWithUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +35,6 @@ export default function BarberPage() {
   }, []);
 
   const handleNext = () => {
-    setStep(3);
     router.push("/book/date-time");
   };
 
@@ -42,7 +45,6 @@ export default function BarberPage() {
     }
     // Auto-select the first active barber
     setBarber(barbers[0].id, barbers[0].user.name);
-    setStep(3);
     router.push("/book/date-time");
   };
 

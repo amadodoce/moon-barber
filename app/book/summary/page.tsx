@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { CreditCard, Loader2 } from "lucide-react";
 import { useBookingStore } from "@/stores/booking";
 import { createAppointment } from "@/app/actions/appointment";
@@ -11,6 +12,7 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 
 export default function SummaryPage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const {
     serviceIds,
     date,
@@ -18,7 +20,12 @@ export default function SummaryPage() {
     barberId,
     notes,
     reset,
+    setStep,
   } = useBookingStore();
+
+  useEffect(() => {
+    setStep(4);
+  }, [setStep]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,6 +34,11 @@ export default function SummaryPage() {
 
   const handlePayment = async () => {
     if (!canSubmit || loading) return;
+
+    if (!session) {
+      router.push("/login?callbackUrl=/book/summary");
+      return;
+    }
 
     setLoading(true);
     setError(null);

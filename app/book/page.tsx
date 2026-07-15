@@ -26,6 +26,10 @@ export default function BookPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setStep(1);
+  }, [setStep]);
+
+  useEffect(() => {
     async function load() {
       const result = await getServices();
       if (!result.success) {
@@ -40,7 +44,6 @@ export default function BookPage() {
   }, []);
 
   const handleNext = () => {
-    setStep(2);
     router.push("/book/barber");
   };
 

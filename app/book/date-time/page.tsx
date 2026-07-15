@@ -12,6 +12,10 @@ import type { AvailableSlot } from "@/lib/availability";
 export default function DateTimePage() {
   const router = useRouter();
   const { date, startTime, barberId, serviceIds, setStep } = useBookingStore();
+
+  useEffect(() => {
+    setStep(3);
+  }, [setStep]);
   const [slots, setSlots] = useState<AvailableSlot[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +56,6 @@ export default function DateTimePage() {
   }, [date, serviceIds, barberId]);
 
   const handleNext = () => {
-    setStep(4);
     router.push("/book/summary");
   };
 
