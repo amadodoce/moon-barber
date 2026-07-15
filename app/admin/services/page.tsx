@@ -71,7 +71,7 @@ export default function ServicesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-zinc-900">مدیریت سرویس‌ها</h1>
+        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">مدیریت سرویس‌ها</h1>
         <Button
           onClick={() => {
             setEditingService(null);
@@ -86,7 +86,7 @@ export default function ServicesPage() {
 
       {error && <ErrorMessage message={error} />}
 
-      <div className="rounded-2xl bg-white border border-zinc-200 overflow-hidden">
+      <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 overflow-hidden">
         <div className="overflow-x-auto">
           <Table className="min-w-[500px]">
           <TableHeader>
@@ -111,8 +111,8 @@ export default function ServicesPage() {
                     variant={service.isActive ? "default" : "secondary"}
                     className={
                       service.isActive
-                        ? "bg-green-100 text-green-700"
-                        : "bg-zinc-100 text-zinc-500"
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                        : "bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400"
                     }
                   >
                     {service.isActive ? "فعال" : "غیرفعال"}
@@ -148,7 +148,7 @@ export default function ServicesPage() {
             ))}
             {services.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-zinc-400">
+                <TableCell colSpan={5} className="text-center py-8 text-zinc-400 dark:text-zinc-500">
                   سرویسی تعریف نشده است
                 </TableCell>
               </TableRow>

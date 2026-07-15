@@ -50,7 +50,7 @@ export default function BarberPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <Spinner size="lg" />
-        <p className="mt-4 text-sm text-zinc-500">
+        <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
           در حال بارگذاری آرایشگرها...
         </p>
       </div>
@@ -64,8 +64,8 @@ export default function BarberPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-zinc-900">انتخاب آرایشگر</h2>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">انتخاب آرایشگر</h2>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           آرایشگر مورد نظر خود را انتخاب کنید
         </p>
       </div>
@@ -87,7 +87,7 @@ export default function BarberPage() {
       {/* Skip option */}
       <button
         onClick={handleSkip}
-        className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-50 transition-colors"
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
       >
         <UserX className="h-4 w-4" />
         آرایشگر خاصی مد نظر نیست
@@ -95,7 +95,7 @@ export default function BarberPage() {
 
       {/* Bottom bar */}
       {barberId && (
-        <div className="sticky bottom-0 -mx-4 bg-white border-t border-zinc-100 px-4 py-4">
+        <div className="sticky bottom-0 -mx-4 bg-white dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-700 px-4 py-4">
           <button
             onClick={handleNext}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-600 transition-colors"

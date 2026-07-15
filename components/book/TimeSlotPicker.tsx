@@ -16,7 +16,7 @@ export function TimeSlotPicker({ slots, loading, error }: TimeSlotPickerProps) {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-zinc-400">
+      <div className="flex flex-col items-center justify-center py-12 text-zinc-400 dark:text-zinc-500">
         <Spinner size="lg" />
         <p className="mt-3 text-sm">در حال بارگذاری ساعات خالی...</p>
       </div>
@@ -25,14 +25,14 @@ export function TimeSlotPicker({ slots, loading, error }: TimeSlotPickerProps) {
 
   if (error) {
     return (
-      <div className="py-12 text-center text-sm text-red-500">{error}</div>
+      <div className="py-12 text-center text-sm text-red-500 dark:text-red-400">{error}</div>
     );
   }
 
   if (slots.length === 0) {
     return (
-      <div className="py-12 text-center text-sm text-zinc-400">
-        <Clock className="mx-auto h-10 w-10 mb-3 text-zinc-300" />
+      <div className="py-12 text-center text-sm text-zinc-400 dark:text-zinc-500">
+        <Clock className="mx-auto h-10 w-10 mb-3 text-zinc-300 dark:text-zinc-600" />
         <p>ساعت خالی برای این تاریخ وجود ندارد</p>
         <p className="mt-1">لطفاً تاریخ دیگری انتخاب کنید</p>
       </div>
@@ -53,7 +53,7 @@ export function TimeSlotPicker({ slots, loading, error }: TimeSlotPickerProps) {
     <div className="space-y-4">
       {morningSlots.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-2 text-sm font-medium text-zinc-500">
+          <div className="flex items-center gap-2 mb-2 text-sm font-medium text-zinc-500 dark:text-zinc-400">
             <Sun className="h-4 w-4 text-amber-500" />
             صبح
           </div>
@@ -72,7 +72,7 @@ export function TimeSlotPicker({ slots, loading, error }: TimeSlotPickerProps) {
 
       {afternoonSlots.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-2 text-sm font-medium text-zinc-500">
+          <div className="flex items-center gap-2 mb-2 text-sm font-medium text-zinc-500 dark:text-zinc-400">
             <Moon className="h-4 w-4 text-amber-500" />
             بعدازظهر
           </div>
@@ -108,7 +108,7 @@ function SlotButton({
       className={`rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-all ${
         isSelected
           ? "border-amber-500 bg-amber-500 text-white shadow-sm"
-          : "border-zinc-200 bg-white text-zinc-700 hover:border-amber-300 hover:bg-amber-50"
+          : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-amber-300 dark:hover:border-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20"
       }`}
     >
       {slot.startTime}

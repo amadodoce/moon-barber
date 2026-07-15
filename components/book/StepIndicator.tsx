@@ -26,8 +26,8 @@ export function StepIndicator() {
                   isCompleted
                     ? "bg-amber-500 text-white"
                     : isActive
-                      ? "bg-amber-500 text-white ring-4 ring-amber-100"
-                      : "bg-zinc-200 text-zinc-500"
+                      ? "bg-amber-500 text-white ring-4 ring-amber-100 dark:ring-amber-900/50"
+                      : "bg-zinc-200 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400"
                 }`}
               >
                 {isCompleted ? (
@@ -44,7 +44,7 @@ export function StepIndicator() {
               </div>
               <span
                 className={`text-xs font-medium hidden sm:block ${
-                  isActive ? "text-amber-600" : "text-zinc-400"
+                  isActive ? "text-amber-600 dark:text-amber-400" : "text-zinc-400 dark:text-zinc-500"
                 }`}
               >
                 {step.label}
@@ -53,7 +53,7 @@ export function StepIndicator() {
             {i < steps.length - 1 && (
               <div
                 className={`flex-1 h-0.5 mx-2 mt-[-1rem] sm:mt-0 ${
-                  isCompleted ? "bg-amber-500" : "bg-zinc-200"
+                  isCompleted ? "bg-amber-500" : "bg-zinc-200 dark:bg-zinc-700"
                 }`}
               />
             )}

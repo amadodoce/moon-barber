@@ -63,8 +63,8 @@ export default function SummaryPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-zinc-900">خلاصه رزرو</h2>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">خلاصه رزرو</h2>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           اطلاعات رزرو خود را بررسی کنید
         </p>
       </div>
@@ -74,7 +74,7 @@ export default function SummaryPage() {
       {error && <ErrorMessage message={error} />}
 
       {/* Pay button */}
-      <div className="sticky bottom-0 -mx-4 bg-white border-t border-zinc-100 px-4 py-4">
+      <div className="sticky bottom-0 -mx-4 bg-white dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-700 px-4 py-4">
         <button
           onClick={handlePayment}
           disabled={!canSubmit || loading}

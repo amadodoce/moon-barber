@@ -31,8 +31,8 @@ export function ServiceCard({
       }
       className={`relative flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-right transition-all ${
         isSelected
-          ? "border-amber-500 bg-amber-50 shadow-sm"
-          : "border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-sm"
+          ? "border-amber-500 bg-amber-50 dark:bg-amber-900/20 shadow-sm"
+          : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600 hover:shadow-sm"
       }`}
     >
       {/* Checkbox indicator */}
@@ -40,7 +40,7 @@ export function ServiceCard({
         className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors mt-0.5 ${
           isSelected
             ? "border-amber-500 bg-amber-500 text-white"
-            : "border-zinc-300 bg-white"
+            : "border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700"
         }`}
       >
         {isSelected && <Check className="h-4 w-4" />}
@@ -57,18 +57,18 @@ export function ServiceCard({
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-zinc-900">{name}</h3>
+        <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">{name}</h3>
         {description && (
-          <p className="mt-1 text-sm text-zinc-500 line-clamp-2">
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400 line-clamp-2">
             {description}
           </p>
         )}
-        <div className="mt-2 flex items-center gap-4 text-sm text-zinc-500">
+        <div className="mt-2 flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400">
           <span className="flex items-center gap-1">
             <Clock className="h-4 w-4" />
             {durationMinutes} دقیقه
           </span>
-          <span className="flex items-center gap-1 font-semibold text-amber-600">
+          <span className="flex items-center gap-1 font-semibold text-amber-600 dark:text-amber-400">
             <DollarSign className="h-4 w-4" />
             {Number(price).toLocaleString("fa-IR")} تومان
           </span>

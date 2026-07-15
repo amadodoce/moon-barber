@@ -28,13 +28,13 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full flex-col bg-white border-l border-zinc-200">
+    <div className="flex h-full flex-col bg-white dark:bg-zinc-800 border-l border-zinc-200 dark:border-zinc-700">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-2 border-b border-zinc-100 px-6">
+      <div className="flex h-16 items-center gap-2 border-b border-zinc-100 dark:border-zinc-700 px-6">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500">
           <Scissors className="h-4 w-4 text-white" />
         </div>
-        <span className="text-lg font-bold text-zinc-900">پنل مدیریت</span>
+        <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100">پنل مدیریت</span>
       </div>
 
       {/* Navigation */}
@@ -52,8 +52,8 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
               onClick={onClose}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-amber-50 text-amber-700"
-                  : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+                  ? "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
+                  : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 hover:text-zinc-900 dark:hover:text-zinc-100"
               }`}
             >
               <item.icon className="h-5 w-5" />
@@ -64,10 +64,10 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
       </nav>
 
       {/* Logout */}
-      <div className="border-t border-zinc-100 p-3">
+      <div className="border-t border-zinc-100 dark:border-zinc-700 p-3">
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
         >
           <LogOut className="h-5 w-5" />
           خروج

@@ -48,7 +48,7 @@ export default function BookPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <Spinner size="lg" />
-        <p className="mt-4 text-sm text-zinc-500">در حال بارگذاری سرویس‌ها...</p>
+        <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">در حال بارگذاری سرویس‌ها...</p>
       </div>
     );
   }
@@ -60,8 +60,8 @@ export default function BookPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-zinc-900">انتخاب سرویس</h2>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">انتخاب سرویس</h2>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           سرویس‌های مورد نظر خود را انتخاب کنید
         </p>
       </div>
@@ -83,16 +83,16 @@ export default function BookPage() {
 
       {/* Bottom bar */}
       {serviceIds.length > 0 && (
-        <div className="sticky bottom-0 -mx-4 bg-white border-t border-zinc-100 px-4 py-4">
+        <div className="sticky bottom-0 -mx-4 bg-white dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-700 px-4 py-4">
           <div className="flex items-center justify-between mb-3 text-sm">
-            <span className="text-zinc-500">
+            <span className="text-zinc-500 dark:text-zinc-400">
               {serviceIds.length} سرویس انتخاب شده
             </span>
             <div className="flex items-center gap-4">
-              <span className="text-zinc-500">
+              <span className="text-zinc-500 dark:text-zinc-400">
                 {totalDuration} دقیقه
               </span>
-              <span className="font-bold text-amber-600">
+              <span className="font-bold text-amber-600 dark:text-amber-400">
                 {totalPrice.toLocaleString("fa-IR")} تومان
               </span>
             </div>

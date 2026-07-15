@@ -59,8 +59,8 @@ export default function DateTimePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-zinc-900">تاریخ و ساعت</h2>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">تاریخ و ساعت</h2>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           تاریخ و ساعت مورد نظر خود را انتخاب کنید
         </p>
       </div>
@@ -71,7 +71,7 @@ export default function DateTimePage() {
       {/* Time slots */}
       {date && barberId && (
         <div>
-          <h3 className="mb-3 text-sm font-medium text-zinc-500">
+          <h3 className="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
             ساعات خالی
           </h3>
           <TimeSlotPicker slots={slots} loading={loading} error={error} />
@@ -80,7 +80,7 @@ export default function DateTimePage() {
 
       {/* Bottom bar */}
       {date && startTime && (
-        <div className="sticky bottom-0 -mx-4 bg-white border-t border-zinc-100 px-4 py-4">
+        <div className="sticky bottom-0 -mx-4 bg-white dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-700 px-4 py-4">
           <button
             onClick={handleNext}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-600 transition-colors"
