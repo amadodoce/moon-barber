@@ -41,7 +41,7 @@ export default function BookPage() {
 
   const handleNext = () => {
     setStep(2);
-    router.push("/book/date-time");
+    router.push("/book/barber");
   };
 
   if (loading) {

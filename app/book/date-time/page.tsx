@@ -52,8 +52,8 @@ export default function DateTimePage() {
   }, [date, serviceIds, barberId]);
 
   const handleNext = () => {
-    setStep(3);
-    router.push("/book/barber");
+    setStep(4);
+    router.push("/book/summary");
   };
 
   return (
@@ -67,14 +67,6 @@ export default function DateTimePage() {
 
       {/* Date picker */}
       <DatePicker />
-
-      {/* Barber note */}
-      {!barberId && (
-        <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-sm text-amber-700">
-          پس از انتخاب تاریخ، لطفاً ابتدا آرایشگر خود را انتخاب کنید تا ساعات
-          خالی نمایش داده شود.
-        </div>
-      )}
 
       {/* Time slots */}
       {date && barberId && (

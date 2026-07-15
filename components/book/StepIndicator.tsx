@@ -4,8 +4,8 @@ import { useBookingStore } from "@/stores/booking";
 
 const steps = [
   { num: 1, label: "انتخاب سرویس" },
-  { num: 2, label: "تاریخ و ساعت" },
-  { num: 3, label: "انتخاب آرایشگر" },
+  { num: 2, label: "انتخاب آرایشگر" },
+  { num: 3, label: "تاریخ و ساعت" },
   { num: 4, label: "تأیید و پرداخت" },
 ];
 

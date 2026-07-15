@@ -5,7 +5,7 @@ import { StepIndicator } from "@/components/book/StepIndicator";
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-const stepRoutes = ["/book", "/book/date-time", "/book/barber", "/book/summary"];
+const stepRoutes = ["/book", "/book/barber", "/book/date-time", "/book/summary"];
 
 export default function BookLayout({
   children,

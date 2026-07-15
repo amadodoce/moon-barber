@@ -5,14 +5,13 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, UserX } from "lucide-react";
 import { useBookingStore } from "@/stores/booking";
 import { getBarbers, type BarberWithUser } from "@/app/actions/barber";
-import { getAvailableBookingSlots } from "@/app/actions/appointment";
 import { BarberCard } from "@/components/book/BarberCard";
 import { Spinner } from "@/components/ui/Spinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 
 export default function BarberPage() {
   const router = useRouter();
-  const { barberId, setBarber, serviceIds, date, setStep } = useBookingStore();
+  const { barberId, setBarber, setStep } = useBookingStore();
   const [barbers, setBarbers] = useState<BarberWithUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,30 +31,19 @@ export default function BarberPage() {
   }, []);
 
   const handleNext = () => {
-    setStep(4);
-    router.push("/book/summary");
+    setStep(3);
+    router.push("/book/date-time");
   };
 
-  const handleSkip = async () => {
-    if (!date || serviceIds.length === 0) return;
-
-    setLoading(true);
-    for (const barber of barbers) {
-      const result = await getAvailableBookingSlots({
-        barberId: barber.id,
-        serviceIds,
-        date,
-      });
-      if (result.success && result.data && result.data.length > 0) {
-        setBarber(barber.id, barber.user.name);
-        setLoading(false);
-        setStep(4);
-        router.push("/book/summary");
-        return;
-      }
+  const handleSkip = () => {
+    if (barbers.length === 0) {
+      setError("هیچ آرایشگری موجود نیست");
+      return;
     }
-    setLoading(false);
-    setError("هیچ آرایشگری در این تاریخ وقت خالی ندارد");
+    // Auto-select the first active barber
+    setBarber(barbers[0].id, barbers[0].user.name);
+    setStep(3);
+    router.push("/book/date-time");
   };
 
   if (loading && barbers.length === 0) {
