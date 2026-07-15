@@ -9,6 +9,7 @@ import { WorkingHourForm } from "@/components/admin/WorkingHourForm";
 import { HolidayForm } from "@/components/admin/HolidayForm";
 import { Spinner } from "@/components/ui/Spinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { showSuccess, showError } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -64,16 +65,24 @@ export default function SchedulePage() {
   const handleDeleteWH = async (id: string) => {
     setDeleting(id);
     const result = await deleteWorkingHour({ id });
-    if (!result.success) setError(result.error || "خطا در حذف");
-    else await loadData(selectedBarber);
+    if (!result.success) {
+      showError(result.error || "خطا در حذف");
+    } else {
+      await loadData(selectedBarber);
+      showSuccess("ساعت کاری حذف شد");
+    }
     setDeleting(null);
   };
 
   const handleDeleteHoliday = async (id: string) => {
     setDeleting(id);
     const result = await deleteHoliday({ id });
-    if (!result.success) setError(result.error || "خطا در حذف");
-    else await loadData(selectedBarber);
+    if (!result.success) {
+      showError(result.error || "خطا در حذف");
+    } else {
+      await loadData(selectedBarber);
+      showSuccess("تعطیلی حذف شد");
+    }
     setDeleting(null);
   };
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, UserX } from "lucide-react";
+import { ArrowLeft, UserX, Users } from "lucide-react";
 import { useBookingStore } from "@/stores/booking";
 import { getBarbers, type BarberWithUser } from "@/app/actions/barber";
 import { BarberCard } from "@/components/book/BarberCard";
@@ -12,13 +12,13 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 export default function BarberPage() {
   const router = useRouter();
   const { barberId, setBarber, setStep } = useBookingStore();
+  const [barbers, setBarbers] = useState<BarberWithUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setStep(2);
   }, [setStep]);
-  const [barbers, setBarbers] = useState<BarberWithUser[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -43,7 +43,6 @@ export default function BarberPage() {
       setError("هیچ آرایشگری موجود نیست");
       return;
     }
-    // Auto-select the first active barber
     setBarber(barbers[0].id, barbers[0].user.name);
     router.push("/book/date-time");
   };
@@ -65,7 +64,7 @@ export default function BarberPage() {
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="animate-[fade-in-up_0.4s_ease-out_both]">
         <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">انتخاب آرایشگر</h2>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           آرایشگر مورد نظر خود را انتخاب کنید
@@ -73,38 +72,51 @@ export default function BarberPage() {
       </div>
 
       {/* Barber list */}
-      <div className="space-y-3">
-        {barbers.map((barber) => (
-          <BarberCard
-            key={barber.id}
-            id={barber.id}
-            name={barber.user.name}
-            bio={barber.bio}
-            experienceYears={barber.experienceYears}
-            avatar={barber.user.avatar}
-          />
-        ))}
-      </div>
+      {barbers.length === 0 ? (
+        <div className="py-16 text-center text-sm text-zinc-400 dark:text-zinc-500 animate-[fade-in-up_0.4s_ease-out_both]">
+          <Users className="mx-auto h-10 w-10 mb-3 text-zinc-300 dark:text-zinc-600" />
+          <p>هیچ آرایشگری موجود نیست</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {barbers.map((barber, i) => (
+            <BarberCard
+              key={barber.id}
+              id={barber.id}
+              name={barber.user.name}
+              bio={barber.bio}
+              experienceYears={barber.experienceYears}
+              avatar={barber.user.avatar}
+              index={i}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Skip option */}
-      <button
-        onClick={handleSkip}
-        className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
-      >
-        <UserX className="h-4 w-4" />
-        آرایشگر خاصی مد نظر نیست
-      </button>
+      {barbers.length > 0 && (
+        <button
+          onClick={handleSkip}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors active:scale-[0.98]"
+        >
+          <UserX className="h-4 w-4" />
+          آرایشگر خاصی مد نظر نیست
+        </button>
+      )}
 
       {/* Bottom bar */}
       {barberId && (
-        <div className="sticky bottom-0 -mx-4 bg-white dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-700 px-4 py-4">
-          <button
-            onClick={handleNext}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-600 transition-colors"
-          >
-            ادامه
-            <ArrowLeft className="h-4 w-4" />
-          </button>
+        <div className="sticky bottom-0 -mx-4 px-4">
+          <div className="h-8 bg-gradient-to-t from-white dark:from-zinc-800 to-transparent pointer-events-none" />
+          <div className="bg-white dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-700 px-4 py-4">
+            <button
+              onClick={handleNext}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#D4A853] px-4 py-3 text-sm font-semibold text-white hover:bg-[#C49A48] transition-all duration-200 active:scale-[0.98] shadow-lg shadow-[#D4A853]/20"
+            >
+              ادامه
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       )}
     </div>

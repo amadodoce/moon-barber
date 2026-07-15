@@ -125,6 +125,35 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* ─── Booking Gold Palette ──────────────────────────────────────────────── */
+:root {
+  --booking-gold: #D4A853;
+  --booking-gold-hover: #C49A48;
+  --booking-gold-light: #D4A85315;
+  --booking-gold-border: #D4A85333;
+}
+
+/* ─── Booking Animations ───────────────────────────────────────────────── */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(-16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 #D4A85340; }
+  50% { box-shadow: 0 0 0 8px #D4A85300; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

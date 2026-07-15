@@ -13,7 +13,7 @@ export function StepIndicator() {
   const currentStep = useBookingStore((s) => s.step);
 
   return (
-    <div className="flex items-center justify-between w-full max-w-lg mx-auto px-4">
+    <div className="flex items-center justify-between w-full max-w-2xl mx-auto px-4">
       {steps.map((step, i) => {
         const isActive = currentStep === step.num;
         const isCompleted = currentStep > step.num;
@@ -22,11 +22,11 @@ export function StepIndicator() {
           <div key={step.num} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center gap-1.5">
               <div
-                className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition-colors ${
+                className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300 ${
                   isCompleted
-                    ? "bg-amber-500 text-white"
+                    ? "bg-[#D4A853] text-white"
                     : isActive
-                      ? "bg-amber-500 text-white ring-4 ring-amber-100 dark:ring-amber-900/50"
+                      ? "bg-[#D4A853] text-white ring-4 ring-[#D4A853]/20 animate-[pulse-glow_2s_ease-in-out_infinite]"
                       : "bg-zinc-200 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400"
                 }`}
               >
@@ -43,8 +43,8 @@ export function StepIndicator() {
                 )}
               </div>
               <span
-                className={`text-xs font-medium hidden sm:block ${
-                  isActive ? "text-amber-600 dark:text-amber-400" : "text-zinc-400 dark:text-zinc-500"
+                className={`text-xs font-medium hidden sm:block transition-colors duration-300 ${
+                  isActive ? "text-[#D4A853]" : "text-zinc-400 dark:text-zinc-500"
                 }`}
               >
                 {step.label}
@@ -52,8 +52,8 @@ export function StepIndicator() {
             </div>
             {i < steps.length - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-2 mt-[-1rem] sm:mt-0 ${
-                  isCompleted ? "bg-amber-500" : "bg-zinc-200 dark:bg-zinc-700"
+                className={`flex-1 h-[3px] mx-2 mt-[-1rem] sm:mt-0 rounded-full transition-colors duration-500 ${
+                  isCompleted ? "bg-[#D4A853]" : "bg-zinc-200 dark:bg-zinc-700"
                 }`}
               />
             )}

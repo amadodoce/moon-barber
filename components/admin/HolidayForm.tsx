@@ -23,6 +23,7 @@ import {
 import { createHolidaySchema } from "@/lib/validations/holiday";
 import { createHoliday } from "@/app/actions/holiday";
 import type { z } from "zod";
+import { showSuccess, showError } from "@/lib/toast";
 
 type HolidayFormInput = z.input<typeof createHolidaySchema>;
 
@@ -40,7 +41,6 @@ export function HolidayForm({
   onSaved,
 }: HolidayFormProps) {
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [type, setType] = useState("FULL_DAY");
 
   const {
@@ -57,7 +57,6 @@ export function HolidayForm({
 
   const onSubmit = async (data: HolidayFormInput) => {
     setSaving(true);
-    setError(null);
 
     const result = await createHoliday({
       ...data,
@@ -66,11 +65,12 @@ export function HolidayForm({
     });
 
     if (!result.success) {
-      setError(result.error || "خطا در ذخیره");
+      showError(result.error || "خطا در ذخیره");
       setSaving(false);
       return;
     }
 
+    showSuccess("تعطیلی ایجاد شد");
     setSaving(false);
     reset();
     onSaved();
@@ -140,8 +140,6 @@ export function HolidayForm({
               </div>
             </div>
           )}
-
-          {error && <p className="text-sm text-red-500">{error}</p>}
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

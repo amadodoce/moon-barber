@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Scissors, Loader2 } from "lucide-react";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
+import { showError } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +16,6 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const {
@@ -28,7 +28,6 @@ function LoginForm() {
 
   const onSubmit = async (data: LoginInput) => {
     setLoading(true);
-    setError(null);
 
     const result = await signIn("credentials", {
       phone: data.phone,
@@ -37,7 +36,7 @@ function LoginForm() {
     });
 
     if (result?.error) {
-      setError("شماره موبایل یا رمز عبور اشتباه است");
+      showError("شماره موبایل یا رمز عبور اشتباه است");
       setLoading(false);
       return;
     }
@@ -88,12 +87,6 @@ function LoginForm() {
           </p>
         )}
       </div>
-
-      {error && (
-        <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 p-3 text-sm text-red-600 dark:text-red-400">
-          {error}
-        </div>
-      )}
 
       <Button
         type="submit"

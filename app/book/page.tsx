@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Scissors } from "lucide-react";
 import { useBookingStore } from "@/stores/booking";
 import { getServices } from "@/app/actions/service";
 import { ServiceCard } from "@/components/book/ServiceCard";
@@ -62,7 +62,7 @@ export default function BookPage() {
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="animate-[fade-in-up_0.4s_ease-out_both]">
         <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">انتخاب سرویس</h2>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           سرویس‌های مورد نظر خود را انتخاب کنید
@@ -70,43 +70,54 @@ export default function BookPage() {
       </div>
 
       {/* Service list */}
-      <div className="space-y-3">
-        {services.map((service) => (
-          <ServiceCard
-            key={service.id}
-            id={service.id}
-            name={service.name}
-            description={service.description}
-            durationMinutes={service.durationMinutes}
-            price={Number(service.price)}
-            imageUrl={service.imageUrl}
-          />
-        ))}
-      </div>
+      {services.length === 0 ? (
+        <div className="py-16 text-center text-sm text-zinc-400 dark:text-zinc-500 animate-[fade-in-up_0.4s_ease-out_both]">
+          <Scissors className="mx-auto h-10 w-10 mb-3 text-zinc-300 dark:text-zinc-600" />
+          <p>هیچ سرویسی موجود نیست</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {services.map((service, i) => (
+            <ServiceCard
+              key={service.id}
+              id={service.id}
+              name={service.name}
+              description={service.description}
+              durationMinutes={service.durationMinutes}
+              price={Number(service.price)}
+              imageUrl={service.imageUrl}
+              index={i}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Bottom bar */}
       {serviceIds.length > 0 && (
-        <div className="sticky bottom-0 -mx-4 bg-white dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-700 px-4 py-4">
-          <div className="flex items-center justify-between mb-3 text-sm">
-            <span className="text-zinc-500 dark:text-zinc-400">
-              {serviceIds.length} سرویس انتخاب شده
-            </span>
-            <div className="flex items-center gap-4">
+        <div className="sticky bottom-0 -mx-4 px-4">
+          <div className="h-8 bg-gradient-to-t from-white dark:from-zinc-800 to-transparent pointer-events-none" />
+          <div className="bg-white dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-700 px-4 py-4">
+            <div className="flex items-center justify-between mb-3 text-sm">
               <span className="text-zinc-500 dark:text-zinc-400">
-                {totalDuration} دقیقه
+                {serviceIds.length} سرویس انتخاب شده
               </span>
-              <span className="font-bold text-amber-600 dark:text-amber-400">
-                {totalPrice.toLocaleString("fa-IR")} تومان
-              </span>
+              <div className="flex items-center gap-4">
+                <span className="text-zinc-500 dark:text-zinc-400">
+                  {totalDuration} دقیقه
+                </span>
+                <span className="font-bold text-[#D4A853]">
+                  {totalPrice.toLocaleString("fa-IR")} تومان
+                </span>
+              </div>
             </div>
+            <button
+              onClick={handleNext}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#D4A853] px-4 py-3 text-sm font-semibold text-white hover:bg-[#C49A48] transition-all duration-200 active:scale-[0.98] shadow-lg shadow-[#D4A853]/20"
+            >
+              ادامه
+              <ArrowLeft className="h-4 w-4" />
+            </button>
           </div>
-          <button
-            onClick={handleNext}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-600 transition-colors"
-          >
-            ادامه
-            <ArrowLeft className="h-4 w-4" />
-          </button>
         </div>
       )}
     </div>

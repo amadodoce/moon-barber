@@ -18,6 +18,7 @@ import { createServiceSchema } from "@/lib/validations/service";
 import type { z } from "zod";
 import { createService, updateService } from "@/app/actions/service";
 import { useState } from "react";
+import { showSuccess, showError } from "@/lib/toast";
 
 type ServiceFormInput = z.input<typeof createServiceSchema>;
 
@@ -42,7 +43,6 @@ export function ServiceDialog({
   onSaved,
 }: ServiceDialogProps) {
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const {
     register,
@@ -72,13 +72,11 @@ export function ServiceDialog({
           imageUrl: "",
         });
       }
-      setError(null);
     }
   }, [open, service, reset]);
 
   const onSubmit = async (data: ServiceFormInput) => {
     setSaving(true);
-    setError(null);
 
     const result = service
       ? await updateService({ ...data, id: service.id })
@@ -92,11 +90,12 @@ export function ServiceDialog({
         });
 
     if (!result.success) {
-      setError(result.error || "خطا در ذخیره");
+      showError(result.error || "خطا در ذخیره");
       setSaving(false);
       return;
     }
 
+    showSuccess(service ? "سرویس بروزرسانی شد" : "سرویس ایجاد شد");
     setSaving(false);
     onSaved();
   };
@@ -164,10 +163,6 @@ export function ServiceDialog({
             <Label htmlFor="imageUrl">آدرس تصویر (اختیاری)</Label>
             <Input id="imageUrl" {...register("imageUrl")} className="mt-1" />
           </div>
-
-          {error && (
-            <p className="text-sm text-red-500">{error}</p>
-          )}
 
           <div className="flex justify-end gap-2">
             <Button

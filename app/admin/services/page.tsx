@@ -6,6 +6,7 @@ import { getAllServices, deleteService } from "@/app/actions/service";
 import { ServiceDialog } from "@/components/admin/ServiceDialog";
 import { Spinner } from "@/components/ui/Spinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { showSuccess, showError } from "@/lib/toast";
 import {
   Table,
   TableBody,
@@ -53,9 +54,10 @@ export default function ServicesPage() {
     setDeleting(id);
     const result = await deleteService({ id });
     if (!result.success) {
-      setError(result.error || "خطا در حذف");
+      showError(result.error || "خطا در حذف");
     } else {
       setServices((prev) => prev.filter((s) => s.id !== id));
+      showSuccess("سرویس حذف شد");
     }
     setDeleting(null);
   };

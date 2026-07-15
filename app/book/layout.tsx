@@ -26,7 +26,7 @@ export default function BookLayout({
                 useBookingStore.getState().setStep((step - 1) as 1 | 2 | 3 | 4);
                 router.push(stepRoutes[step - 2]);
               }}
-              className="p-2 -mr-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors"
+              className="p-2 -mr-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors active:scale-95"
             >
               <ArrowRight className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
             </button>
@@ -36,10 +36,14 @@ export default function BookLayout({
         <div className="px-4 pb-3">
           <StepIndicator />
         </div>
+        {/* Gold accent line */}
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#D4A853] to-transparent" />
       </header>
 
-      {/* Content */}
-      <main className="mx-auto max-w-2xl px-4 py-6">{children}</main>
+      {/* Content with page transition */}
+      <main className="mx-auto max-w-2xl px-4 py-6 animate-[slide-in-right_0.3s_ease-out_both]">
+        {children}
+      </main>
     </div>
   );
 }

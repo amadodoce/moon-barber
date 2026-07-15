@@ -8,6 +8,7 @@ import axios from "axios";
 const MERCHANT_ID = process.env.ZARINPAL_MERCHANT_ID!;
 const SANDBOX = process.env.ZARINPAL_SANDBOX === "true";
 const CALLBACK_URL = process.env.CALLBACK_URL!;
+const DEV_MOCK = process.env.ZARINPAL_DEV_MOCK === "true";
 
 // Zarinpal API base URLs
 const BASE_URL = SANDBOX
@@ -51,6 +52,18 @@ export async function requestPayment(
   mobile?: string,
   email?: string
 ): Promise<ZarinpalRequestResult> {
+  // Dev mock mode — redirect to mock gateway page
+  if (DEV_MOCK) {
+    const mockAuthority = "MOCK_" + Date.now();
+    const gatewayUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    return {
+      success: true,
+      authority: mockAuthority,
+      url: `${gatewayUrl}/book/payment-gateway?Authority=${mockAuthority}`,
+      errors: [],
+    };
+  }
+
   // Zarinpal amount is in Rials (1 Toman = 10 Rials)
   const amountInRials = amount * 10;
 
@@ -100,6 +113,15 @@ export async function verifyPayment(
   amount: number,
   authority: string
 ): Promise<ZarinpalVerifyResult> {
+  // Dev mock mode — skip real Zarinpal API
+  if (DEV_MOCK) {
+    return {
+      success: true,
+      refId: "MOCK_REF_" + Date.now(),
+      errors: [],
+    };
+  }
+
   const amountInRials = amount * 10;
 
   const response = await axios.post(`${BASE_URL}/Verification.json`, {

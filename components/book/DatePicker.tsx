@@ -18,34 +18,20 @@ import { useBookingStore } from "@/stores/booking";
 
 const WEEKDAYS = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
 
-const MONTH_NAMES = [
-  "ژانویه",
-  "فوریه",
-  "مارس",
-  "آوریل",
-  "مه",
-  "ژوئن",
-  "ژوئیه",
-  "اوت",
-  "سپتامبر",
-  "اکتبر",
-  "نوامبر",
-  "دسامبر",
-];
-
-const PERSIAN_MONTHS = [
-  "فروردین",
-  "اردیبهشت",
-  "خرداد",
-  "تیر",
-  "مرداد",
-  "شهریور",
-  "مهر",
-  "آبان",
-  "آذر",
-  "دی",
-  "بهمن",
-  "اسفند",
+// Gregorian month names in Persian (aligned with JS month indices 0-11)
+const GREGORIAN_MONTHS_FA = [
+  "ژانویه",   // January
+  "فوریه",    // February
+  "مارس",     // March
+  "آوریل",    // April
+  "مه",       // May
+  "ژوئن",     // June
+  "ژوئیه",    // July
+  "اوت",      // August
+  "سپتامبر",  // September
+  "اکتبر",    // October
+  "نوامبر",   // November
+  "دسامبر",   // December
 ];
 
 function toPersianDigits(num: number): string {
@@ -62,13 +48,11 @@ export function DatePicker() {
   const monthEnd = endOfMonth(currentMonth);
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  const startDayOfWeek = getDay(monthStart);
+  // Shift getDay() so Saturday = 0 (Iranian week starts Saturday)
+  const startDayOfWeek = (getDay(monthStart) + 1) % 7;
   const paddingDays = Array.from({ length: startDayOfWeek });
 
   const selectedDate = date ? new Date(date) : null;
-
-  // Convert to Persian month index (0-11 based on Gregorian calendar for display)
-  const persianMonthIndex = currentMonth.getMonth();
 
   return (
     <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
@@ -77,17 +61,17 @@ export function DatePicker() {
         <button
           type="button"
           onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-          className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors"
+          className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors active:scale-95"
         >
           <ChevronRight className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
         </button>
         <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
-          {PERSIAN_MONTHS[persianMonthIndex]} {toPersianDigits(currentMonth.getFullYear())}
+          {GREGORIAN_MONTHS_FA[currentMonth.getMonth()]} {toPersianDigits(currentMonth.getFullYear())}
         </h3>
         <button
           type="button"
           onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-          className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors"
+          className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors active:scale-95"
         >
           <ChevronLeft className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
         </button>
@@ -121,19 +105,19 @@ export function DatePicker() {
               type="button"
               disabled={isPast}
               onClick={() => setDate(format(day, "yyyy-MM-dd"))}
-              className={`relative flex h-10 items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+              className={`relative flex h-11 items-center justify-center rounded-lg text-sm font-medium transition-all duration-150 active:scale-95 ${
                 isPast
                   ? "text-zinc-300 dark:text-zinc-600 cursor-not-allowed"
                   : isSelected
-                    ? "bg-amber-500 text-white"
+                    ? "bg-[#D4A853] text-white shadow-md shadow-[#D4A853]/20"
                     : isToday
-                      ? "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-bold"
+                      ? "bg-[#D4A853]/10 text-[#D4A853] font-bold"
                       : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700"
               }`}
             >
               {toPersianDigits(parseInt(format(day, "d"), 10))}
               {isToday && !isSelected && (
-                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-amber-500" />
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-[#D4A853]" />
               )}
             </button>
           );

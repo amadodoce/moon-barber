@@ -6,6 +6,7 @@ import { getAllBarbers, deleteBarber, activateBarber } from "@/app/actions/barbe
 import { BarberDialog } from "@/components/admin/BarberDialog";
 import { Spinner } from "@/components/ui/Spinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { showSuccess, showError } from "@/lib/toast";
 import {
   Table,
   TableBody,
@@ -56,11 +57,12 @@ export default function BarbersPage() {
     setActionLoading(id);
     const result = await deleteBarber({ id });
     if (!result.success) {
-      setError(result.error || "خطا در غیرفعال کردن");
+      showError(result.error || "خطا در غیرفعال کردن");
     } else {
       setBarbers((prev) =>
         prev.map((b) => (b.id === id ? { ...b, isActive: false } : b))
       );
+      showSuccess("آرایشگر غیرفعال شد");
     }
     setActionLoading(null);
   };
@@ -69,11 +71,12 @@ export default function BarbersPage() {
     setActionLoading(id);
     const result = await activateBarber({ id });
     if (!result.success) {
-      setError(result.error || "خطا در فعال کردن");
+      showError(result.error || "خطا در فعال کردن");
     } else {
       setBarbers((prev) =>
         prev.map((b) => (b.id === id ? { ...b, isActive: true } : b))
       );
+      showSuccess("آرایشگر فعال شد");
     }
     setActionLoading(null);
   };

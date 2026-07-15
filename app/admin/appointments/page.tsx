@@ -5,6 +5,7 @@ import { Search, Loader2, ChevronDown } from "lucide-react";
 import { getAllAppointments, updateAppointmentStatus } from "@/app/actions/appointment";
 import { Spinner } from "@/components/ui/Spinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { showSuccess, showError } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -81,11 +82,12 @@ export default function AppointmentsPage() {
     setUpdating(id);
     const result = await updateAppointmentStatus({ id, status: status as any });
     if (!result.success) {
-      setError(result.error || "خطا در بروزرسانی");
+      showError(result.error || "خطا در بروزرسانی");
     } else {
       setAppointments((prev) =>
         prev.map((a) => (a.id === id ? { ...a, status } : a))
       );
+      showSuccess("وضعیت بروزرسانی شد");
     }
     setUpdating(null);
   };

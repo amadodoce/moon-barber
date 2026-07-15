@@ -110,7 +110,13 @@ export async function createAppointment(
       );
     }
 
-    // Create appointment with related services in a transaction
+    // Calculate total amount for payment
+    const totalAmount = services.reduce(
+      (sum, s) => sum + Number(s.price),
+      0
+    );
+
+    // Create appointment with related services and payment in a transaction
     const appointment = await prisma.$transaction(async (tx) => {
       const appt = await tx.appointment.create({
         data: {
@@ -131,6 +137,16 @@ export async function createAppointment(
           serviceId: service.id,
           priceAtBooking: service.price,
         })),
+      });
+
+      // Create Payment record for this appointment
+      await tx.payment.create({
+        data: {
+          appointmentId: appt.id,
+          amount: totalAmount,
+          status: "PENDING",
+          method: "ZARINPAL",
+        },
       });
 
       return appt;

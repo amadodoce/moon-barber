@@ -23,6 +23,7 @@ import {
 import { createWorkingHourSchema } from "@/lib/validations/working-hour";
 import { createWorkingHour } from "@/app/actions/working-hour";
 import type { z } from "zod";
+import { showSuccess, showError } from "@/lib/toast";
 
 type WHFormInput = z.input<typeof createWorkingHourSchema>;
 
@@ -50,7 +51,6 @@ export function WorkingHourForm({
   onSaved,
 }: WorkingHourFormProps) {
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [dayOfWeek, setDayOfWeek] = useState("SATURDAY");
 
   const {
@@ -70,7 +70,6 @@ export function WorkingHourForm({
 
   const onSubmit = async (data: WHFormInput) => {
     setSaving(true);
-    setError(null);
 
     const result = await createWorkingHour({
       ...data,
@@ -81,11 +80,12 @@ export function WorkingHourForm({
     });
 
     if (!result.success) {
-      setError(result.error || "خطا در ذخیره");
+      showError(result.error || "خطا در ذخیره");
       setSaving(false);
       return;
     }
 
+    showSuccess("ساعت کاری ایجاد شد");
     setSaving(false);
     reset();
     onSaved();
@@ -141,8 +141,6 @@ export function WorkingHourForm({
               )}
             </div>
           </div>
-
-          {error && <p className="text-sm text-red-500">{error}</p>}
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 // Routes that don't require authentication
-const publicRoutes = ["/", "/login", "/register", "/book", "/dashboard/payment/result"];
+const publicRoutes = ["/", "/login", "/register", "/book", "/dashboard/payment/result", "/book/payment-gateway"];
 const authApiRoutes = ["/api/auth"];
 
 function isPublicRoute(pathname: string): boolean {

@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createBarberSchema, type CreateBarberInput } from "@/lib/validations/barber";
 import { createBarber, updateBarber } from "@/app/actions/barber";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface BarberDialogProps {
   open: boolean;
@@ -36,7 +37,6 @@ export function BarberDialog({
   onSaved,
 }: BarberDialogProps) {
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const isEditing = !!barber;
 
   const {
@@ -67,13 +67,11 @@ export function BarberDialog({
           experienceYears: undefined,
         });
       }
-      setError(null);
     }
   }, [open, barber, reset]);
 
   const onSubmit = async (data: CreateBarberInput) => {
     setSaving(true);
-    setError(null);
 
     let result;
     if (isEditing) {
@@ -88,11 +86,12 @@ export function BarberDialog({
     }
 
     if (!result.success) {
-      setError(result.error || "خطا در ذخیره");
+      showError(result.error || "خطا در ذخیره");
       setSaving(false);
       return;
     }
 
+    showSuccess(isEditing ? "آرایشگر بروزرسانی شد" : "آرایشگر ایجاد شد");
     setSaving(false);
     onSaved();
   };
@@ -174,10 +173,6 @@ export function BarberDialog({
               rows={3}
             />
           </div>
-
-          {error && (
-            <p className="text-sm text-red-500">{error}</p>
-          )}
 
           <div className="flex justify-end gap-2">
             <Button

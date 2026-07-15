@@ -12,13 +12,13 @@ import type { AvailableSlot } from "@/lib/availability";
 export default function DateTimePage() {
   const router = useRouter();
   const { date, startTime, barberId, serviceIds, setStep } = useBookingStore();
+  const [slots, setSlots] = useState<AvailableSlot[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setStep(3);
   }, [setStep]);
-  const [slots, setSlots] = useState<AvailableSlot[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!date || serviceIds.length === 0 || !barberId) {
@@ -61,7 +61,7 @@ export default function DateTimePage() {
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="animate-[fade-in-up_0.4s_ease-out_both]">
         <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">تاریخ و ساعت</h2>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           تاریخ و ساعت مورد نظر خود را انتخاب کنید
@@ -69,12 +69,14 @@ export default function DateTimePage() {
       </div>
 
       {/* Date picker */}
-      <DatePicker />
+      <div className="animate-[fade-in-up_0.4s_ease-out_both] [animation-delay:60ms]">
+        <DatePicker />
+      </div>
 
       {/* Time slots */}
       {date && barberId && (
         <div>
-          <h3 className="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+          <h3 className="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400 animate-[fade-in-up_0.4s_ease-out_both] [animation-delay:120ms]">
             ساعات خالی
           </h3>
           <TimeSlotPicker slots={slots} loading={loading} error={error} />
@@ -83,14 +85,17 @@ export default function DateTimePage() {
 
       {/* Bottom bar */}
       {date && startTime && (
-        <div className="sticky bottom-0 -mx-4 bg-white dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-700 px-4 py-4">
-          <button
-            onClick={handleNext}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-600 transition-colors"
-          >
-            ادامه
-            <ArrowLeft className="h-4 w-4" />
-          </button>
+        <div className="sticky bottom-0 -mx-4 px-4">
+          <div className="h-8 bg-gradient-to-t from-white dark:from-zinc-800 to-transparent pointer-events-none" />
+          <div className="bg-white dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-700 px-4 py-4">
+            <button
+              onClick={handleNext}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#D4A853] px-4 py-3 text-sm font-semibold text-white hover:bg-[#C49A48] transition-all duration-200 active:scale-[0.98] shadow-lg shadow-[#D4A853]/20"
+            >
+              ادامه
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       )}
     </div>

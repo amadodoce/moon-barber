@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Save } from "lucide-react";
 import { getLandingContent, upsertLandingContent } from "@/app/actions/landing-page";
+import { showSuccess, showError } from "@/lib/toast";
 import {
   upsertLandingContentSchema,
   LANDING_PAGE_KEYS,
@@ -56,7 +57,6 @@ export default function ContentPage() {
 
   const onSubmit = async (data: ContentFormInput) => {
     setSaving(true);
-    setError(null);
 
     const result = await upsertLandingContent({
       key: data.key,
@@ -64,12 +64,13 @@ export default function ContentPage() {
       type: data.type ?? "TEXT",
     });
     if (!result.success) {
-      setError(result.error || "خطا در ذخیره");
+      showError(result.error || "خطا در ذخیره");
       setSaving(false);
       return;
     }
 
     setContents((prev) => ({ ...prev, [data.key]: data.value }));
+    showSuccess("ذخیره شد");
     setSavedKey(data.key);
     setTimeout(() => setSavedKey(null), 2000);
     setSaving(false);
