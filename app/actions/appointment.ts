@@ -17,7 +17,7 @@ import {
   type UpdateAppointmentStatusInput,
   type GetAvailableSlotsInput,
 } from "@/lib/validations/appointment";
-import { getAvailableSlots, type AvailableSlot } from "@/lib/availability";
+import { getAvailableSlots, parseLocalDate, type AvailableSlot } from "@/lib/availability";
 import type { Appointment } from "@/app/generated/prisma/client";
 
 /** Get available booking slots for a barber + services + date */
@@ -81,7 +81,7 @@ export async function createAppointment(
     const overlapping = await prisma.appointment.findFirst({
       where: {
         barberId: data.barberId,
-        date: new Date(data.date),
+        date: parseLocalDate(data.date),
         status: { notIn: ["CANCELLED"] },
         deletedAt: null,
         OR: [
@@ -116,7 +116,7 @@ export async function createAppointment(
         data: {
           userId: user.userId,
           barberId: data.barberId,
-          date: new Date(data.date),
+          date: parseLocalDate(data.date),
           startTime: data.startTime,
           endTime,
           notes: data.notes,

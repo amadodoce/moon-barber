@@ -33,6 +33,26 @@ const MONTH_NAMES = [
   "دسامبر",
 ];
 
+const PERSIAN_MONTHS = [
+  "فروردین",
+  "اردیبهشت",
+  "خرداد",
+  "تیر",
+  "مرداد",
+  "شهریور",
+  "مهر",
+  "آبان",
+  "آذر",
+  "دی",
+  "بهمن",
+  "اسفند",
+];
+
+function toPersianDigits(num: number): string {
+  const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+  return num.toString().replace(/\d/g, (d) => persianDigits[parseInt(d)]);
+}
+
 export function DatePicker() {
   const { date, setDate } = useBookingStore();
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -47,6 +67,9 @@ export function DatePicker() {
 
   const selectedDate = date ? new Date(date) : null;
 
+  // Convert to Persian month index (0-11 based on Gregorian calendar for display)
+  const persianMonthIndex = currentMonth.getMonth();
+
   return (
     <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
       {/* Month navigation */}
@@ -59,7 +82,7 @@ export function DatePicker() {
           <ChevronRight className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
         </button>
         <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
-          {MONTH_NAMES[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+          {PERSIAN_MONTHS[persianMonthIndex]} {toPersianDigits(currentMonth.getFullYear())}
         </h3>
         <button
           type="button"
@@ -108,7 +131,7 @@ export function DatePicker() {
                       : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700"
               }`}
             >
-              {format(day, "d")}
+              {toPersianDigits(parseInt(format(day, "d"), 10))}
               {isToday && !isSelected && (
                 <span className="absolute bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-amber-500" />
               )}

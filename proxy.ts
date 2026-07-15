@@ -40,7 +40,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Check admin-only routes
-  if (isAdminRoute(pathname) && session.user.role !== "ADMIN") {
+  if (isAdminRoute(pathname) && session.user.role !== "ADMIN" && session.user.role !== "BARBER") {
     return NextResponse.redirect(new URL("/", request.url));
   }
 

@@ -13,6 +13,12 @@ export interface AvailableSlot {
   endTime: string;
 }
 
+/** Parse a date string "YYYY-MM-DD" to a Date at local midnight */
+export function parseLocalDate(dateStr: string): Date {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
 /** Convert JS Date day index (0=Sun) to Prisma DayOfWeek enum */
 const DAY_MAP: DayOfWeek[] = [
   "SUNDAY",
@@ -128,7 +134,8 @@ export async function getAvailableSlots(
   serviceIds: string[],
   date: string
 ): Promise<AvailableSlot[]> {
-  const dateObj = new Date(date);
+  // Parse date string and create Date at local midnight (not UTC)
+  const dateObj = parseLocalDate(date);
   const dayOfWeek = DAY_MAP[dateObj.getDay()];
 
   // 1. Fetch services to calculate total duration
