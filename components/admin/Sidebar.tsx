@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Scissors,
+  Users,
   Clock,
   Calendar,
   CreditCard,
@@ -16,6 +17,7 @@ import { signOut } from "next-auth/react";
 const navItems = [
   { href: "/admin", label: "داشبورد", icon: LayoutDashboard },
   { href: "/admin/services", label: "سرویس‌ها", icon: Scissors },
+  { href: "/admin/barbers", label: "آرایشگرها", icon: Users },
   { href: "/admin/schedule", label: "ساعات کاری", icon: Clock },
   { href: "/admin/appointments", label: "نوبت‌ها", icon: Calendar },
   { href: "/admin/payments", label: "پرداخت‌ها", icon: CreditCard },
