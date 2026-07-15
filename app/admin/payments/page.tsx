@@ -41,10 +41,10 @@ interface Payment {
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
-  PENDING: { label: "در انتظار", color: "bg-yellow-100 text-yellow-700" },
-  PAID: { label: "پرداخت شده", color: "bg-green-100 text-green-700" },
-  FAILED: { label: "ناموفق", color: "bg-red-100 text-red-700" },
-  REFUNDED: { label: "بازپرداخت", color: "bg-zinc-100 text-zinc-700" },
+  PENDING: { label: "در انتظار", color: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400" },
+  PAID: { label: "پرداخت شده", color: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400" },
+  FAILED: { label: "ناموفق", color: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400" },
+  REFUNDED: { label: "بازپرداخت", color: "bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300" },
 };
 
 export default function PaymentsPage() {
@@ -91,7 +91,7 @@ export default function PaymentsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-zinc-900">مدیریت پرداخت‌ها</h1>
+      <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">مدیریت پرداخت‌ها</h1>
 
       {error && <ErrorMessage message={error} />}
 
@@ -119,7 +119,7 @@ export default function PaymentsPage() {
         </Select>
       </div>
 
-      <div className="rounded-2xl bg-white border border-zinc-200 overflow-hidden">
+      <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 overflow-hidden">
         <div className="overflow-x-auto">
           <Table className="min-w-[700px]">
           <TableHeader>

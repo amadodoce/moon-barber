@@ -88,12 +88,12 @@ export default function SchedulePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-zinc-900">ساعات کاری و تعطیلات</h1>
+        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">ساعات کاری و تعطیلات</h1>
       </div>
 
       {/* Barber filter */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm text-zinc-500">فیتر:</span>
+        <span className="text-sm text-zinc-500 dark:text-zinc-400">فیتر:</span>
         <div className="flex flex-wrap gap-1">
           <Button
             variant={selectedBarber === "shop" ? "default" : "outline"}
@@ -146,18 +146,18 @@ export default function SchedulePage() {
             {workingHours.map((wh) => (
               <div
                 key={wh.id}
-                className="rounded-xl border border-zinc-200 bg-white p-4"
+                className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-zinc-900">
+                    <p className="font-medium text-zinc-900 dark:text-zinc-100">
                       {DAY_LABELS[wh.dayOfWeek] ?? wh.dayOfWeek}
                     </p>
-                    <p className="text-sm text-zinc-500">
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
                       {wh.startTime} - {wh.endTime}
                     </p>
                     {wh.specificDate && (
-                      <p className="text-xs text-zinc-400 mt-1">
+                      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
                         تاریخ خاص: {new Date(wh.specificDate).toLocaleDateString("fa-IR")}
                       </p>
                     )}
@@ -205,11 +205,11 @@ export default function SchedulePage() {
             {holidays.map((hol) => (
               <div
                 key={hol.id}
-                className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4"
+                className="flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4"
               >
                 <div>
-                  <p className="font-medium text-zinc-900">{hol.title}</p>
-                  <p className="text-sm text-zinc-500">
+                  <p className="font-medium text-zinc-900 dark:text-zinc-100">{hol.title}</p>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
                     {new Date(hol.date).toLocaleDateString("fa-IR")} •{" "}
                     {hol.type === "FULL_DAY" ? "تمام روز" : `${hol.startTime} - ${hol.endTime}`}
                   </p>

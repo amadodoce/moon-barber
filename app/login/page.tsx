@@ -68,7 +68,7 @@ function LoginForm() {
           dir="ltr"
         />
         {errors.phone && (
-          <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
+          <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.phone.message}</p>
         )}
       </div>
 
@@ -83,14 +83,14 @@ function LoginForm() {
           dir="ltr"
         />
         {errors.password && (
-          <p className="mt-1 text-xs text-red-500">
+          <p className="mt-1 text-xs text-red-500 dark:text-red-400">
             {errors.password.message}
           </p>
         )}
       </div>
 
       {error && (
-        <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+        <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 p-3 text-sm text-red-600 dark:text-red-400">
           {error}
         </div>
       )}
@@ -109,16 +109,16 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4">
       <div className="w-full max-w-sm">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500">
           <Scissors className="h-8 w-8 text-white" />
         </div>
 
-        <h1 className="text-center text-2xl font-bold text-zinc-900">
+        <h1 className="text-center text-2xl font-bold text-zinc-900 dark:text-zinc-100">
           ورود به حساب
         </h1>
-        <p className="mt-2 text-center text-sm text-zinc-500">
+        <p className="mt-2 text-center text-sm text-zinc-500 dark:text-zinc-400">
           شماره موبایل و رمز عبور خود را وارد کنید
         </p>
 
@@ -132,9 +132,9 @@ export default function LoginPage() {
           <LoginForm />
         </Suspense>
 
-        <p className="mt-6 text-center text-sm text-zinc-500">
+        <p className="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
           حساب ندارید؟{" "}
-          <a href="/register" className="font-medium text-amber-600 hover:text-amber-700">
+          <a href="/register" className="font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300">
             ثبت‌نام کنید
           </a>
         </p>

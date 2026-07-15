@@ -85,15 +85,15 @@ export default function ContentPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-zinc-900">محتوای صفحه اصلی</h1>
+      <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">محتوای صفحه اصلی</h1>
 
       {error && <ErrorMessage message={error} />}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {LANDING_PAGE_KEYS.map((field) => (
-          <Card key={field.key}>
+          <Card key={field.key} className="dark:bg-zinc-800 dark:border-zinc-700">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-zinc-500">
+              <CardTitle className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
                 {field.label}
               </CardTitle>
             </CardHeader>
@@ -124,7 +124,7 @@ export default function ContentPage() {
                 )}
 
                 {errors.value && (
-                  <p className="text-xs text-red-500">{errors.value.message}</p>
+                  <p className="text-xs text-red-500 dark:text-red-400">{errors.value.message}</p>
                 )}
 
                 <Button
@@ -136,7 +136,7 @@ export default function ContentPage() {
                   {saving ? (
                     <Loader2 className="ml-2 h-4 w-4 animate-spin" />
                   ) : savedKey === field.key ? (
-                    <span className="ml-2 text-green-600">ذخیره شد ✓</span>
+                    <span className="ml-2 text-green-600 dark:text-green-400">ذخیره شد ✓</span>
                   ) : (
                     <Save className="ml-2 h-4 w-4" />
                   )}

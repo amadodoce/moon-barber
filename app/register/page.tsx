@@ -58,15 +58,15 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4">
         <div className="w-full max-w-sm text-center">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-            <svg className="h-8 w-8 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+            <svg className="h-8 w-8 text-green-600 dark:text-green-400" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-zinc-900">ثبت‌نام موفق</h1>
-          <p className="mt-2 text-sm text-zinc-500">
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">ثبت‌نام موفق</h1>
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
             در حال انتقال به صفحه ورود...
           </p>
         </div>
@@ -75,16 +75,16 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4">
       <div className="w-full max-w-sm">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500">
           <Scissors className="h-8 w-8 text-white" />
         </div>
 
-        <h1 className="text-center text-2xl font-bold text-zinc-900">
+        <h1 className="text-center text-2xl font-bold text-zinc-900 dark:text-zinc-100">
           ثبت‌نام
         </h1>
-        <p className="mt-2 text-center text-sm text-zinc-500">
+        <p className="mt-2 text-center text-sm text-zinc-500 dark:text-zinc-400">
           حساب کاربری جدید بسازید
         </p>
 
@@ -98,7 +98,7 @@ export default function RegisterPage() {
               className="mt-1"
             />
             {errors.name && (
-              <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.name.message}</p>
             )}
           </div>
 
@@ -112,7 +112,7 @@ export default function RegisterPage() {
               dir="ltr"
             />
             {errors.phone && (
-              <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.phone.message}</p>
             )}
           </div>
 
@@ -127,7 +127,7 @@ export default function RegisterPage() {
               dir="ltr"
             />
             {errors.password && (
-              <p className="mt-1 text-xs text-red-500">
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400">
                 {errors.password.message}
               </p>
             )}
@@ -144,14 +144,14 @@ export default function RegisterPage() {
               dir="ltr"
             />
             {errors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-500">
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400">
                 {errors.confirmPassword.message}
               </p>
             )}
           </div>
 
           {error && (
-            <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+            <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 p-3 text-sm text-red-600 dark:text-red-400">
               {error}
             </div>
           )}
@@ -166,9 +166,9 @@ export default function RegisterPage() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-zinc-500">
+        <p className="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
           قبلاً ثبت‌نام کرده‌اید؟{" "}
-          <a href="/login" className="font-medium text-amber-600 hover:text-amber-700">
+          <a href="/login" className="font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300">
             وارد شوید
           </a>
         </p>
