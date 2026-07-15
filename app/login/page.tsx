@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,7 +42,17 @@ function LoginForm() {
       return;
     }
 
-    router.push(callbackUrl);
+    // Fetch session to get user role
+    const sessionRes = await fetch("/api/auth/session");
+    const session = await sessionRes.json();
+    const role = session?.user?.role;
+
+    // Redirect based on role
+    if (role === "ADMIN" || role === "BARBER") {
+      router.push("/admin");
+    } else {
+      router.push(callbackUrl);
+    }
     router.refresh();
   };
 
