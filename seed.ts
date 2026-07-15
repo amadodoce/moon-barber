@@ -182,6 +182,41 @@ async function main() {
 
   console.log("✅ Working hours created (shop-wide: Sat-Thu 09:00-12:00, 14:00-20:00)");
 
+  // ─── 4b. Working Hours (per barber) ──────────────────────────────────────
+  // Each barber works Saturday-Thursday: 09:00-12:00, 14:00-20:00
+
+  const barbers = [barber1, barber2, barber3];
+
+  for (const barber of barbers) {
+    // Clear existing barber-specific hours
+    await prisma.workingHour.deleteMany({
+      where: { barberId: barber.id, isRecurring: true },
+    });
+
+    for (const day of workDays) {
+      await prisma.workingHour.create({
+        data: {
+          barberId: barber.id,
+          dayOfWeek: day,
+          startTime: morningStart,
+          endTime: morningEnd,
+          isRecurring: true,
+        },
+      });
+      await prisma.workingHour.create({
+        data: {
+          barberId: barber.id,
+          dayOfWeek: day,
+          startTime: afternoonStart,
+          endTime: afternoonEnd,
+          isRecurring: true,
+        },
+      });
+    }
+  }
+
+  console.log("✅ Barber working hours created (all barbers: Sat-Thu 09:00-12:00, 14:00-20:00)");
+
   // ─── 5. Sample Appointments ────────────────────────────────────────────────
 
   // Get tomorrow's date (or next Saturday if tomorrow is Friday)
