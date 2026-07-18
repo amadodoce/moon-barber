@@ -309,3 +309,38 @@ export async function deleteAppointment(
     return handleActionError(error);
   }
 }
+
+/** Get appointments for the logged-in barber */
+export async function getBarberAppointments(): Promise<ActionResponse<Appointment[]>> {
+  try {
+    const user = await requireAuth();
+
+    // Find the barber record for this user
+    const barber = await prisma.barber.findUnique({
+      where: { userId: user.userId },
+    });
+
+    if (!barber) {
+      throw new Error("پروفایل آرایشگر یافت نشد");
+    }
+
+    const appointments = await prisma.appointment.findMany({
+      where: {
+        barberId: barber.id,
+        deletedAt: null,
+        status: { notIn: ["CANCELLED"] },
+      },
+      include: {
+        user: { select: { name: true, phone: true } },
+        appointmentServices: {
+          include: { service: { select: { name: true } } },
+        },
+      },
+      orderBy: [{ date: "asc" }, { startTime: "asc" }],
+    });
+
+    return { success: true, data: appointments };
+  } catch (error) {
+    return handleActionError(error);
+  }
+}
