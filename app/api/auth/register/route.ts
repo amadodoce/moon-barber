@@ -2,9 +2,19 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   try {
+    // Rate limit: 5 attempts per 15 minutes per IP
+    const ip = request.headers.get("x-forwarded-for") ?? "unknown";
+    if (!checkRateLimit(`register:${ip}`, 5, 15 * 60 * 1000)) {
+      return NextResponse.json(
+        { error: "تعداد درخواست‌ها بیش از حد مجاز است. لطفاً بعداً تلاش کنید." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
 
     // Validate input with Zod
