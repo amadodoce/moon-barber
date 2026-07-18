@@ -24,6 +24,7 @@ import { createWorkingHourSchema } from "@/lib/validations/working-hour";
 import { createWorkingHour } from "@/app/actions/working-hour";
 import type { z } from "zod";
 import { showSuccess, showError } from "@/lib/toast";
+import type { DayOfWeek } from "@/app/generated/prisma/enums";
 
 type WHFormInput = z.input<typeof createWorkingHourSchema>;
 
@@ -73,7 +74,7 @@ export function WorkingHourForm({
 
     const result = await createWorkingHour({
       ...data,
-      dayOfWeek: dayOfWeek as any,
+      dayOfWeek: dayOfWeek as DayOfWeek,
       barberId: barberId ?? undefined,
       isRecurring: data.isRecurring ?? true,
       isActive: data.isActive ?? true,

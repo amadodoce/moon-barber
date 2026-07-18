@@ -23,12 +23,25 @@ export interface BarberWithUser {
   isActive: boolean;
   user: {
     name: string;
+    phone: string;
+    avatar: string | null;
+  };
+}
+
+/** Public barber type without phone (used in booking flow) */
+export interface PublicBarber {
+  id: string;
+  bio: string | null;
+  experienceYears: number | null;
+  isActive: boolean;
+  user: {
+    name: string;
     avatar: string | null;
   };
 }
 
 /** Get all active barbers with user info (public — booking flow) */
-export async function getBarbers(): Promise<ActionResponse<BarberWithUser[]>> {
+export async function getBarbers(): Promise<ActionResponse<PublicBarber[]>> {
   try {
     const barbers = await prisma.barber.findMany({
       where: { isActive: true },
@@ -47,7 +60,7 @@ export async function getBarbers(): Promise<ActionResponse<BarberWithUser[]>> {
 }
 
 /** Get all barbers including inactive (ADMIN only) */
-export async function getAllBarbers(): Promise<ActionResponse<any[]>> {
+export async function getAllBarbers(): Promise<ActionResponse<BarberWithUser[]>> {
   try {
     await requireAdmin();
 

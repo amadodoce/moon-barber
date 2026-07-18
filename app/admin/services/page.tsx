@@ -36,19 +36,24 @@ export default function ServicesPage() {
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
+  useEffect(() => {
+    void (async () => {
+      const result = await getAllServices();
+      if (!result.success) {
+        setError(result.error || "خطا در بارگذاری");
+        setLoading(false);
+        return;
+      }
+      setServices((result.data ?? []) as Service[]);
+      setLoading(false);
+    })();
+  }, []);
+
   const loadServices = async () => {
     const result = await getAllServices();
-    if (!result.success) {
-      setError(result.error || "خطا در بارگذاری");
-      return;
-    }
+    if (!result.success) return;
     setServices((result.data ?? []) as Service[]);
-    setLoading(false);
   };
-
-  useEffect(() => {
-    loadServices();
-  }, []);
 
   const handleDelete = async (id: string) => {
     setDeleting(id);

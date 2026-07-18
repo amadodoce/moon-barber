@@ -4,15 +4,16 @@ import { useEffect, useState } from "react";
 import { Plus, Trash2, Loader2, Clock, Calendar } from "lucide-react";
 import { getWorkingHours, deleteWorkingHour } from "@/app/actions/working-hour";
 import { getHolidays, deleteHoliday } from "@/app/actions/holiday";
-import { getBarbers, type BarberWithUser } from "@/app/actions/barber";
+import { getAllBarbers, type BarberWithUser } from "@/app/actions/barber";
 import { WorkingHourForm } from "@/components/admin/WorkingHourForm";
 import { HolidayForm } from "@/components/admin/HolidayForm";
 import { Spinner } from "@/components/ui/Spinner";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { showSuccess, showError } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { WorkingHour } from "@/app/generated/prisma/client";
+import type { Holiday } from "@/app/generated/prisma/client";
 
 const DAY_LABELS: Record<string, string> = {
   SATURDAY: "شنبه",
@@ -27,25 +28,12 @@ const DAY_LABELS: Record<string, string> = {
 export default function SchedulePage() {
   const [barbers, setBarbers] = useState<BarberWithUser[]>([]);
   const [selectedBarber, setSelectedBarber] = useState<string>("shop");
-  const [workingHours, setWorkingHours] = useState<any[]>([]);
-  const [holidays, setHolidays] = useState<any[]>([]);
+  const [workingHours, setWorkingHours] = useState<WorkingHour[]>([]);
+  const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [whDialogOpen, setWhDialogOpen] = useState(false);
   const [holDialogOpen, setHolDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function load() {
-      const barbersResult = await getBarbers();
-      if (barbersResult.success) {
-        setBarbers(barbersResult.data ?? []);
-      }
-      await loadData("shop");
-      setLoading(false);
-    }
-    load();
-  }, []);
 
   const loadData = async (barberFilter: string) => {
     const barberId = barberFilter === "shop" ? undefined : barberFilter;
@@ -56,6 +44,17 @@ export default function SchedulePage() {
     if (whResult.success) setWorkingHours(whResult.data ?? []);
     if (holResult.success) setHolidays(holResult.data ?? []);
   };
+
+  useEffect(() => {
+    void (async () => {
+      const barbersResult = await getAllBarbers();
+      if (barbersResult.success) {
+        setBarbers(barbersResult.data ?? []);
+      }
+      await loadData("shop");
+      setLoading(false);
+    })();
+  }, []);
 
   const handleBarberChange = async (val: string) => {
     setSelectedBarber(val);
@@ -125,8 +124,6 @@ export default function SchedulePage() {
           ))}
         </div>
       </div>
-
-      {error && <ErrorMessage message={error} />}
 
       <Tabs defaultValue="hours">
         <TabsList>

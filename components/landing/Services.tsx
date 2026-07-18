@@ -1,4 +1,4 @@
-import { Scissors, Clock, CreditCard } from "lucide-react";
+import { Scissors, Clock } from "lucide-react";
 
 const services = [
   {

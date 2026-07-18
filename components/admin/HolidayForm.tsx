@@ -24,6 +24,7 @@ import { createHolidaySchema } from "@/lib/validations/holiday";
 import { createHoliday } from "@/app/actions/holiday";
 import type { z } from "zod";
 import { showSuccess, showError } from "@/lib/toast";
+import type { HolidayType } from "@/app/generated/prisma/enums";
 
 type HolidayFormInput = z.input<typeof createHolidaySchema>;
 
@@ -60,7 +61,7 @@ export function HolidayForm({
 
     const result = await createHoliday({
       ...data,
-      type: type as any,
+      type: type as HolidayType,
       barberId: barberId ?? undefined,
     });
 

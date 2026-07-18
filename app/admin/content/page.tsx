@@ -17,9 +17,9 @@ import { Spinner } from "@/components/ui/Spinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { LandingPageContent } from "@/app/generated/prisma/client";
 
 export default function ContentPage() {
   const [contents, setContents] = useState<Record<string, string>>({});
@@ -31,8 +31,7 @@ export default function ContentPage() {
   const {
     register,
     handleSubmit,
-    reset,
-    formState: { errors, isDirty },
+    formState: { errors },
   } = useForm<ContentFormInput>({
     resolver: zodResolver(upsertLandingContentSchema),
   });
@@ -46,7 +45,7 @@ export default function ContentPage() {
         return;
       }
       const map: Record<string, string> = {};
-      (result.data ?? []).forEach((c: any) => {
+      (result.data ?? []).forEach((c: LandingPageContent) => {
         map[c.key] = c.value;
       });
       setContents(map);

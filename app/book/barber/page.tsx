@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, UserX, Users } from "lucide-react";
 import { useBookingStore } from "@/stores/booking";
-import { getBarbers, type BarberWithUser } from "@/app/actions/barber";
+import { getBarbers, type PublicBarber } from "@/app/actions/barber";
 import { BarberCard } from "@/components/book/BarberCard";
 import { Spinner } from "@/components/ui/Spinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
@@ -12,7 +12,7 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 export default function BarberPage() {
   const router = useRouter();
   const { barberId, setBarber, setStep } = useBookingStore();
-  const [barbers, setBarbers] = useState<BarberWithUser[]>([]);
+  const [barbers, setBarbers] = useState<PublicBarber[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
