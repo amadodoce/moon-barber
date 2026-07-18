@@ -1,4 +1,5 @@
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import type { UserRole } from "@/app/generated/prisma/enums";
 
@@ -45,6 +46,7 @@ export async function getAuth(): Promise<AuthResult | null> {
 
 /**
  * Require ADMIN role. Throws if not admin.
+ * Used in server actions — throws for error handling.
  */
 export async function requireAdmin(): Promise<AuthResult> {
   const user = await requireAuth();
@@ -56,6 +58,7 @@ export async function requireAdmin(): Promise<AuthResult> {
 
 /**
  * Require ADMIN or BARBER role.
+ * Used in server actions — throws for error handling.
  */
 export async function requireAdminOrBarber(): Promise<AuthResult> {
   const user = await requireAuth();
@@ -63,6 +66,27 @@ export async function requireAdminOrBarber(): Promise<AuthResult> {
     throw new Error("FORBIDDEN");
   }
   return user;
+}
+
+/**
+ * Require ADMIN role for page-level protection.
+ * Redirects to /login if not authenticated, / if not admin.
+ */
+export async function requireAdminPage(): Promise<AuthResult> {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    redirect("/login");
+  }
+  const user = session.user as { id: string; phone: string; role: UserRole; name: string | null };
+  if (user.role !== "ADMIN") {
+    redirect("/");
+  }
+  return {
+    userId: user.id,
+    role: user.role,
+    name: user.name,
+    phone: user.phone,
+  };
 }
 
 /** Standard action response type */

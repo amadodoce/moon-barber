@@ -1,4 +1,4 @@
-import { requireAdmin } from "@/lib/auth-utils";
+import { requireAdminPage } from "@/lib/auth-utils";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 
 export default async function AdminLayout({
@@ -6,8 +6,8 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Protect all admin routes — throws redirect if not admin
-  await requireAdmin();
+  // Protect all admin routes — redirects if not admin
+  await requireAdminPage();
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
