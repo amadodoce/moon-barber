@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 interface Barber {
   id: string;
@@ -37,6 +38,12 @@ export default function BarbersPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingBarber, setEditingBarber] = useState<Barber | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+  }>({ open: false, title: "", description: "", onConfirm: () => {} });
 
   useEffect(() => {
     void (async () => {
@@ -166,7 +173,12 @@ export default function BarbersPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDelete(barber.id)}
+                        onClick={() => setConfirmAction({
+                          open: true,
+                          title: "غیرفعال کردن آرایشگر",
+                          description: "آیا از غیرفعال کردن این آرایشگر اطمینان دارید؟",
+                          onConfirm: () => handleDelete(barber.id),
+                        })}
                         disabled={actionLoading === barber.id}
                       >
                         {actionLoading === barber.id ? (
@@ -179,7 +191,12 @@ export default function BarbersPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleActivate(barber.id)}
+                        onClick={() => setConfirmAction({
+                          open: true,
+                          title: "فعال کردن آرایشگر",
+                          description: "آیا از فعال کردن این آرایشگر اطمینان دارید؟",
+                          onConfirm: () => handleActivate(barber.id),
+                        })}
                         disabled={actionLoading === barber.id}
                       >
                         {actionLoading === barber.id ? (
@@ -218,6 +235,16 @@ export default function BarbersPage() {
           setDialogOpen(false);
           loadBarbers();
         }}
+      />
+
+      <ConfirmDialog
+        open={confirmAction.open}
+        onOpenChange={(open) => setConfirmAction(prev => ({ ...prev, open }))}
+        title={confirmAction.title}
+        description={confirmAction.description}
+        confirmLabel="تأیید"
+        onConfirm={confirmAction.onConfirm}
+        loading={!!actionLoading}
       />
     </div>
   );

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 interface Service {
   id: string;
@@ -35,6 +36,10 @@ export default function ServicesPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; id: string | null }>({
+    open: false,
+    id: null,
+  });
 
   useEffect(() => {
     void (async () => {
@@ -65,6 +70,7 @@ export default function ServicesPage() {
       showSuccess("سرویس حذف شد");
     }
     setDeleting(null);
+    setDeleteConfirm({ open: false, id: null });
   };
 
   if (loading) {
@@ -140,7 +146,7 @@ export default function ServicesPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDelete(service.id)}
+                      onClick={() => setDeleteConfirm({ open: true, id: service.id })}
                       disabled={deleting === service.id}
                     >
                       {deleting === service.id ? (
@@ -173,6 +179,16 @@ export default function ServicesPage() {
           setDialogOpen(false);
           loadServices();
         }}
+      />
+
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onOpenChange={(open) => setDeleteConfirm({ open, id: deleteConfirm.id })}
+        title="حذف سرویس"
+        description="آیا از حذف این سرویس اطمینان دارید؟ این عمل قابل بازگشت نیست."
+        confirmLabel="حذف"
+        onConfirm={() => deleteConfirm.id && handleDelete(deleteConfirm.id)}
+        loading={deleting === deleteConfirm.id}
       />
     </div>
   );
