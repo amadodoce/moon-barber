@@ -16,15 +16,14 @@ export default function DateTimePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const shouldLoad = !!date && serviceIds.length > 0 && !!barberId;
+
   useEffect(() => {
     setStep(3);
   }, [setStep]);
 
   useEffect(() => {
-    if (!date || serviceIds.length === 0 || !barberId) {
-      setSlots([]);
-      return;
-    }
+    if (!shouldLoad) return;
 
     let cancelled = false;
 
@@ -53,7 +52,7 @@ export default function DateTimePage() {
     return () => {
       cancelled = true;
     };
-  }, [date, serviceIds, barberId]);
+  }, [shouldLoad, date, serviceIds, barberId]);
 
   const handleNext = () => {
     router.push("/book/summary");

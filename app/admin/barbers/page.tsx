@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Loader2, UserCheck, UserX } from "lucide-react";
+import { Plus, Pencil, Loader2, UserCheck, UserX } from "lucide-react";
 import { getAllBarbers, deleteBarber, activateBarber } from "@/app/actions/barber";
 import { BarberDialog } from "@/components/admin/BarberDialog";
 import { Spinner } from "@/components/ui/Spinner";
@@ -38,20 +38,27 @@ export default function BarbersPage() {
   const [editingBarber, setEditingBarber] = useState<Barber | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
+  useEffect(() => {
+    void (async () => {
+      const result = await getAllBarbers();
+      if (!result.success) {
+        setError(result.error || "خطا در بارگذاری");
+        setLoading(false);
+        return;
+      }
+      setBarbers(result.data ?? []);
+      setLoading(false);
+    })();
+  }, []);
+
   const loadBarbers = async () => {
     const result = await getAllBarbers();
     if (!result.success) {
       setError(result.error || "خطا در بارگذاری");
-      setLoading(false);
       return;
     }
     setBarbers(result.data ?? []);
-    setLoading(false);
   };
-
-  useEffect(() => {
-    loadBarbers();
-  }, []);
 
   const handleDelete = async (id: string) => {
     setActionLoading(id);

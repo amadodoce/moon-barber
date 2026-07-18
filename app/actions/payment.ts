@@ -15,6 +15,17 @@ import {
 } from "@/lib/validations/payment";
 import type { Payment } from "@/app/generated/prisma/client";
 
+/** Payment with nested appointment, user, and barber relations */
+export type PaymentWithRelations = Payment & {
+  appointment: {
+    id: string;
+    date: Date;
+    startTime: string;
+    user: { name: string; phone: string };
+    barber: { user: { name: string } };
+  };
+};
+
 /** Result returned to client after initiating payment */
 export interface PaymentUrlResult {
   paymentUrl: string;
@@ -259,7 +270,7 @@ export async function getPayment(
 }
 
 /** Get all payments with appointment info (ADMIN only) */
-export async function getPayments(): Promise<ActionResponse<any[]>> {
+export async function getPayments(): Promise<ActionResponse<PaymentWithRelations[]>> {
   try {
     await requireAdmin();
 

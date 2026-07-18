@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Loader2, ChevronDown } from "lucide-react";
+import { Search } from "lucide-react";
 import { getAllAppointments, updateAppointmentStatus } from "@/app/actions/appointment";
 import { Spinner } from "@/components/ui/Spinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { showSuccess, showError } from "@/lib/toast";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import type { AppointmentStatus } from "@/app/generated/prisma/enums";
 import {
   Select,
   SelectContent,
@@ -80,7 +80,7 @@ export default function AppointmentsPage() {
 
   const handleStatusChange = async (id: string, status: string) => {
     setUpdating(id);
-    const result = await updateAppointmentStatus({ id, status: status as any });
+    const result = await updateAppointmentStatus({ id, status: status as AppointmentStatus });
     if (!result.success) {
       showError(result.error || "خطا در بروزرسانی");
     } else {

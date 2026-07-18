@@ -1,29 +1,24 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 import { CreditCard, Loader2, X } from "lucide-react";
 
 function MockGateway() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const authority = searchParams.get("Authority");
-  const [origin, setOrigin] = useState("");
-
-  useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
-
-  const callbackUrl = `${origin}/api/payment/callback?Authority=${authority}`;
 
   const handlePay = () => {
-    if (!origin) return;
-    router.push(`${callbackUrl}&Status=OK`);
+    router.push(
+      `${window.location.origin}/api/payment/callback?Authority=${authority}&Status=OK`
+    );
   };
 
   const handleCancel = () => {
-    if (!origin) return;
-    router.push(`${callbackUrl}&Status=NOK`);
+    router.push(
+      `${window.location.origin}/api/payment/callback?Authority=${authority}&Status=NOK`
+    );
   };
 
   return (

@@ -1,14 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Scissors, Menu, X } from "lucide-react";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { Scissors, Menu } from "lucide-react";
 import { Sidebar } from "./Sidebar";
 
 export function AdminHeader() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { user } = useCurrentUser();
 
   return (
     <>
