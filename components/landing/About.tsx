@@ -18,7 +18,11 @@ const features = [
   },
 ];
 
-export function About() {
+interface AboutProps {
+  text?: string;
+}
+
+export function About({ text = "ما با سال‌ها تجربه در ارائه خدمات آرایشگاهی مردانه، تلاش می‌کنیم تا بهترین تجربه را برای شما فراهم کنیم." }: AboutProps) {
   return (
     <section className="bg-[#0F0F0F] py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
@@ -32,9 +36,7 @@ export function About() {
               تجربه‌ای متفاوت از آرایشگاه
             </h2>
             <p className="mb-8 text-lg leading-relaxed text-[#9A9A9A]">
-              ما با سال‌ها تجربه در ارائه خدمات آرایشگاهی مردانه، تلاش می‌کنیم
-              تا بهترین تجربه را برای شما فراهم کنیم. از لحظه ورود تا خروج،
-              همه چیز با دقت و حرفه‌ایت برنامه‌ریزی شده است.
+              {text}
             </p>
 
             {/* Features list */}

@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { Scissors } from "lucide-react";
 
-export function Hero() {
+interface HeroProps {
+  shopName?: string;
+  subtitle?: string;
+}
+
+export function Hero({ shopName = "آرایشگاه مردانه", subtitle = "رزرو آنلاین نوبت در چند ثانیه" }: HeroProps) {
   return (
     <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden bg-[#0A0A0A]">
       {/* Decorative geometric pattern */}
@@ -22,7 +27,7 @@ export function Hero() {
 
         {/* Headline */}
         <h1 className="text-5xl font-bold tracking-tight text-white md:text-7xl">
-          آرایشگاه مردانه
+          {shopName}
         </h1>
 
         {/* Decorative line */}
@@ -30,7 +35,7 @@ export function Hero() {
 
         {/* Subtext */}
         <p className="mx-auto max-w-xl text-lg text-[#9A9A9A] md:text-xl">
-          رزرو آنلاین نوبت در چند ثانیه
+          {subtitle}
         </p>
 
         {/* CTA */}

@@ -1,6 +1,16 @@
 import { Phone, MapPin, Clock } from "lucide-react";
 
-export function Footer() {
+interface FooterProps {
+  phone?: string;
+  address?: string;
+  workingHours?: string;
+}
+
+export function Footer({
+  phone = "۰۲۱-۱۲۳۴۵۶۷۸",
+  address = "تهران، خیابان ولیعصر، پلاک ۱۲۳",
+  workingHours = "شنبه تا پنجشنبه — ۹:۰۰ صبح تا ۹:۰۰ شب",
+}: FooterProps) {
   return (
     <footer className="border-t border-[#2A2A2A] bg-[#0F0F0F] py-12">
       <div className="mx-auto max-w-6xl px-6">
@@ -11,11 +21,11 @@ export function Footer() {
             <div className="space-y-3 text-[#9A9A9A]">
               <div className="flex items-center gap-3">
                 <Phone className="h-4 w-4 text-[#D4A853]" />
-                <span>۰۲۱-۱۲۳۴۵۶۷۸</span>
+                <span>{phone}</span>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="h-4 w-4 text-[#D4A853]" />
-                <span>تهران، خیابان ولیعصر، پلاک ۱۲۳</span>
+                <span>{address}</span>
               </div>
             </div>
           </div>
@@ -26,10 +36,8 @@ export function Footer() {
             <div className="space-y-2 text-[#9A9A9A]">
               <div className="flex items-center gap-3">
                 <Clock className="h-4 w-4 text-[#D4A853]" />
-                <span>شنبه تا پنجشنبه</span>
+                <span>{workingHours}</span>
               </div>
-              <p className="mr-7">۹:۰۰ صبح تا ۹:۰۰ شب</p>
-              <p className="mr-7 text-[#6A6A6A]">جمعه تعطیل</p>
             </div>
           </div>
 
