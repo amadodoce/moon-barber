@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export interface BookingState {
   step: 1 | 2 | 3 | 4;
@@ -56,35 +57,54 @@ const initialState = {
   totalPrice: 0,
 };
 
-export const useBookingStore = create<BookingState>((set) => ({
-  ...initialState,
+export const useBookingStore = create<BookingState>()(
+  persist(
+    (set) => ({
+      ...initialState,
 
-  setStep: (step) => set({ step }),
+      setStep: (step) => set({ step }),
 
-  toggleService: (service) =>
-    set((state) => {
-      const exists = state.serviceIds.includes(service.id);
-      const newIds = exists
-        ? state.serviceIds.filter((id) => id !== service.id)
-        : [...state.serviceIds, service.id];
-      const newDetails = exists
-        ? state.serviceDetails.filter((s) => s.id !== service.id)
-        : [...state.serviceDetails, service];
+      toggleService: (service) =>
+        set((state) => {
+          const exists = state.serviceIds.includes(service.id);
+          const newIds = exists
+            ? state.serviceIds.filter((id) => id !== service.id)
+            : [...state.serviceIds, service.id];
+          const newDetails = exists
+            ? state.serviceDetails.filter((s) => s.id !== service.id)
+            : [...state.serviceDetails, service];
 
-      return {
-        serviceIds: newIds,
-        serviceDetails: newDetails,
-        totalDuration: newDetails.reduce(
-          (sum, s) => sum + s.durationMinutes,
-          0
-        ),
-        totalPrice: newDetails.reduce((sum, s) => sum + s.price, 0),
-      };
+          return {
+            serviceIds: newIds,
+            serviceDetails: newDetails,
+            totalDuration: newDetails.reduce(
+              (sum, s) => sum + s.durationMinutes,
+              0
+            ),
+            totalPrice: newDetails.reduce((sum, s) => sum + s.price, 0),
+          };
+        }),
+
+      setDate: (date) => set({ date, startTime: null, endTime: null }),
+      setTime: (start, end) => set({ startTime: start, endTime: end }),
+      setBarber: (id, name) => set({ barberId: id, barberName: name }),
+      setNotes: (notes) => set({ notes }),
+      reset: () => set(initialState),
     }),
-
-  setDate: (date) => set({ date, startTime: null, endTime: null }),
-  setTime: (start, end) => set({ startTime: start, endTime: end }),
-  setBarber: (id, name) => set({ barberId: id, barberName: name }),
-  setNotes: (notes) => set({ notes }),
-  reset: () => set(initialState),
-}));
+    {
+      name: "barber-booking",
+      partialize: (state) => ({
+        serviceIds: state.serviceIds,
+        serviceDetails: state.serviceDetails,
+        date: state.date,
+        startTime: state.startTime,
+        endTime: state.endTime,
+        barberId: state.barberId,
+        barberName: state.barberName,
+        notes: state.notes,
+        totalDuration: state.totalDuration,
+        totalPrice: state.totalPrice,
+      }),
+    }
+  )
+);
