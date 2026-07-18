@@ -9,6 +9,7 @@ import { showSuccess, showError } from "@/lib/toast";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import type { AppointmentStatus } from "@/app/generated/prisma/enums";
+import { Pagination } from "@/components/ui/Pagination";
 import {
   Select,
   SelectContent,
@@ -63,6 +64,8 @@ export default function AppointmentsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [updating, setUpdating] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
 
   useEffect(() => {
     async function load() {
@@ -104,6 +107,9 @@ export default function AppointmentsPage() {
     }
     return true;
   });
+
+  const totalPages = Math.ceil(filtered.length / pageSize);
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   if (loading) {
     return (
@@ -162,7 +168,7 @@ export default function AppointmentsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.map((appt) => {
+            {paginated.map((appt) => {
               const st = statusConfig[appt.status] ?? { label: appt.status, color: "bg-zinc-100" };
               const paySt = appt.payment
                 ? paymentStatusConfig[appt.payment.status] ?? { label: appt.payment.status, color: "bg-zinc-100" }
@@ -234,6 +240,12 @@ export default function AppointmentsPage() {
         </Table>
         </div>
       </div>
+
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

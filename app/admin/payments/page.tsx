@@ -7,6 +7,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Pagination } from "@/components/ui/Pagination";
 import {
   Select,
   SelectContent,
@@ -53,6 +54,8 @@ export default function PaymentsPage() {
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
 
   useEffect(() => {
     async function load() {
@@ -80,6 +83,9 @@ export default function PaymentsPage() {
     }
     return true;
   });
+
+  const totalPages = Math.ceil(filtered.length / pageSize);
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   if (loading) {
     return (
@@ -134,7 +140,7 @@ export default function PaymentsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.map((pay) => {
+            {paginated.map((pay) => {
               const st = statusConfig[pay.status] ?? {
                 label: pay.status,
                 color: "bg-zinc-100",
@@ -183,6 +189,12 @@ export default function PaymentsPage() {
         </Table>
         </div>
       </div>
+
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
     </div>
   );
 }
