@@ -6,10 +6,12 @@ import { Barbers } from "@/components/landing/Barbers";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
+import { Navbar } from "@/components/landing/Navbar";
 
 export default function Home() {
   return (
     <main>
+      <Navbar />
       <Hero />
       <Services />
       <HowItWorks />
