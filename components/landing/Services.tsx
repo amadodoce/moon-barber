@@ -1,22 +1,26 @@
 import { Scissors, Clock } from "lucide-react";
 
-const services = [
+interface ServiceItem {
+  name: string;
+  description: string | null;
+  price: string;
+  duration: string;
+}
+
+const defaultServices: ServiceItem[] = [
   {
-    icon: Scissors,
     name: "اصلاح مو",
     description: "اصلاح حرفه‌ای مو با جدیدترین تکنیک‌ها",
     price: "۱۵۰,۰۰۰",
     duration: "۳۰ دقیقه",
   },
   {
-    icon: Scissors,
     name: "اصلاح ریش",
     description: "طراحی و اصلاح ریش با دقت بالا",
     price: "۱۰۰,۰۰۰",
     duration: "۲۰ دقیقه",
   },
   {
-    icon: Scissors,
     name: "پکیج کامل",
     description: "اصلاح مو + ریش + ماساژ صورت",
     price: "۲۵۰,۰۰۰",
@@ -24,7 +28,11 @@ const services = [
   },
 ];
 
-export function Services() {
+interface ServicesProps {
+  services?: ServiceItem[];
+}
+
+export function Services({ services = defaultServices }: ServicesProps) {
   return (
     <section className="bg-[#0F0F0F] py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
@@ -46,7 +54,7 @@ export function Services() {
               className="group rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-8 transition-all hover:border-[#D4A853]/30"
             >
               <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-lg bg-[#D4A853]/10">
-                <service.icon className="h-6 w-6 text-[#D4A853]" />
+                <Scissors className="h-6 w-6 text-[#D4A853]" />
               </div>
               <h3 className="mb-2 text-xl font-bold text-white">
                 {service.name}

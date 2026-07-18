@@ -1,6 +1,12 @@
 import { User } from "lucide-react";
 
-const barbers = [
+interface BarberItem {
+  name: string;
+  specialty: string;
+  experience: string;
+}
+
+const defaultBarbers: BarberItem[] = [
   {
     name: "علی محمدی",
     specialty: "اصلاح مو و ریش",
@@ -18,7 +24,11 @@ const barbers = [
   },
 ];
 
-export function Barbers() {
+interface BarbersProps {
+  barbers?: BarberItem[];
+}
+
+export function Barbers({ barbers = defaultBarbers }: BarbersProps) {
   return (
     <section className="bg-[#0A0A0A] py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
