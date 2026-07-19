@@ -145,8 +145,14 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 #D4A85340; }
-  50% { box-shadow: 0 0 0 8px #D4A85300; }
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.04); opacity: 0.95; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[pulse-glow_2s_ease-in-out_infinite\] {
+    animation: none !important;
+  }
 }
 
 @keyframes shimmer {

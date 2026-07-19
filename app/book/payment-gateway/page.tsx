@@ -22,7 +22,7 @@ function MockGateway() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-100 dark:bg-zinc-900 px-4">
+    <div className="flex min-h-screen min-h-dvh items-center justify-center bg-zinc-100 dark:bg-zinc-900 px-4">
       <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-zinc-800 shadow-xl p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-center gap-3">
@@ -80,7 +80,7 @@ export default function PaymentGatewayPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="flex min-h-screen min-h-dvh items-center justify-center">
           <Loader2 className="h-6 w-6 animate-spin text-[#D4A853]" />
         </div>
       }

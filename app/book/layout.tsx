@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useBookingStore } from "@/stores/booking";
 import { StepIndicator } from "@/components/book/StepIndicator";
 import { ArrowRight } from "lucide-react";
@@ -13,14 +14,21 @@ export default function BookLayout({
   children: React.ReactNode;
 }) {
   const step = useBookingStore((s) => s.step);
+  const hasHydrated = useBookingStore((s) => s._hasHydrated);
   const router = useRouter();
 
+  useEffect(() => {
+    useBookingStore.persist.rehydrate();
+  }, []);
+
+  const showBackButton = hasHydrated && step > 1;
+
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
+    <div className="min-h-screen min-h-dvh bg-zinc-50 dark:bg-zinc-900">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm border-b border-zinc-100 dark:border-zinc-700">
+      <header className="sticky top-0 z-10 border-b border-zinc-100 bg-white/80 pt-[env(safe-area-inset-top)] backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-800/80">
         <div className="mx-auto flex h-14 max-w-2xl items-center gap-3 px-4">
-          {step > 1 && (
+          {showBackButton && (
             <button
               onClick={() => {
                 useBookingStore.getState().setStep((step - 1) as 1 | 2 | 3 | 4);
@@ -40,9 +48,8 @@ export default function BookLayout({
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#D4A853] to-transparent" />
       </header>
 
-      {/* Content with page transition */}
-      <main className="mx-auto max-w-2xl px-4 py-6 animate-[slide-in-right_0.3s_ease-out_both]">
-        {children}
+      <main className="mx-auto max-w-2xl px-4 py-6">
+        <div className="animate-[fade-in-up_0.3s_ease-out_both]">{children}</div>
       </main>
     </div>
   );

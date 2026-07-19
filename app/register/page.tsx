@@ -58,7 +58,7 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4">
+      <div className="flex min-h-screen min-h-dvh items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4">
         <div className="w-full max-w-sm text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
             <svg className="h-8 w-8 text-green-600 dark:text-green-400" viewBox="0 0 20 20" fill="currentColor">
@@ -75,7 +75,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4">
+    <div className="flex min-h-screen min-h-dvh items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4">
       <div className="w-full max-w-sm">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500">
           <Scissors className="h-8 w-8 text-white" />

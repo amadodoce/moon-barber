@@ -9,6 +9,7 @@ import { showSuccess, showError } from "@/lib/toast";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import type { AppointmentStatus } from "@/app/generated/prisma/enums";
+import { formatFaDate } from "@/lib/dates";
 import { Pagination } from "@/components/ui/Pagination";
 import {
   Select,
@@ -184,7 +185,7 @@ export default function AppointmentsPage() {
                   </TableCell>
                   <TableCell>{appt.barber.user.name}</TableCell>
                   <TableCell>
-                    {new Date(appt.date).toLocaleDateString("fa-IR")}
+                    {formatFaDate(appt.date)}
                   </TableCell>
                   <TableCell>
                     {appt.startTime} - {appt.endTime}

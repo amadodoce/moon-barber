@@ -9,6 +9,10 @@ import { createAppointment } from "@/app/actions/appointment";
 import { initiatePayment } from "@/app/actions/payment";
 import { BookingSummary } from "@/components/book/BookingSummary";
 import { showSuccess, showError } from "@/lib/toast";
+import {
+  BookingBottomBar,
+  BOOKING_BOTTOM_BAR_PADDING,
+} from "@/components/book/BookingBottomBar";
 
 export default function SummaryPage() {
   const router = useRouter();
@@ -77,7 +81,7 @@ export default function SummaryPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${canSubmit ? BOOKING_BOTTOM_BAR_PADDING : ""}`}>
       <div className="animate-[fade-in-up_0.4s_ease-out_both]">
         <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">خلاصه رزرو</h2>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
@@ -87,30 +91,26 @@ export default function SummaryPage() {
 
       <BookingSummary />
 
-      {/* Pay button */}
       {canSubmit && (
-        <div className="sticky bottom-0 -mx-4 px-4">
-          <div className="h-8 bg-gradient-to-t from-white dark:from-zinc-800 to-transparent pointer-events-none" />
-          <div className="bg-white dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-700 px-4 py-4">
-            <button
-              onClick={handlePayment}
-              disabled={loading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#D4A853] px-4 py-3 text-sm font-semibold text-white hover:bg-[#C49A48] transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#D4A853]/20"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  در حال پردازش...
-                </>
-              ) : (
-                <>
-                  <CreditCard className="h-4 w-4" />
-                  تأیید و پرداخت
-                </>
-              )}
-            </button>
-          </div>
-        </div>
+        <BookingBottomBar>
+          <button
+            onClick={handlePayment}
+            disabled={loading}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#D4A853] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-[#D4A853]/20 transition-all duration-200 hover:bg-[#C49A48] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                در حال پردازش...
+              </>
+            ) : (
+              <>
+                <CreditCard className="h-4 w-4" />
+                تأیید و پرداخت
+              </>
+            )}
+          </button>
+        </BookingBottomBar>
       )}
     </div>
   );

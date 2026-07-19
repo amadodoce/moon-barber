@@ -5,6 +5,7 @@ import {
   Scissors,
   Clock,
 } from "lucide-react";
+import { formatFaDate } from "@/lib/dates";
 
 async function getStats() {
   const today = new Date();
@@ -129,7 +130,7 @@ export default async function AdminDashboard() {
                     </p>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400">
                       {appt.barber.user.name} •{" "}
-                      {new Date(appt.date).toLocaleDateString("fa-IR")}
+                      {formatFaDate(appt.date)}
                     </p>
                   </div>
                 </div>

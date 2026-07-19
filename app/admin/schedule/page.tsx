@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { WorkingHour } from "@/app/generated/prisma/client";
+import { formatFaDate } from "@/lib/dates";
 import type { Holiday } from "@/app/generated/prisma/client";
 
 const DAY_LABELS: Record<string, string> = {
@@ -164,7 +165,7 @@ export default function SchedulePage() {
                     </p>
                     {wh.specificDate && (
                       <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
-                        تاریخ خاص: {new Date(wh.specificDate).toLocaleDateString("fa-IR")}
+                        تاریخ خاص: {formatFaDate(wh.specificDate)}
                       </p>
                     )}
                   </div>
@@ -216,7 +217,7 @@ export default function SchedulePage() {
                 <div>
                   <p className="font-medium text-zinc-900 dark:text-zinc-100">{hol.title}</p>
                   <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                    {new Date(hol.date).toLocaleDateString("fa-IR")} •{" "}
+                    {formatFaDate(hol.date)} •{" "}
                     {hol.type === "FULL_DAY" ? "تمام روز" : `${hol.startTime} - ${hol.endTime}`}
                   </p>
                 </div>

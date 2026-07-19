@@ -12,6 +12,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         position="bottom-center"
         dir="rtl"
         duration={4000}
+        style={{ bottom: "max(1rem, env(safe-area-inset-bottom))" }}
         toastOptions={{
           classNames: {
             toast: "!bg-zinc-800 !border-zinc-700 !text-zinc-100 !rounded-xl",

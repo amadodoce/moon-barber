@@ -5,8 +5,7 @@ import "./globals.css";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1.0,
-  maximumScale: 1.0,
-  userScalable: false,
+  viewportFit: "cover",
 };
 
 export const metadata: Metadata = {
@@ -21,6 +20,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa" dir="rtl" className="h-full antialiased dark">
+      <head>
+        <link
+          rel="preload"
+          href="/fonts/Yekan.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
       </body>

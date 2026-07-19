@@ -2,6 +2,7 @@
 
 import { Calendar, Clock, Scissors, User, FileText } from "lucide-react";
 import { useBookingStore } from "@/stores/booking";
+import { formatFaDate } from "@/lib/dates";
 
 export function BookingSummary() {
   const {
@@ -17,7 +18,7 @@ export function BookingSummary() {
   } = useBookingStore();
 
   const formattedDate = date
-    ? new Date(date).toLocaleDateString("fa-IR", {
+    ? formatFaDate(date, {
         weekday: "long",
         year: "numeric",
         month: "long",
@@ -92,7 +93,7 @@ export function BookingSummary() {
           onChange={(e) => setNotes(e.target.value)}
           placeholder="توضیحات خود را اینجا بنویسید..."
           rows={3}
-          className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:border-[#D4A853] focus:outline-none focus:ring-1 focus:ring-[#D4A853] resize-none transition-colors"
+          className="w-full resize-none rounded-xl border border-zinc-200 bg-white px-3 py-2 text-base text-zinc-700 transition-colors placeholder:text-zinc-400 focus:border-[#D4A853] focus:outline-none focus:ring-1 focus:ring-[#D4A853] dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:placeholder:text-zinc-500 md:text-sm"
         />
       </div>
 
