@@ -6,6 +6,7 @@ import { cancelAppointment } from "@/app/actions/appointment";
 import { showSuccess, showError } from "@/lib/toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Loader2 } from "lucide-react";
+import { formatFaDate } from "@/lib/dates";
 
 interface AppointmentService {
   service: { name: string };
@@ -79,7 +80,7 @@ export function AppointmentCard({ appointment, onCancel }: AppointmentCardProps)
             <div className="mt-2 flex items-center gap-4 text-xs text-zinc-500 dark:text-zinc-400">
               <span className="flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5" />
-                {new Date(appointment.date).toLocaleDateString("fa-IR")}
+                {formatFaDate(appointment.date)}
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="h-3.5 w-3.5" />

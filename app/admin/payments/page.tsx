@@ -8,6 +8,7 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/Pagination";
+import { formatFaDate } from "@/lib/dates";
 import {
   Select,
   SelectContent,
@@ -164,7 +165,7 @@ export default function PaymentsPage() {
                     <Badge className={st.color}>{st.label}</Badge>
                   </TableCell>
                   <TableCell>
-                    {new Date(pay.appointment.date).toLocaleDateString("fa-IR")}{" "}
+                    {formatFaDate(pay.appointment.date)}{" "}
                     {pay.appointment.startTime}
                   </TableCell>
                   <TableCell className="text-xs text-zinc-500">
@@ -172,7 +173,7 @@ export default function PaymentsPage() {
                   </TableCell>
                   <TableCell className="text-xs text-zinc-500">
                     {pay.paidAt
-                      ? new Date(pay.paidAt).toLocaleDateString("fa-IR")
+                      ? formatFaDate(pay.paidAt)
                       : "—"}
                   </TableCell>
                 </TableRow>

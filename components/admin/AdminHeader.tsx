@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { Scissors, Menu } from "lucide-react";
 import { Sidebar } from "./Sidebar";
+import {
+  Sheet,
+  SheetContent,
+} from "@/components/ui/sheet";
 
 export function AdminHeader() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -10,10 +14,12 @@ export function AdminHeader() {
   return (
     <>
       {/* Mobile header */}
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-zinc-200 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm px-4 sm:hidden">
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-zinc-200 bg-white/80 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-800/80 sm:hidden">
         <button
+          type="button"
           onClick={() => setSidebarOpen(true)}
-          className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg"
+          className="rounded-lg p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+          aria-label="باز کردن منو"
         >
           <Menu className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
         </button>
@@ -30,18 +36,16 @@ export function AdminHeader() {
         <Sidebar />
       </aside>
 
-      {/* Mobile sidebar (slide-out) */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-40 sm:hidden">
-          <div
-            className="absolute inset-0 bg-black/50"
-            onClick={() => setSidebarOpen(false)}
-          />
-          <div className="absolute inset-y-0 right-0 w-64">
-            <Sidebar onClose={() => setSidebarOpen(false)} />
-          </div>
-        </div>
-      )}
+      {/* Mobile sidebar */}
+      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+        <SheetContent
+          side="right"
+          showCloseButton={false}
+          className="w-64 max-w-[85vw] gap-0 p-0 pr-[env(safe-area-inset-right)] sm:hidden"
+        >
+          <Sidebar onClose={() => setSidebarOpen(false)} />
+        </SheetContent>
+      </Sheet>
 
       {/* Spacer for desktop sidebar */}
       <div className="hidden sm:block sm:w-64" />

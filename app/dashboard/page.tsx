@@ -49,7 +49,7 @@ export default function DashboardPage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
+      <div className="min-h-screen min-h-dvh bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
         <Spinner size="lg" />
       </div>
     );
@@ -66,7 +66,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
+    <div className="min-h-screen min-h-dvh bg-zinc-50 dark:bg-zinc-900">
       <header className="sticky top-0 z-10 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm border-b border-zinc-100 dark:border-zinc-700">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
           <h1 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">نوبت‌های من</h1>

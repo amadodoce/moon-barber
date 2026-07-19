@@ -15,6 +15,7 @@ import {
 } from "date-fns";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { useBookingStore } from "@/stores/booking";
+import { parseLocalDate } from "@/lib/dates";
 
 const WEEKDAYS = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
 
@@ -52,7 +53,7 @@ export function DatePicker() {
   const startDayOfWeek = (getDay(monthStart) + 1) % 7;
   const paddingDays = Array.from({ length: startDayOfWeek });
 
-  const selectedDate = date ? new Date(date) : null;
+  const selectedDate = date ? parseLocalDate(date) : null;
 
   return (
     <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">

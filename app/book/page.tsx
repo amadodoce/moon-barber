@@ -8,6 +8,10 @@ import { getServices } from "@/app/actions/service";
 import { ServiceCard } from "@/components/book/ServiceCard";
 import { Spinner } from "@/components/ui/Spinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import {
+  BookingBottomBar,
+  BOOKING_BOTTOM_BAR_PADDING,
+} from "@/components/book/BookingBottomBar";
 
 interface Service {
   id: string;
@@ -61,7 +65,7 @@ export default function BookPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${serviceIds.length > 0 ? BOOKING_BOTTOM_BAR_PADDING : ""}`}>
       <div className="animate-[fade-in-up_0.4s_ease-out_both]">
         <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">انتخاب سرویس</h2>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
@@ -92,33 +96,29 @@ export default function BookPage() {
         </div>
       )}
 
-      {/* Bottom bar */}
       {serviceIds.length > 0 && (
-        <div className="sticky bottom-0 -mx-4 px-4">
-          <div className="h-8 bg-gradient-to-t from-white dark:from-zinc-800 to-transparent pointer-events-none" />
-          <div className="bg-white dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-700 px-4 py-4">
-            <div className="flex items-center justify-between mb-3 text-sm">
+        <BookingBottomBar>
+          <div className="mb-3 flex items-center justify-between text-sm">
+            <span className="text-zinc-500 dark:text-zinc-400">
+              {serviceIds.length} سرویس انتخاب شده
+            </span>
+            <div className="flex items-center gap-4">
               <span className="text-zinc-500 dark:text-zinc-400">
-                {serviceIds.length} سرویس انتخاب شده
+                {totalDuration} دقیقه
               </span>
-              <div className="flex items-center gap-4">
-                <span className="text-zinc-500 dark:text-zinc-400">
-                  {totalDuration} دقیقه
-                </span>
-                <span className="font-bold text-[#D4A853]">
-                  {totalPrice.toLocaleString("fa-IR")} تومان
-                </span>
-              </div>
+              <span className="font-bold text-[#D4A853]">
+                {totalPrice.toLocaleString("fa-IR")} تومان
+              </span>
             </div>
-            <button
-              onClick={handleNext}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#D4A853] px-4 py-3 text-sm font-semibold text-white hover:bg-[#C49A48] transition-all duration-200 active:scale-[0.98] shadow-lg shadow-[#D4A853]/20"
-            >
-              ادامه
-              <ArrowLeft className="h-4 w-4" />
-            </button>
           </div>
-        </div>
+          <button
+            onClick={handleNext}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#D4A853] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-[#D4A853]/20 transition-all duration-200 hover:bg-[#C49A48] active:scale-[0.98]"
+          >
+            ادامه
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+        </BookingBottomBar>
       )}
     </div>
   );
