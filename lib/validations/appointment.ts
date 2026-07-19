@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isTodayOrFuture } from "@/lib/dates";
 
 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
@@ -15,13 +16,7 @@ export const createAppointmentSchema = z
     notes: z.string().max(500).optional(),
   })
   .refine(
-    (data) => {
-      // Date must be today or in the future
-      const selectedDate = new Date(data.date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return selectedDate >= today;
-    },
+    (data) => isTodayOrFuture(data.date),
     { message: "تاریخ رزرو باید امروز یا بعد از آن باشد", path: ["date"] }
   );
 

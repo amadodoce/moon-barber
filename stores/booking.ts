@@ -1,7 +1,31 @@
 "use client";
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+
+const safeLocalStorage = {
+  getItem: (name: string): string | null => {
+    try {
+      return localStorage.getItem(name);
+    } catch {
+      return null;
+    }
+  },
+  setItem: (name: string, value: string): void => {
+    try {
+      localStorage.setItem(name, value);
+    } catch {
+      // Safari private mode / storage quota
+    }
+  },
+  removeItem: (name: string): void => {
+    try {
+      localStorage.removeItem(name);
+    } catch {
+      // ignore
+    }
+  },
+};
 
 export interface BookingState {
   step: 1 | 2 | 3 | 4;
@@ -18,6 +42,7 @@ export interface BookingState {
   barberId: string | null;
   barberName: string | null;
   notes: string;
+  _hasHydrated: boolean;
 
   // Computed
   totalDuration: number;
@@ -35,6 +60,7 @@ export interface BookingState {
   setTime: (start: string, end: string) => void;
   setBarber: (id: string | null, name: string | null) => void;
   setNotes: (notes: string) => void;
+  setHasHydrated: (value: boolean) => void;
   reset: () => void;
 }
 
@@ -53,6 +79,7 @@ const initialState = {
   barberId: null as string | null,
   barberName: null as string | null,
   notes: "",
+  _hasHydrated: false,
   totalDuration: 0,
   totalPrice: 0,
 };
@@ -63,6 +90,7 @@ export const useBookingStore = create<BookingState>()(
       ...initialState,
 
       setStep: (step) => set({ step }),
+      setHasHydrated: (value) => set({ _hasHydrated: value }),
 
       toggleService: (service) =>
         set((state) => {
@@ -89,10 +117,11 @@ export const useBookingStore = create<BookingState>()(
       setTime: (start, end) => set({ startTime: start, endTime: end }),
       setBarber: (id, name) => set({ barberId: id, barberName: name }),
       setNotes: (notes) => set({ notes }),
-      reset: () => set(initialState),
+      reset: () => set({ ...initialState, _hasHydrated: true }),
     }),
     {
       name: "barber-booking",
+      storage: createJSONStorage(() => safeLocalStorage),
       partialize: (state) => ({
         serviceIds: state.serviceIds,
         serviceDetails: state.serviceDetails,
@@ -105,6 +134,9 @@ export const useBookingStore = create<BookingState>()(
         totalDuration: state.totalDuration,
         totalPrice: state.totalPrice,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );
