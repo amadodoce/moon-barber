@@ -6,6 +6,13 @@ interface FooterProps {
   workingHours?: string;
 }
 
+function toTelHref(phone: string): string {
+  const normalized = phone
+    .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
+    .replace(/[^\d+]/g, "");
+  return `tel:${normalized}`;
+}
+
 export function Footer({
   phone = "۰۲۱-۱۲۳۴۵۶۷۸",
   address = "تهران، خیابان ولیعصر، پلاک ۱۲۳",
@@ -21,7 +28,12 @@ export function Footer({
             <div className="space-y-3 text-[#9A9A9A]">
               <div className="flex items-center gap-3">
                 <Phone className="h-4 w-4 text-[#D4A853]" />
-                <span>{phone}</span>
+                <a
+                  href={toTelHref(phone)}
+                  className="transition-colors hover:text-[#D4A853]"
+                >
+                  {phone}
+                </a>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="h-4 w-4 text-[#D4A853]" />
