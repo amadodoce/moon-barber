@@ -9,6 +9,7 @@ import {
   handleActionError,
   type ActionResponse,
 } from "@/lib/auth-utils";
+import { notifyPaymentConfirmed } from "@/lib/notifications";
 import {
   initiatePaymentSchema,
   type InitiatePaymentInput,
@@ -207,6 +208,10 @@ export async function handlePaymentCallback(
       ]);
 
       revalidatePath("/dashboard");
+
+      // Send notification (non-blocking)
+      void notifyPaymentConfirmed(payment.appointmentId);
+
       return {
         success: true,
         data: { success: true, appointmentId: payment.appointmentId },

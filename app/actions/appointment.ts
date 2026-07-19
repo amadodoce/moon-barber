@@ -9,6 +9,10 @@ import {
   type ActionResponse,
 } from "@/lib/auth-utils";
 import {
+  notifyAppointmentCreated,
+  notifyAppointmentCancelled,
+} from "@/lib/notifications";
+import {
   createAppointmentSchema,
   appointmentIdSchema,
   updateAppointmentStatusSchema,
@@ -154,6 +158,10 @@ export async function createAppointment(
 
     revalidatePath("/dashboard");
     revalidatePath("/admin/appointments");
+
+    // Send notification (non-blocking)
+    void notifyAppointmentCreated(appointment.id);
+
     return { success: true, data: appointment };
   } catch (error) {
     return handleActionError(error);
@@ -197,6 +205,10 @@ export async function cancelAppointment(
 
     revalidatePath("/dashboard");
     revalidatePath("/admin/appointments");
+
+    // Send notification (non-blocking)
+    void notifyAppointmentCancelled(id);
+
     return { success: true, data: updated };
   } catch (error) {
     return handleActionError(error);
