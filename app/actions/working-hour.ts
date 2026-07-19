@@ -15,6 +15,7 @@ import {
   type UpdateWorkingHourInput,
 } from "@/lib/validations/working-hour";
 import type { WorkingHour } from "@/app/generated/prisma/client";
+import { parseLocalDate } from "@/lib/dates";
 
 /** Create a new working hour (ADMIN or BARBER for their own) */
 export async function createWorkingHour(
@@ -45,7 +46,7 @@ export async function createWorkingHour(
       }
     }
 
-    const specificDate = data.specificDate ? new Date(data.specificDate) : null;
+    const specificDate = data.specificDate ? parseLocalDate(data.specificDate) : null;
 
     const workingHour = await prisma.workingHour.create({
       data: {
@@ -96,7 +97,7 @@ export async function updateWorkingHour(
       data: {
         ...updateData,
         specificDate: updateData.specificDate
-          ? new Date(updateData.specificDate)
+          ? parseLocalDate(updateData.specificDate)
           : updateData.specificDate === null
             ? null
             : undefined,

@@ -15,6 +15,7 @@ import {
   type UpdateHolidayInput,
 } from "@/lib/validations/holiday";
 import type { Holiday } from "@/app/generated/prisma/client";
+import { parseLocalDate } from "@/lib/dates";
 
 /** Create a new holiday (ADMIN only) */
 export async function createHoliday(
@@ -38,7 +39,7 @@ export async function createHoliday(
       data: {
         barberId: data.barberId ?? null,
         title: data.title,
-        date: new Date(data.date),
+        date: parseLocalDate(data.date),
         startTime: data.startTime ?? null,
         endTime: data.endTime ?? null,
         type: data.type ?? "FULL_DAY",
@@ -71,7 +72,7 @@ export async function updateHoliday(
       where: { id },
       data: {
         ...updateData,
-        date: updateData.date ? new Date(updateData.date) : undefined,
+        date: updateData.date ? parseLocalDate(updateData.date) : undefined,
       },
     });
 

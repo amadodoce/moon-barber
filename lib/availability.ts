@@ -1,5 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import type { DayOfWeek } from "@/app/generated/prisma/enums";
+import { parseLocalDate } from "@/lib/dates";
+
+export { parseLocalDate } from "@/lib/dates";
 
 /** A continuous time range in "HH:mm" format */
 export interface TimeRange {
@@ -11,12 +14,6 @@ export interface TimeRange {
 export interface AvailableSlot {
   startTime: string;
   endTime: string;
-}
-
-/** Parse a date string "YYYY-MM-DD" to a Date at local midnight */
-export function parseLocalDate(dateStr: string): Date {
-  const [year, month, day] = dateStr.split("-").map(Number);
-  return new Date(year, month - 1, day);
 }
 
 /** Convert JS Date day index (0=Sun) to Prisma DayOfWeek enum */

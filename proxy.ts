@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getToken } from "next-auth/jwt";
 
 // Routes that don't require authentication
 const publicRoutes = ["/", "/login", "/register", "/book", "/dashboard/payment/result", "/book/payment-gateway"];
@@ -29,18 +28,21 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check authentication
-  const session = await getServerSession(authOptions);
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
   // Redirect unauthenticated users to login
-  if (!session) {
+  if (!token) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   // Check admin-only routes
-  if (isAdminRoute(pathname) && session.user.role !== "ADMIN" && session.user.role !== "BARBER") {
+  const role = token.role as string | undefined;
+  if (isAdminRoute(pathname) && role !== "ADMIN" && role !== "BARBER") {
     return NextResponse.redirect(new URL("/", request.url));
   }
 

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { formatFaDate } from "@/lib/dates";
 
 /**
  * Notification system for appointment events.
@@ -39,7 +40,7 @@ async function getNotificationContext(
     userPhone: appointment.user.phone,
     barberName: appointment.barber.user.name,
     services: appointment.appointmentServices.map((as) => as.service.name),
-    date: new Date(appointment.date).toLocaleDateString("fa-IR"),
+    date: formatFaDate(appointment.date),
     startTime: appointment.startTime,
     endTime: appointment.endTime,
     totalAmount: Number(appointment.payment?.amount ?? 0),
