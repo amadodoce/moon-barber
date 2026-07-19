@@ -8,7 +8,7 @@ interface HeroProps {
 
 export function Hero({ shopName = "آرایشگاه مردانه", subtitle = "رزرو آنلاین نوبت در چند ثانیه" }: HeroProps) {
   return (
-    <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden bg-[#0A0A0A]">
+    <section className="relative flex min-h-[85vh] min-h-[85dvh] items-center justify-center overflow-hidden bg-[#0A0A0A]">
       {/* Decorative geometric pattern */}
       <div className="absolute inset-0 opacity-[0.03]">
         <div className="absolute right-[10%] top-[15%] h-64 w-64 rounded-full border border-[#D4A853]" />
