@@ -36,18 +36,19 @@ export function Navbar() {
           >
             صفحه اصلی
           </Link>
-          {isAuthenticated && (user?.role === "ADMIN" || user?.role === "BARBER") && (
-            <Link
-              href="/admin"
-              className={`text-sm transition-colors ${
-                pathname.startsWith("/admin")
-                  ? "text-[#D4A853]"
-                  : "text-[#9A9A9A] hover:text-white"
-              }`}
-            >
-              پنل مدیریت
-            </Link>
-          )}
+          {isAuthenticated &&
+            (user?.role === "ADMIN" || user?.role === "BARBER") && (
+              <Link
+                href="/admin"
+                className={`text-sm transition-colors ${
+                  pathname.startsWith("/admin")
+                    ? "text-[#D4A853]"
+                    : "text-[#9A9A9A] hover:text-white"
+                }`}
+              >
+                پنل مدیریت
+              </Link>
+            )}
           {isAuthenticated && user?.role === "CUSTOMER" && (
             <Link
               href="/dashboard"
@@ -86,7 +87,8 @@ export function Navbar() {
 
         {/* Mobile menu button */}
         <button
-          onClick={() => setMenuOpen(prev => !prev)}
+          type="button"
+          onClick={() => setMenuOpen((prev) => !prev)}
           className="p-2 text-[#9A9A9A] hover:text-white md:hidden"
         >
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -104,15 +106,16 @@ export function Navbar() {
             >
               صفحه اصلی
             </Link>
-            {isAuthenticated && (user?.role === "ADMIN" || user?.role === "BARBER") && (
-              <Link
-                href="/admin"
-                onClick={() => setMenuOpen(false)}
-                className="text-sm text-[#9A9A9A] hover:text-white"
-              >
-                پنل مدیریت
-              </Link>
-            )}
+            {isAuthenticated &&
+              (user?.role === "ADMIN" || user?.role === "BARBER") && (
+                <Link
+                  href="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-sm text-[#9A9A9A] hover:text-white"
+                >
+                  پنل مدیریت
+                </Link>
+              )}
             {isAuthenticated && user?.role === "CUSTOMER" && (
               <Link
                 href="/dashboard"
