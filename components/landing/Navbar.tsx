@@ -86,7 +86,7 @@ export function Navbar() {
 
         {/* Mobile menu button */}
         <button
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={() => setMenuOpen(prev => !prev)}
           className="p-2 text-[#9A9A9A] hover:text-white md:hidden"
         >
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
