@@ -13,8 +13,9 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-[#2A2A2A] bg-[#0A0A0A]/80 backdrop-blur-sm">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-[#2A2A2A]">
+      <div className="absolute inset-0 bg-[#0A0A0A]/80 backdrop-blur-sm" />
+      <div className="relative mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#D4A853]">
