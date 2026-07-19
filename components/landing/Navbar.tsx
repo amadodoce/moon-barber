@@ -103,7 +103,7 @@ export function Navbar() {
         <button
           type="button"
           onClick={() => setMenuOpen((prev) => !prev)}
-          className="p-2 text-[#9A9A9A] hover:text-white md:hidden"
+          className="p-2 text-[#9A9A9A] hover:text-white md:hidden touch-manipulation active:opacity-70"
           aria-expanded={menuOpen}
           aria-controls={menuId}
           aria-label={menuOpen ? "بستن منو" : "باز کردن منو"}
