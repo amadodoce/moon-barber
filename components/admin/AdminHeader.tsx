@@ -79,7 +79,7 @@ export function AdminHeader() {
           showCloseButton={false}
           className="w-64 max-w-[85vw] gap-0 p-0 pr-[env(safe-area-inset-right)] sm:hidden"
         >
-          <Sidebar onClose={() => setSidebarOpen(false)} />
+          <Sidebar onClose={() => setSidebarOpen(false)} mobile />
         </SheetContent>
       </Sheet>
     </>
