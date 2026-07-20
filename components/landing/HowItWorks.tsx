@@ -18,35 +18,36 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="bg-[#0A0A0A] py-20 md:py-28">
+    <section className="bg-[#0f0e0c] py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
-        {/* Section header */}
-        <div className="mb-16 text-center">
-          <p className="mb-3 text-sm font-medium tracking-widest text-[#D4A853]">
-            فرآیند رزرو
-          </p>
-          <h2 className="text-3xl font-bold text-white md:text-4xl">
+        {/* Section header — left-aligned */}
+        <div className="mb-12 max-w-md">
+          <h2 className="text-3xl font-bold text-[#f5f0e8] md:text-4xl">
             چگونه کار می‌کند؟
           </h2>
+          <p className="mt-3 text-[#6a6458]">
+            فرآیند رزرو
+          </p>
         </div>
 
-        {/* Steps */}
-        <div className="relative grid gap-8 md:grid-cols-3">
-          {/* Connecting line */}
-          <div className="absolute top-12 right-[16%] left-[16%] hidden h-px bg-[#2A2A2A] md:block" />
-
+        {/* Steps — staggered list, not centred grid */}
+        <div className="max-w-2xl space-y-4">
           {steps.map((step, index) => (
-            <div key={index} className="relative text-center">
-              {/* Number circle */}
-              <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#D4A853] bg-[#0A0A0A] text-lg font-bold text-[#D4A853]">
+            <div
+              key={index}
+              className="flex items-start gap-5 rounded-2xl border border-[#2a2520] bg-[#1a1814] p-6 transition-colors duration-200 hover:border-[#D4A853]/20"
+            >
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#D4A853]/30 bg-[#D4A853]/5 text-sm font-bold text-[#D4A853]">
                 {step.number}
               </div>
-              <h3 className="mb-3 text-lg font-bold text-white">
-                {step.title}
-              </h3>
-              <p className="mx-auto max-w-xs text-[#9A9A9A]">
-                {step.description}
-              </p>
+              <div>
+                <h3 className="text-base font-bold text-[#f5f0e8]">
+                  {step.title}
+                </h3>
+                <p className="mt-1 text-sm text-[#6a6458]">
+                  {step.description}
+                </p>
+              </div>
             </div>
           ))}
         </div>

@@ -30,36 +30,42 @@ interface BarbersProps {
 
 export function Barbers({ barbers = defaultBarbers }: BarbersProps) {
   return (
-    <section className="bg-[#0A0A0A] py-20 md:py-28">
+    <section className="bg-[#0c0b09] py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
-        {/* Section header */}
-        <div className="mb-16 text-center">
-          <p className="mb-3 text-sm font-medium tracking-widest text-[#D4A853]">
-            تیم ما
-          </p>
-          <h2 className="text-3xl font-bold text-white md:text-4xl">
+        {/* Section header — right-aligned for variety */}
+        <div className="mb-12 text-right md:ml-auto md:max-w-md">
+          <h2 className="text-3xl font-bold text-[#f5f0e8] md:text-4xl">
             آرایشگران حرفه‌ای
           </h2>
+          <p className="mt-3 text-[#6a6458]">
+            تیم ما
+          </p>
         </div>
 
-        {/* Barbers grid */}
-        <div className="grid gap-6 md:grid-cols-3">
+        {/* Barbers — list layout, not grid */}
+        <div className="space-y-3">
           {barbers.map((barber) => (
             <div
               key={barber.name}
-              className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-6 text-center transition-all hover:border-[#D4A853]/30"
+              className="flex items-center gap-5 rounded-2xl border border-[#2a2520] bg-[#1a1814] p-5 transition-colors duration-200 hover:border-[#D4A853]/30"
             >
-              {/* Avatar placeholder */}
-              <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 border-[#D4A853]/30 bg-[#0F0F0F]">
-                <User className="h-8 w-8 text-[#6A6A6A]" />
+              {/* Avatar */}
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[#D4A853]/20 bg-[#D4A853]/5">
+                <User className="h-6 w-6 text-[#D4A853]/60" />
               </div>
-              <h3 className="mb-1 text-lg font-bold text-white">
-                {barber.name}
-              </h3>
-              <p className="mb-2 text-sm text-[#D4A853]">
-                {barber.specialty}
-              </p>
-              <p className="text-sm text-[#6A6A6A]">{barber.experience}</p>
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-bold text-[#f5f0e8]">
+                  {barber.name}
+                </h3>
+                <p className="mt-0.5 text-sm text-[#D4A853]">
+                  {barber.specialty}
+                </p>
+              </div>
+              {/* Experience — right side */}
+              <span className="shrink-0 text-xs text-[#4a4538]">
+                {barber.experience}
+              </span>
             </div>
           ))}
         </div>
