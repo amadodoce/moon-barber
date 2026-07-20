@@ -111,7 +111,14 @@ export function HolidayForm({
 
           <div>
             <Label className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>نوع</Label>
-            <Select value={type} onValueChange={(v) => v && setType(v)}>
+            <Select
+              value={type}
+              onValueChange={(v) => v && setType(v)}
+              items={[
+                { value: "FULL_DAY", label: "تمام روز" },
+                { value: "TIME_RANGE", label: "بازه زمانی" },
+              ]}
+            >
               <SelectTrigger className={inputClass}>
                 <SelectValue />
               </SelectTrigger>

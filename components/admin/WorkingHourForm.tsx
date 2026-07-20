@@ -105,7 +105,19 @@ export function WorkingHourForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 px-6 py-4">
           <div>
             <Label className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>روز هفته</Label>
-            <Select value={dayOfWeek} onValueChange={(v) => v && setDayOfWeek(v)}>
+            <Select
+              value={dayOfWeek}
+              onValueChange={(v) => v && setDayOfWeek(v)}
+              items={[
+                { value: "SATURDAY", label: "شنبه" },
+                { value: "SUNDAY", label: "یکشنبه" },
+                { value: "MONDAY", label: "دوشنبه" },
+                { value: "TUESDAY", label: "سه‌شنبه" },
+                { value: "WEDNESDAY", label: "چهارشنبه" },
+                { value: "THURSDAY", label: "پنجشنبه" },
+                { value: "FRIDAY", label: "جمعه" },
+              ]}
+            >
               <SelectTrigger className={inputClass}>
                 <SelectValue />
               </SelectTrigger>
