@@ -32,7 +32,7 @@ export function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)]">
       <div className="mx-auto max-w-6xl px-6 py-4">
-        <div className="flex items-center justify-between rounded-full border border-[var(--surface-border)] bg-[var(--surface-base)]/90 px-5 py-2.5 backdrop-blur-md">
+        <div className="flex items-center justify-between rounded-full border border-[var(--surface-border)] bg-[var(--surface-base)] px-5 py-2.5">
           {/* Logo — left */}
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--booking-gold)]">
@@ -124,7 +124,7 @@ export function Navbar() {
       {menuOpen && (
         <div
           id={menuId}
-          className="mx-6 mb-4 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-base)]/95 p-4 backdrop-blur-md md:hidden"
+          className="mx-6 mb-4 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-base)] p-4 md:hidden"
         >
           <nav className="flex flex-col gap-1">
             <Link
