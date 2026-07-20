@@ -68,9 +68,9 @@ export function Navbar() {
               )}
             {isAuthenticated && user?.role === "CUSTOMER" && (
               <Link
-                href="/dashboard"
+                href="/customer"
                 className={`rounded-full px-3.5 py-1.5 text-sm transition-colors duration-150 ${
-                  pathname === "/dashboard"
+                  pathname === "/customer"
                     ? "bg-[var(--booking-gold)]/10 text-[var(--booking-gold)]"
                     : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 }`}
@@ -146,7 +146,7 @@ export function Navbar() {
               )}
             {isAuthenticated && user?.role === "CUSTOMER" && (
               <Link
-                href="/dashboard"
+                href="/customer"
                 onClick={() => setMenuOpen(false)}
                 className="rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
               >
