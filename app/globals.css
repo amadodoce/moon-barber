@@ -131,6 +131,19 @@
   --booking-gold-hover: #C49A48;
   --booking-gold-light: #D4A85315;
   --booking-gold-border: #D4A85333;
+
+  /* Surface scale — warm-tinted darks */
+  --surface-base: #0c0b09;
+  --surface-raised: #0f0e0c;
+  --surface-overlay: #1a1814;
+  --surface-border: #2a2520;
+
+  /* Text scale */
+  --text-primary: #f5f0e8;
+  --text-secondary: #8a8578;
+  --text-muted: #6a6458;
+  --text-faint: #4a4538;
+  --text-accent: #c8c2b8;
 }
 
 /* ─── Booking Animations ───────────────────────────────────────────────── */

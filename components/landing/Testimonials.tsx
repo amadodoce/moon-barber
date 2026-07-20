@@ -15,14 +15,14 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="bg-[#0f0e0c] py-20 md:py-28">
+    <section className="bg-[var(--surface-raised)] py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
         {/* Section header — right-aligned for variety */}
         <div className="mb-12 text-right md:ml-auto md:max-w-md">
-          <h2 className="text-3xl font-bold text-[#f5f0e8] md:text-4xl">
+          <h2 className="text-3xl font-bold text-[var(--text-primary)] md:text-4xl">
             مشتریان ما چه می‌گویند؟
           </h2>
-          <p className="mt-3 text-[#6a6458]">
+          <p className="mt-3 text-[var(--text-muted)]">
             نظرات مشتریان
           </p>
         </div>
@@ -32,15 +32,15 @@ export function Testimonials() {
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.name}
-              className="rounded-2xl border border-[#2a2520] bg-[#1a1814] p-6"
+              className="rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-overlay)] p-6"
             >
-              <Quote className="mb-3 h-6 w-6 text-[#D4A853]/30" />
-              <p className="text-base leading-relaxed text-[#c8c2b8]">
+              <Quote className="mb-3 h-6 w-6 text-[var(--booking-gold)]/30" />
+              <p className="text-base leading-relaxed text-[var(--text-accent)]">
                 {testimonial.quote}
               </p>
-              <div className="mt-5 border-t border-[#2a2520] pt-4">
-                <p className="text-sm font-semibold text-[#f5f0e8]">{testimonial.name}</p>
-                <p className="mt-0.5 text-xs text-[#D4A853]">
+              <div className="mt-5 border-t border-[var(--surface-border)] pt-4">
+                <p className="text-sm font-semibold text-[var(--text-primary)]">{testimonial.name}</p>
+                <p className="mt-0.5 text-xs text-[var(--booking-gold)]">
                   {testimonial.service}
                 </p>
               </div>
