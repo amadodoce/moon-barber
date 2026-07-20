@@ -7,6 +7,7 @@ import { Scissors, Menu, X, LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { Button } from "@base-ui/react";
 
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -106,7 +107,7 @@ export function Navbar() {
             </Link>
 
             {/* Mobile hamburger */}
-            <button
+            <Button
               type="button"
               onClick={() => setMenuOpen((prev) => !prev)}
               className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:hidden touch-manipulation active:opacity-70"
@@ -115,7 +116,7 @@ export function Navbar() {
               aria-label={menuOpen ? "بستن منو" : "باز کردن منو"}
             >
               {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
