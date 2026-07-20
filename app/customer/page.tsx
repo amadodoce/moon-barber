@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Calendar, CreditCard, Scissors, LogOut, Clock } from "lucide-react";
+import { Calendar, CreditCard, Scissors, LogOut, Clock, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { getMyAppointments } from "@/app/actions/appointment";
 import { getMyPayments } from "@/app/actions/payment";
@@ -30,12 +30,18 @@ interface Payment {
   id: string;
   amount: unknown;
   status: string;
+  paidAt: Date | null;
   createdAt: Date;
   appointment: {
     id: string;
     date: Date;
     startTime: string;
+    endTime: string;
     barber: { user: { name: string } };
+    appointmentServices: Array<{
+      service: { name: string; durationMinutes: number };
+      priceAtBooking: unknown;
+    }>;
   };
 }
 
@@ -266,33 +272,67 @@ export default function CustomerDashboardPage() {
                       className="rounded-xl border p-4"
                       style={{ borderColor: "var(--surface-border)", backgroundColor: "var(--surface-overlay)" }}
                     >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <CreditCard className="h-4 w-4 shrink-0" style={{ color: "var(--booking-gold)" }} />
-                            <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                              {Number(payment.amount).toLocaleString("fa-IR")} تومان
-                            </span>
-                          </div>
-                          <div className="mt-1.5 flex items-center gap-3 text-xs" style={{ color: "var(--text-muted)" }}>
-                            <span className="flex items-center gap-1">
-                              <Calendar className="h-3.5 w-3.5" />
-                              {formatFaDate(payment.appointment.date)}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Clock className="h-3.5 w-3.5" />
-                              {payment.appointment.startTime}
-                            </span>
-                          </div>
-                          <p className="mt-1 text-xs" style={{ color: "var(--text-faint)" }}>
-                            آرایشگر: {payment.appointment.barber.user.name}
-                          </p>
+                      {/* Header: amount + status */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="h-4 w-4 shrink-0" style={{ color: "var(--booking-gold)" }} />
+                          <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+                            {Number(payment.amount).toLocaleString("fa-IR")} تومان
+                          </span>
                         </div>
                         <span
                           className="rounded-full px-2 py-0.5 text-xs font-medium"
                           style={{ backgroundColor: ps.bg, color: ps.text }}
                         >
                           {ps.label}
+                        </span>
+                      </div>
+
+                      {/* Appointment details */}
+                      <div
+                        className="mt-3 rounded-lg p-3"
+                        style={{ backgroundColor: "var(--surface-base)" }}
+                      >
+                        <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                          <Calendar className="h-3.5 w-3.5" />
+                          <span>{formatFaDate(payment.appointment.date)}</span>
+                          <span>•</span>
+                          <Clock className="h-3.5 w-3.5" />
+                          <span>{payment.appointment.startTime} - {payment.appointment.endTime}</span>
+                        </div>
+                        <div className="mt-2 flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                          <Scissors className="h-3.5 w-3.5" style={{ color: "var(--booking-gold)" }} />
+                          <span>آرایشگر: {payment.appointment.barber.user.name}</span>
+                        </div>
+                      </div>
+
+                      {/* Services list */}
+                      {payment.appointment.appointmentServices.length > 0 && (
+                        <div className="mt-3 space-y-1.5">
+                          {payment.appointment.appointmentServices.map((as, i) => (
+                            <div key={i} className="flex items-center justify-between text-xs">
+                              <span style={{ color: "var(--text-secondary)" }}>{as.service.name}</span>
+                              <span style={{ color: "var(--text-muted)" }}>
+                                {as.service.durationMinutes} دقیقه • {Number(as.priceAtBooking).toLocaleString("fa-IR")} تومان
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Footer: payment ID + date */}
+                      <div
+                        className="mt-3 flex items-center justify-between border-t pt-3 text-xs"
+                        style={{ borderColor: "var(--surface-border)" }}
+                      >
+                        <span style={{ color: "var(--text-faint)" }}>
+                          کد پرداخت: {payment.id.slice(-8).toUpperCase()}
+                        </span>
+                        <span style={{ color: "var(--text-faint)" }}>
+                          {payment.paidAt
+                            ? `پرداخت: ${formatFaDate(payment.paidAt)}`
+                            : `ثبت: ${formatFaDate(payment.createdAt)}`
+                          }
                         </span>
                       </div>
                     </div>
