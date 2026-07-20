@@ -175,7 +175,8 @@ export function ServiceDialog({
             <Button
               type="submit"
               disabled={saving}
-              className="bg-amber-500 hover:bg-amber-600"
+              className=""
+              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
             >
               {saving && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
               ذخیره

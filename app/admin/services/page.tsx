@@ -90,7 +90,7 @@ export default function ServicesPage() {
             setEditingService(null);
             setDialogOpen(true);
           }}
-          className="bg-amber-500 hover:bg-amber-600"
+          style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
         >
           <Plus className="ml-2 h-4 w-4" />
           سرویس جدید

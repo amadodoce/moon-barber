@@ -131,7 +131,7 @@ export default function ContentPage() {
                   type="submit"
                   size="sm"
                   disabled={saving}
-                  className="bg-amber-500 hover:bg-amber-600"
+                  style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
                 >
                   {saving ? (
                     <Loader2 className="ml-2 h-4 w-4 animate-spin" />
