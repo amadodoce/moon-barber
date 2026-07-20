@@ -31,8 +31,8 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
     <div className="flex h-full flex-col bg-white dark:bg-zinc-800 border-l border-zinc-200 dark:border-zinc-700">
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 border-b border-zinc-100 dark:border-zinc-700 px-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500">
-          <Scissors className="h-4 w-4 text-white" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ backgroundColor: "var(--booking-gold)" }}>
+          <Scissors className="h-4 w-4" style={{ color: "var(--surface-base)" }} />
         </div>
         <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100">پنل مدیریت</span>
       </div>

@@ -15,7 +15,7 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="bg-[var(--surface-raised)] py-20 md:py-28">
+    <section className="bg-[var(--surface-raised)] py-24 md:py-36">
       <div className="mx-auto max-w-6xl px-6">
         {/* Section header — right-aligned for variety */}
         <div className="mb-12 text-right md:ml-auto md:max-w-md">

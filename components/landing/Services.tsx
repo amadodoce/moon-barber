@@ -34,7 +34,7 @@ interface ServicesProps {
 
 export function Services({ services = defaultServices }: ServicesProps) {
   return (
-    <section className="bg-[var(--surface-raised)] py-20 md:py-28">
+    <section className="bg-[var(--surface-raised)] py-16 md:py-24">
       <div className="mx-auto max-w-6xl px-6">
         {/* Section header — left-aligned */}
         <div className="mb-12 max-w-md">
