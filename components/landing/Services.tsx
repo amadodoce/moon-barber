@@ -39,7 +39,7 @@ export function Services({ services = defaultServices }: ServicesProps) {
         {/* Section header — left-aligned */}
         <div className="mb-12 max-w-md">
           <h2 className="text-3xl font-bold text-[var(--text-primary)] md:text-4xl">
-            خدمات آرایشگاه
+            خدمات مون باربر
           </h2>
           <p className="mt-3 text-[var(--text-muted)]">
             سرویس‌های ما

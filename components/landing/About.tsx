@@ -9,7 +9,7 @@ const features = [
   {
     icon: Star,
     title: "سابقه درخشان",
-    description: "سال‌ها تجربه در ارائه خدمات آرایشگاهی",
+    description: "سال‌ها تجربه در ارائه خدمات باربرین",
   },
   {
     icon: Users,
@@ -22,7 +22,7 @@ interface AboutProps {
   text?: string;
 }
 
-export function About({ text = "ما با سال‌ها تجربه در ارائه خدمات آرایشگاهی مردانه، تلاش می‌کنیم تا بهترین تجربه را برای شما فراهم کنیم." }: AboutProps) {
+export function About({ text = "ما با سال‌ها تجربه در ارائه خدمات باربرین، تلاش می‌کنیم تا بهترین تجربه را برای شما فراهم کنیم." }: AboutProps) {
   return (
     <section className="bg-[var(--surface-base)] py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
@@ -30,7 +30,7 @@ export function About({ text = "ما با سال‌ها تجربه در ارائ
           {/* Text content — left */}
           <div className="max-w-lg">
             <h2 className="text-3xl font-bold text-[var(--text-primary)] md:text-4xl">
-              تجربه‌ای متفاوت از آرایشگاه
+              تجربه‌ای متفاوت از مون باربر
             </h2>
             <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)]">
               {text}

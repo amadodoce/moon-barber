@@ -13,7 +13,7 @@ export type UpsertLandingContentInput = z.infer<typeof upsertLandingContentSchem
 
 /** Predefined landing page content keys */
 export const LANDING_PAGE_KEYS = [
-  { key: "shop_name", label: "نام آرایشگاه", type: "TEXT" as const },
+  { key: "shop_name", label: "نام مون باربر", type: "TEXT" as const },
   { key: "hero_image", label: "تصویر هدر", type: "IMAGE" as const },
   { key: "about_text", label: "درباره ما", type: "RICH_TEXT" as const },
   { key: "phone", label: "شماره تلفن", type: "TEXT" as const },

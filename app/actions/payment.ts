@@ -91,7 +91,7 @@ export async function initiatePayment(
     const serviceNames = appointment.appointmentServices
       .map((as) => as.service.name)
       .join(", ");
-    const description = `رزرو آرایشگاه - ${serviceNames}`;
+    const description = `رزرو مون باربر - ${serviceNames}`;
 
     // Request payment from Zarinpal
     const result = await requestPayment(
