@@ -38,9 +38,7 @@ export function Navbar() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--booking-gold)]">
               <Scissors className="h-4 w-4 text-[var(--surface-base)]" />
             </div>
-            <span className="text-base font-bold text-[var(--text-primary)]">
-              آرایشگاه
-            </span>
+            <span className="text-base font-bold text-[var(--text-primary)]">آرایشگاه</span>
           </Link>
 
           {/* Nav links — hidden on mobile */}
@@ -111,21 +109,12 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setMenuOpen((prev) => !prev)}
-              onPointerDown={() => setMenuOpen((prev) => !prev)} // ← اضافه کنید
-              onTouchStart={(e) => {
-                e.preventDefault(); // اختیاری
-                setMenuOpen((prev) => !prev);
-              }}
               className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:hidden touch-manipulation active:opacity-70"
               aria-expanded={menuOpen}
               aria-controls={menuId}
               aria-label={menuOpen ? "بستن منو" : "باز کردن منو"}
             >
-              {menuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
+              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
