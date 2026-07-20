@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Scissors, Loader2 } from "lucide-react";
+import { Scissors, Loader2, ArrowRight, CheckCircle } from "lucide-react";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 import { showSuccess, showError } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
@@ -58,113 +59,138 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-screen min-h-dvh items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4">
+      <div className="flex min-h-screen min-h-dvh items-center justify-center px-4 py-12" style={{ backgroundColor: "var(--surface-base)" }}>
         <div className="w-full max-w-sm text-center">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-            <svg className="h-8 w-8 text-green-600 dark:text-green-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
-            </svg>
+          <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full" style={{ backgroundColor: "var(--booking-gold)", opacity: 0.15 }}>
+            <CheckCircle className="h-7 w-7" style={{ color: "var(--booking-gold)" }} />
           </div>
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">ثبت‌نام موفق</h1>
-          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>ثبت‌نام موفق</h1>
+          <p className="mt-2 text-sm" style={{ color: "var(--text-muted)" }}>
             در حال انتقال به صفحه ورود...
           </p>
+          <div className="mt-4">
+            <Loader2 className="h-5 w-5 animate-spin mx-auto" style={{ color: "var(--booking-gold)" }} />
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen min-h-dvh items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4">
+    <div className="flex min-h-screen min-h-dvh items-center justify-center px-4 py-12" style={{ backgroundColor: "var(--surface-base)" }}>
       <div className="w-full max-w-sm">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500">
-          <Scissors className="h-8 w-8 text-white" />
+        {/* Back to home */}
+        <Link
+          href="/"
+          className="mb-8 inline-flex items-center gap-1.5 text-sm transition-colors duration-150"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          <ArrowRight className="h-4 w-4" />
+          بازگشت به صفحه اصلی
+        </Link>
+
+        {/* Card */}
+        <div className="rounded-2xl border p-6 sm:p-8" style={{ borderColor: "var(--surface-border)", backgroundColor: "var(--surface-overlay)" }}>
+          {/* Logo */}
+          <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl" style={{ backgroundColor: "var(--booking-gold)" }}>
+            <Scissors className="h-6 w-6" style={{ color: "var(--surface-base)" }} />
+          </div>
+
+          <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
+            ثبت‌نام
+          </h1>
+          <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
+            حساب کاربری جدید بسازید
+          </p>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
+            <div>
+              <Label htmlFor="name" className="text-sm font-medium text-[var(--text-primary)]">
+                نام
+              </Label>
+              <Input
+                id="name"
+                placeholder="نام خود را وارد کنید"
+                {...register("name")}
+                className="mt-1.5 h-11 rounded-xl border-[var(--surface-border)] bg-[var(--surface-overlay)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]"
+              />
+              {errors.name && (
+                <p className="mt-1.5 text-xs text-red-500">{errors.name.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="phone" className="text-sm font-medium text-[var(--text-primary)]">
+                شماره موبایل
+              </Label>
+              <Input
+                id="phone"
+                placeholder="09123456789"
+                {...register("phone")}
+                className="mt-1.5 h-11 rounded-xl border-[var(--surface-border)] bg-[var(--surface-overlay)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]"
+                dir="ltr"
+              />
+              {errors.phone && (
+                <p className="mt-1.5 text-xs text-red-500">{errors.phone.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="password" className="text-sm font-medium text-[var(--text-primary)]">
+                رمز عبور
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="حداقل ۶ کاراکتر"
+                {...register("password")}
+                className="mt-1.5 h-11 rounded-xl border-[var(--surface-border)] bg-[var(--surface-overlay)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]"
+                dir="ltr"
+              />
+              {errors.password && (
+                <p className="mt-1.5 text-xs text-red-500">{errors.password.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="confirmPassword" className="text-sm font-medium text-[var(--text-primary)]">
+                تکرار رمز عبور
+              </Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="رمز عبور را دوباره وارد کنید"
+                {...register("confirmPassword")}
+                className="mt-1.5 h-11 rounded-xl border-[var(--surface-border)] bg-[var(--surface-overlay)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]"
+                dir="ltr"
+              />
+              {errors.confirmPassword && (
+                <p className="mt-1.5 text-xs text-red-500">{errors.confirmPassword.message}</p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="h-11 w-full rounded-xl text-sm font-semibold transition-colors duration-150 hover:opacity-90"
+              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
+            >
+              {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+              ثبت‌نام
+            </Button>
+          </form>
         </div>
 
-        <h1 className="text-center text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-          ثبت‌نام
-        </h1>
-        <p className="mt-2 text-center text-sm text-zinc-500 dark:text-zinc-400">
-          حساب کاربری جدید بسازید
-        </p>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
-          <div>
-            <Label htmlFor="name">نام</Label>
-            <Input
-              id="name"
-              placeholder="نام خود را وارد کنید"
-              {...register("name")}
-              className="mt-1"
-            />
-            {errors.name && (
-              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.name.message}</p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="phone">شماره موبایل</Label>
-            <Input
-              id="phone"
-              placeholder="09123456789"
-              {...register("phone")}
-              className="mt-1"
-              dir="ltr"
-            />
-            {errors.phone && (
-              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.phone.message}</p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="password">رمز عبور</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="حداقل ۶ کاراکتر"
-              {...register("password")}
-              className="mt-1"
-              dir="ltr"
-            />
-            {errors.password && (
-              <p className="mt-1 text-xs text-red-500 dark:text-red-400">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="confirmPassword">تکرار رمز عبور</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              placeholder="رمز عبور را دوباره وارد کنید"
-              {...register("confirmPassword")}
-              className="mt-1"
-              dir="ltr"
-            />
-            {errors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-500 dark:text-red-400">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
-
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-amber-500 hover:bg-amber-600"
-          >
-            {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-            ثبت‌نام
-          </Button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
+        {/* Login link */}
+        <p className="mt-6 text-center text-sm" style={{ color: "var(--text-muted)" }}>
           قبلاً ثبت‌نام کرده‌اید؟{" "}
-          <a href="/login" className="font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300">
+          <Link
+            href="/login"
+            className="font-medium transition-colors duration-150 hover:opacity-80"
+            style={{ color: "var(--booking-gold)" }}
+          >
             وارد شوید
-          </a>
+          </Link>
         </p>
       </div>
     </div>
