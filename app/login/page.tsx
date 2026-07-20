@@ -115,15 +115,15 @@ export default function LoginPage() {
           شماره موبایل و رمز عبور خود را وارد کنید
         </p>
 
-        {/* <Suspense
+        <Suspense
           fallback={
             <div className="mt-8 flex justify-center">
               <Loader2 className="h-6 w-6 animate-spin text-amber-500" />
             </div>
           }
-        > */}
+        >
           <LoginForm />
-        {/* </Suspense> */}
+        </Suspense>
 
         <p className="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
           حساب ندارید؟{" "}
