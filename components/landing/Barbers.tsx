@@ -4,6 +4,7 @@ interface BarberItem {
   name: string;
   specialty: string;
   experience: string;
+  avatar?: string;
 }
 
 const defaultBarbers: BarberItem[] = [
@@ -11,16 +12,19 @@ const defaultBarbers: BarberItem[] = [
     name: "علی محمدی",
     specialty: "اصلاح مو و ریش",
     experience: "۸ سال سابقه",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
   },
   {
     name: "محمد رضایی",
     specialty: "طراحی خط ریش",
     experience: "۵ سال سابقه",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face",
   },
   {
     name: "حسین عباسی",
     specialty: "اصلاح مو مردانه",
     experience: "۱۰ سال سابقه",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face",
   },
 ];
 
@@ -50,8 +54,16 @@ export function Barbers({ barbers = defaultBarbers }: BarbersProps) {
               className="flex items-center gap-5 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-overlay)] p-5 transition-colors duration-200 hover:border-[var(--booking-gold)]/30"
             >
               {/* Avatar */}
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[var(--booking-gold)]/20 bg-[var(--booking-gold)]/5">
-                <User className="h-6 w-6 text-[var(--booking-gold)]/60" />
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--booking-gold)]/20 bg-[var(--booking-gold)]/5">
+                {barber.avatar ? (
+                  <img
+                    src={barber.avatar}
+                    alt={barber.name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <User className="h-6 w-6 text-[var(--booking-gold)]/60" />
+                )}
               </div>
               {/* Info */}
               <div className="flex-1 min-w-0">

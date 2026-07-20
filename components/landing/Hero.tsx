@@ -39,10 +39,13 @@ export function Hero({ shopName = "مون باربر", subtitle = "رزرو آن
 
           {/* Visual block — right side, asymmetric */}
           <div className="hidden md:block">
-            <div className="relative h-64 w-56 rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--surface-overlay)" }}>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Scissors className="h-16 w-16" style={{ color: "var(--booking-gold)", opacity: 0.15 }} />
-              </div>
+            <div className="relative h-80 w-72 overflow-hidden rounded-2xl" style={{ backgroundColor: "var(--surface-overlay)" }}>
+              <img
+                src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=800&fit=crop"
+                alt="مون باربر"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-base)]/60 to-transparent" />
             </div>
           </div>
         </div>
