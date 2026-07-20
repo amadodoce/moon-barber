@@ -66,7 +66,7 @@ export function AdminHeader() {
       {/* Desktop sidebar (fixed) */}
       <aside
         data-admin-sidebar
-        className="hidden sm:fixed sm:inset-y-0 sm:right-0 sm:z-20 sm:flex sm:flex-col sm:transition-[width] sm:duration-200"
+        className="hidden sm:fixed sm:inset-y-0 sm:right-0 sm:z-20 sm:flex sm:flex-col sm:overflow-hidden sm:transition-[width] sm:duration-200 sm:ease-in-out"
         style={{ width: sidebarWidth }}
       >
         <Sidebar />
@@ -113,7 +113,7 @@ export function AdminSidebarSpacer() {
 
   return (
     <div
-      className="hidden sm:block sm:shrink-0 sm:transition-[width] sm:duration-200"
+      className="hidden sm:block sm:shrink-0 sm:transition-[width] sm:duration-200 sm:ease-in-out"
       style={{ width: sidebarWidth }}
     />
   );

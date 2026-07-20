@@ -51,17 +51,18 @@ export function Sidebar({ onClose, mobile }: { onClose?: () => void; mobile?: bo
 
   return (
     <div
-      className="flex h-full flex-col"
+      className="flex h-full flex-col overflow-hidden"
       style={{
         width: mobile ? undefined : width,
         minWidth: mobile ? undefined : width,
         backgroundColor: "var(--surface-overlay)",
         borderLeft: mobile ? undefined : "1px solid var(--surface-border)",
+        transition: mobile ? undefined : "width 200ms ease, min-width 200ms ease",
       }}
     >
       {/* Logo + toggle */}
       <div
-        className="flex h-16 items-center gap-2 border-b px-4"
+        className="flex h-16 shrink-0 items-center gap-2 border-b px-4"
         style={{ borderColor: "var(--surface-border)" }}
       >
         <div
@@ -70,9 +71,15 @@ export function Sidebar({ onClose, mobile }: { onClose?: () => void; mobile?: bo
         >
           <Scissors className="h-4 w-4" style={{ color: "var(--surface-base)" }} />
         </div>
+        {/* Title — fades out when collapsed */}
         <span
-          className="text-lg font-bold whitespace-nowrap"
-          style={{ color: "var(--text-primary)" }}
+          className="text-lg font-bold whitespace-nowrap overflow-hidden"
+          style={{
+            color: "var(--text-primary)",
+            opacity: isExpanded ? 1 : 0,
+            width: isExpanded ? "auto" : 0,
+            transition: "opacity 150ms ease, width 200ms ease",
+          }}
         >
           پنل مدیریت
         </span>
@@ -80,11 +87,12 @@ export function Sidebar({ onClose, mobile }: { onClose?: () => void; mobile?: bo
           <button
             type="button"
             onClick={toggle}
-            className="mr-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-all duration-150 hover:scale-105 active:scale-95"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-all duration-150 hover:scale-105 active:scale-95"
             style={{
               borderColor: "var(--surface-border)",
               backgroundColor: "var(--surface-base)",
               color: "var(--text-secondary)",
+              marginLeft: isExpanded ? "auto" : "0",
             }}
             aria-label={expanded ? "جمع کردن منو" : "باز کردن منو"}
           >
@@ -111,15 +119,26 @@ export function Sidebar({ onClose, mobile }: { onClose?: () => void; mobile?: bo
               href={item.href}
               onClick={onClose}
               title={!isExpanded ? item.label : undefined}
-              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150"
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium"
               style={{
                 color: isActive ? "var(--booking-gold)" : "var(--text-secondary)",
                 backgroundColor: isActive ? "color-mix(in srgb, var(--booking-gold) 10%, transparent)" : undefined,
                 justifyContent: isExpanded ? "flex-start" : "center",
+                transition: "background-color 150ms ease, color 150ms ease, justify-content 150ms ease",
               }}
             >
               <item.icon className="h-5 w-5 shrink-0" />
-              {isExpanded && <span className="whitespace-nowrap">{item.label}</span>}
+              {/* Label — fades out when collapsed */}
+              <span
+                className="whitespace-nowrap overflow-hidden"
+                style={{
+                  opacity: isExpanded ? 1 : 0,
+                  width: isExpanded ? "auto" : 0,
+                  transition: "opacity 150ms ease, width 200ms ease",
+                }}
+              >
+                {item.label}
+              </span>
             </Link>
           );
         })}
@@ -127,7 +146,7 @@ export function Sidebar({ onClose, mobile }: { onClose?: () => void; mobile?: bo
 
       {/* Logout */}
       <div
-        className="border-t p-2"
+        className="shrink-0 border-t p-2"
         style={{ borderColor: "var(--surface-border)" }}
       >
         <button
@@ -140,7 +159,17 @@ export function Sidebar({ onClose, mobile }: { onClose?: () => void; mobile?: bo
           }}
         >
           <LogOut className="h-5 w-5 shrink-0" />
-          {isExpanded && <span className="whitespace-nowrap">خروج</span>}
+          {/* Label — fades out when collapsed */}
+          <span
+            className="whitespace-nowrap overflow-hidden"
+            style={{
+              opacity: isExpanded ? 1 : 0,
+              width: isExpanded ? "auto" : 0,
+              transition: "opacity 150ms ease, width 200ms ease",
+            }}
+          >
+            خروج
+          </span>
         </button>
       </div>
     </div>
