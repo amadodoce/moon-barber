@@ -62,15 +62,21 @@ export function Sidebar({ onClose, mobile }: { onClose?: () => void; mobile?: bo
     >
       {/* Logo + toggle */}
       <div
-        className="flex h-16 shrink-0 items-center gap-2 border-b px-4"
+        className="flex h-16 shrink-0 items-center gap-2 border-b px-3"
         style={{ borderColor: "var(--surface-border)" }}
       >
+        {/* Logo — always visible, centered when collapsed */}
         <div
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
-          style={{ backgroundColor: "var(--booking-gold)" }}
+          style={{
+            backgroundColor: "var(--booking-gold)",
+            marginLeft: isExpanded ? 0 : "auto",
+            marginRight: isExpanded ? 0 : "auto",
+          }}
         >
           <Scissors className="h-4 w-4" style={{ color: "var(--surface-base)" }} />
         </div>
+
         {/* Title — fades out when collapsed */}
         <span
           className="text-lg font-bold whitespace-nowrap overflow-hidden"
@@ -83,6 +89,8 @@ export function Sidebar({ onClose, mobile }: { onClose?: () => void; mobile?: bo
         >
           پنل مدیریت
         </span>
+
+        {/* Toggle button — right side when expanded, hidden when collapsed */}
         {!mobile && (
           <button
             type="button"
@@ -92,18 +100,36 @@ export function Sidebar({ onClose, mobile }: { onClose?: () => void; mobile?: bo
               borderColor: "var(--surface-border)",
               backgroundColor: "var(--surface-base)",
               color: "var(--text-secondary)",
-              marginLeft: isExpanded ? "auto" : "0",
+              opacity: isExpanded ? 1 : 0,
+              width: isExpanded ? 32 : 0,
+              pointerEvents: isExpanded ? "auto" : "none",
+              transition: "opacity 150ms ease, width 200ms ease",
             }}
             aria-label={expanded ? "جمع کردن منو" : "باز کردن منو"}
           >
-            {expanded ? (
-              <ChevronsRight className="h-4 w-4" />
-            ) : (
-              <ChevronsLeft className="h-4 w-4" />
-            )}
+            <ChevronsRight className="h-4 w-4" />
           </button>
         )}
       </div>
+
+      {/* Expand button — visible only when collapsed */}
+      {!mobile && !isExpanded && (
+        <div className="flex justify-center py-2">
+          <button
+            type="button"
+            onClick={toggle}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border transition-all duration-150 hover:scale-105 active:scale-95"
+            style={{
+              borderColor: "var(--surface-border)",
+              backgroundColor: "var(--surface-base)",
+              color: "var(--text-secondary)",
+            }}
+            aria-label="باز کردن منو"
+          >
+            <ChevronsLeft className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-2 py-4">
