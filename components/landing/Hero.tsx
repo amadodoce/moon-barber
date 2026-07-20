@@ -8,43 +8,54 @@ interface HeroProps {
 
 export function Hero({ shopName = "آرایشگاه مردانه", subtitle = "رزرو آنلاین نوبت در چند ثانیه" }: HeroProps) {
   return (
-    <section className="relative flex min-h-[85vh] min-h-[85dvh] items-center justify-center overflow-hidden bg-[#0A0A0A]">
-      {/* Decorative geometric pattern */}
-      <div className="absolute inset-0 opacity-[0.03]">
-        <div className="absolute right-[10%] top-[15%] h-64 w-64 rounded-full border border-[#D4A853]" />
-        <div className="absolute bottom-[20%] left-[8%] h-48 w-48 rounded-full border border-[#D4A853]" />
-        <div className="absolute right-[25%] bottom-[10%] h-32 w-32 rotate-45 border border-[#D4A853]" />
-      </div>
-
+    <section className="relative overflow-hidden bg-[#0c0b09]">
       {/* Gold accent line at top */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4A853]/40 to-transparent" />
 
-      <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-        {/* Logo */}
-        <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl border border-[#D4A853]/20 bg-[#1A1A1A]">
-          <Scissors className="h-10 w-10 text-[#D4A853]" />
+      <div className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <div className="grid items-start gap-12 md:grid-cols-[1fr_auto] md:items-center">
+          {/* Text block — left-biased */}
+          <div className="max-w-xl">
+            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl border border-[#D4A853]/20 bg-[#1a1814]">
+              <Scissors className="h-7 w-7 text-[#D4A853]" />
+            </div>
+
+            <h1 className="overflow-wrap-anywhere min-w-0 text-4xl font-bold tracking-tight text-[#f5f0e8] md:text-6xl">
+              {shopName}
+            </h1>
+
+            <p className="mt-5 max-w-md text-lg leading-relaxed text-[#8a8578]">
+              {subtitle}
+            </p>
+
+            <Link
+              href="/book"
+              className="mt-8 inline-flex items-center gap-2 rounded-lg bg-[#D4A853] px-7 py-3.5 text-base font-semibold text-[#0c0b09] transition-colors duration-200 hover:bg-[#C49A48]"
+            >
+              رزرو نوبت
+            </Link>
+          </div>
+
+          {/* Visual block — right side, asymmetric */}
+          <div className="hidden md:block">
+            <div className="relative h-64 w-56 rounded-2xl border border-[#D4A853]/15 bg-[#1a1814] p-6">
+              <div className="space-y-4">
+                <div className="h-3 w-3/4 rounded-full bg-[#D4A853]/20" />
+                <div className="h-3 w-1/2 rounded-full bg-[#D4A853]/10" />
+                <div className="h-3 w-2/3 rounded-full bg-[#D4A853]/10" />
+              </div>
+              <div className="mt-8 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#D4A853]/25 bg-[#D4A853]/10">
+                  <Scissors className="h-5 w-5 text-[#D4A853]" />
+                </div>
+                <div>
+                  <div className="h-2.5 w-20 rounded-full bg-[#D4A853]/15" />
+                  <div className="mt-1.5 h-2 w-14 rounded-full bg-[#D4A853]/8" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-
-        {/* Headline */}
-        <h1 className="text-5xl font-bold tracking-tight text-white md:text-7xl">
-          {shopName}
-        </h1>
-
-        {/* Decorative line */}
-        <div className="mx-auto my-6 h-px w-24 bg-[#D4A853]" />
-
-        {/* Subtext */}
-        <p className="mx-auto max-w-xl text-lg text-[#9A9A9A] md:text-xl">
-          {subtitle}
-        </p>
-
-        {/* CTA */}
-        <Link
-          href="/book"
-          className="mt-10 inline-flex items-center gap-2 rounded-lg bg-[#D4A853] px-8 py-4 text-lg font-semibold text-[#0A0A0A] transition-all hover:bg-[#C49A48] hover:shadow-lg hover:shadow-[#D4A853]/20"
-        >
-          رزرو نوبت
-        </Link>
       </div>
     </section>
   );

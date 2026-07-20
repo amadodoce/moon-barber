@@ -15,32 +15,32 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="bg-[#0F0F0F] py-20 md:py-28">
+    <section className="bg-[#0f0e0c] py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
-        {/* Section header */}
-        <div className="mb-16 text-center">
-          <p className="mb-3 text-sm font-medium tracking-widest text-[#D4A853]">
-            نظرات مشتریان
-          </p>
-          <h2 className="text-3xl font-bold text-white md:text-4xl">
+        {/* Section header — right-aligned for variety */}
+        <div className="mb-12 text-right md:ml-auto md:max-w-md">
+          <h2 className="text-3xl font-bold text-[#f5f0e8] md:text-4xl">
             مشتریان ما چه می‌گویند؟
           </h2>
+          <p className="mt-3 text-[#6a6458]">
+            نظرات مشتریان
+          </p>
         </div>
 
-        {/* Testimonials grid */}
-        <div className="grid gap-6 md:grid-cols-2">
+        {/* Testimonials — asymmetric, no equal columns */}
+        <div className="grid gap-4 md:grid-cols-[1fr_1.2fr]">
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.name}
-              className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-8"
+              className="rounded-2xl border border-[#2a2520] bg-[#1a1814] p-6"
             >
-              <Quote className="mb-4 h-8 w-8 text-[#D4A853]/40" />
-              <p className="mb-6 text-lg leading-relaxed text-[#E5E5E5]">
+              <Quote className="mb-3 h-6 w-6 text-[#D4A853]/30" />
+              <p className="text-base leading-relaxed text-[#c8c2b8]">
                 {testimonial.quote}
               </p>
-              <div className="border-t border-[#2A2A2A] pt-4">
-                <p className="font-semibold text-white">{testimonial.name}</p>
-                <p className="text-sm text-[#D4A853]">
+              <div className="mt-5 border-t border-[#2a2520] pt-4">
+                <p className="text-sm font-semibold text-[#f5f0e8]">{testimonial.name}</p>
+                <p className="mt-0.5 text-xs text-[#D4A853]">
                   {testimonial.service}
                 </p>
               </div>

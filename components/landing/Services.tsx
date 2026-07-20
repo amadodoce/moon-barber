@@ -34,38 +34,42 @@ interface ServicesProps {
 
 export function Services({ services = defaultServices }: ServicesProps) {
   return (
-    <section className="bg-[#0F0F0F] py-20 md:py-28">
+    <section className="bg-[#0f0e0c] py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
-        {/* Section header */}
-        <div className="mb-16 text-center">
-          <p className="mb-3 text-sm font-medium tracking-widest text-[#D4A853]">
-            سرویس‌های ما
-          </p>
-          <h2 className="text-3xl font-bold text-white md:text-4xl">
+        {/* Section header — left-aligned */}
+        <div className="mb-12 max-w-md">
+          <h2 className="text-3xl font-bold text-[#f5f0e8] md:text-4xl">
             خدمات آرایشگاه
           </h2>
+          <p className="mt-3 text-[#6a6458]">
+            سرویس‌های ما
+          </p>
         </div>
 
-        {/* Services grid */}
-        <div className="grid gap-6 md:grid-cols-3">
-          {services.map((service) => (
+        {/* Services — asymmetric grid: first item spans wider */}
+        <div className="grid gap-4 md:grid-cols-[1.4fr_1fr]">
+          {services.map((service, i) => (
             <div
               key={service.name}
-              className="group rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-8 transition-all hover:border-[#D4A853]/30"
+              className={`group flex items-start gap-5 rounded-2xl border border-[#2a2520] bg-[#1a1814] p-6 transition-colors duration-200 hover:border-[#D4A853]/30 ${
+                i === 0 ? "md:col-span-2 md:p-8" : ""
+              }`}
             >
-              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-lg bg-[#D4A853]/10">
-                <Scissors className="h-6 w-6 text-[#D4A853]" />
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#D4A853]/10">
+                <Scissors className="h-5 w-5 text-[#D4A853]" />
               </div>
-              <h3 className="mb-2 text-xl font-bold text-white">
-                {service.name}
-              </h3>
-              <p className="mb-6 text-[#9A9A9A]">{service.description}</p>
-              <div className="flex items-center justify-between border-t border-[#2A2A2A] pt-4">
-                <span className="text-[#D4A853]">{service.price} تومان</span>
-                <span className="flex items-center gap-1 text-sm text-[#6A6A6A]">
-                  <Clock className="h-4 w-4" />
-                  {service.duration}
-                </span>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-bold text-[#f5f0e8]">
+                  {service.name}
+                </h3>
+                <p className="mt-1 text-sm text-[#6a6458]">{service.description}</p>
+                <div className="mt-4 flex items-center gap-4 border-t border-[#2a2520] pt-3">
+                  <span className="font-semibold text-[#D4A853]">{service.price} تومان</span>
+                  <span className="flex items-center gap-1 text-xs text-[#4a4538]">
+                    <Clock className="h-3 w-3" />
+                    {service.duration}
+                  </span>
+                </div>
               </div>
             </div>
           ))}

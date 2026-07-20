@@ -29,7 +29,7 @@ export function BookingSummary() {
   return (
     <div className="space-y-4">
       {/* Services */}
-      <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 border-l-2 border-l-[#D4A853] p-4 animate-[fade-in-up_0.4s_ease-out_both]">
+      <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
         <div className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
           <Scissors className="h-4 w-4 text-[#D4A853]" />
           سرویس‌های انتخابی
@@ -53,7 +53,7 @@ export function BookingSummary() {
       </div>
 
       {/* Date & Time */}
-      <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 border-l-2 border-l-[#D4A853] p-4 animate-[fade-in-up_0.4s_ease-out_both] [animation-delay:60ms]">
+      <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
         <div className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
           <Calendar className="h-4 w-4 text-[#D4A853]" />
           تاریخ و ساعت
@@ -73,7 +73,7 @@ export function BookingSummary() {
 
       {/* Barber */}
       {barberName && (
-        <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 border-l-2 border-l-[#D4A853] p-4 animate-[fade-in-up_0.4s_ease-out_both] [animation-delay:120ms]">
+        <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
           <div className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
             <User className="h-4 w-4 text-[#D4A853]" />
             آرایشگر
@@ -83,7 +83,7 @@ export function BookingSummary() {
       )}
 
       {/* Notes */}
-      <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 border-l-2 border-l-[#D4A853] p-4 animate-[fade-in-up_0.4s_ease-out_both] [animation-delay:180ms]">
+      <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
         <div className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
           <FileText className="h-4 w-4 text-[#D4A853]" />
           توضیحات (اختیاری)
@@ -98,7 +98,7 @@ export function BookingSummary() {
       </div>
 
       {/* Total */}
-      <div className="rounded-2xl bg-gradient-to-l from-[#D4A853]/10 to-[#D4A853]/5 border border-[#D4A853]/20 p-4 animate-[fade-in-up_0.4s_ease-out_both] [animation-delay:240ms]">
+      <div className="rounded-2xl bg-gradient-to-l from-[#D4A853]/10 to-[#D4A853]/5 border border-[#D4A853]/20 p-4">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-[#D4A853]">
             مبلغ قابل پرداخت
