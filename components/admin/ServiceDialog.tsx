@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,10 +18,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { createServiceSchema } from "@/lib/validations/service";
 import type { z } from "zod";
 import { createService, updateService } from "@/app/actions/service";
-import { useState } from "react";
 import { showSuccess, showError } from "@/lib/toast";
 
 type ServiceFormInput = z.input<typeof createServiceSchema>;
+
+const inputClass = "mt-1.5 h-10 rounded-xl border-[var(--surface-border)] bg-[var(--surface-base)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]";
 
 interface ServiceDialogProps {
   open: boolean;
@@ -109,33 +111,33 @@ export function ServiceDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 px-6 py-4">
           <div>
-            <Label htmlFor="name">نام سرویس</Label>
-            <Input id="name" {...register("name")} className="mt-1" />
+            <Label htmlFor="name" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>نام سرویس</Label>
+            <Input id="name" {...register("name")} className={inputClass} />
             {errors.name && (
               <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
             )}
           </div>
 
           <div>
-            <Label htmlFor="description">توضیحات</Label>
+            <Label htmlFor="description" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>توضیحات</Label>
             <Textarea
               id="description"
               {...register("description")}
-              className="mt-1"
+              className={`${inputClass} min-h-[80px]`}
               rows={3}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="durationMinutes">مدت زمان (دقیقه)</Label>
+              <Label htmlFor="durationMinutes" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>مدت زمان (دقیقه)</Label>
               <Input
                 id="durationMinutes"
                 type="number"
                 {...register("durationMinutes", { valueAsNumber: true })}
-                className="mt-1"
+                className={inputClass}
               />
               {errors.durationMinutes && (
                 <p className="mt-1 text-xs text-red-500">
@@ -144,12 +146,12 @@ export function ServiceDialog({
               )}
             </div>
             <div>
-              <Label htmlFor="price">قیمت (تومان)</Label>
+              <Label htmlFor="price" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>قیمت (تومان)</Label>
               <Input
                 id="price"
                 type="number"
                 {...register("price", { valueAsNumber: true })}
-                className="mt-1"
+                className={inputClass}
               />
               {errors.price && (
                 <p className="mt-1 text-xs text-red-500">
@@ -160,29 +162,30 @@ export function ServiceDialog({
           </div>
 
           <div>
-            <Label htmlFor="imageUrl">آدرس تصویر (اختیاری)</Label>
-            <Input id="imageUrl" {...register("imageUrl")} className="mt-1" />
-          </div>
-
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              انصراف
-            </Button>
-            <Button
-              type="submit"
-              disabled={saving}
-              className=""
-              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
-            >
-              {saving && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              ذخیره
-            </Button>
+            <Label htmlFor="imageUrl" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>آدرس تصویر (اختیاری)</Label>
+            <Input id="imageUrl" {...register("imageUrl")} className={inputClass} />
           </div>
         </form>
+
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
+            انصراف
+          </Button>
+          <Button
+            type="submit"
+            disabled={saving}
+            className="text-white"
+            style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
+            onClick={handleSubmit(onSubmit)}
+          >
+            {saving && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+            ذخیره
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,8 @@ import { showSuccess, showError } from "@/lib/toast";
 import type { HolidayType } from "@/app/generated/prisma/enums";
 
 type HolidayFormInput = z.input<typeof createHolidaySchema>;
+
+const inputClass = "mt-1.5 h-10 rounded-xl border-[var(--surface-border)] bg-[var(--surface-base)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]";
 
 interface HolidayFormProps {
   open: boolean;
@@ -84,22 +87,22 @@ export function HolidayForm({
           <DialogTitle>تعطیلی جدید</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 px-6 py-4">
           <div>
-            <Label htmlFor="title">عنوان</Label>
-            <Input id="title" {...register("title")} className="mt-1" />
+            <Label htmlFor="title" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>عنوان</Label>
+            <Input id="title" {...register("title")} className={inputClass} />
             {errors.title && (
               <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>
             )}
           </div>
 
           <div>
-            <Label htmlFor="date">تاریخ</Label>
+            <Label htmlFor="date" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>تاریخ</Label>
             <Input
               id="date"
               type="date"
               {...register("date")}
-              className="mt-1"
+              className={inputClass}
             />
             {errors.date && (
               <p className="mt-1 text-xs text-red-500">{errors.date.message}</p>
@@ -107,9 +110,9 @@ export function HolidayForm({
           </div>
 
           <div>
-            <Label>نوع</Label>
+            <Label className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>نوع</Label>
             <Select value={type} onValueChange={(v) => v && setType(v)}>
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className={inputClass}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -122,36 +125,36 @@ export function HolidayForm({
           {type === "TIME_RANGE" && (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="startTime">زمان شروع</Label>
+                <Label htmlFor="startTime" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>زمان شروع</Label>
                 <Input
                   id="startTime"
                   type="time"
                   {...register("startTime")}
-                  className="mt-1"
+                  className={inputClass}
                 />
               </div>
               <div>
-                <Label htmlFor="endTime">زمان پایان</Label>
+                <Label htmlFor="endTime" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>زمان پایان</Label>
                 <Input
                   id="endTime"
                   type="time"
                   {...register("endTime")}
-                  className="mt-1"
+                  className={inputClass}
                 />
               </div>
             </div>
           )}
-
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              انصراف
-            </Button>
-            <Button type="submit" disabled={saving} style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}>
-              {saving && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              ذخیره
-            </Button>
-          </div>
         </form>
+
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            انصراف
+          </Button>
+          <Button type="submit" disabled={saving} style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }} onClick={handleSubmit(onSubmit)}>
+            {saving && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+            ذخیره
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
