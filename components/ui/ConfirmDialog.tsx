@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
@@ -38,7 +39,7 @@ export function ConfirmDialog({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="flex justify-end gap-2 pt-2">
+        <DialogFooter>
           <Button
             type="button"
             variant="outline"
@@ -51,17 +52,16 @@ export function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={loading}
-            className={
-              variant === "danger"
-                ? "bg-red-500 hover:bg-red-600 text-white"
-                : "text-white"
+            className="text-white"
+            style={variant === "danger"
+              ? { backgroundColor: "#ef4444" }
+              : { backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }
             }
-            style={variant !== "danger" ? { backgroundColor: "var(--booking-gold)" } : undefined}
           >
             {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
             {confirmLabel}
           </Button>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { createBarberSchema, type CreateBarberInput } from "@/lib/validations/barber";
 import { createBarber, updateBarber } from "@/app/actions/barber";
 import { showSuccess, showError } from "@/lib/toast";
+
+const inputClass = "mt-1.5 h-10 rounded-xl border-[var(--surface-border)] bg-[var(--surface-base)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]";
 
 interface BarberDialogProps {
   open: boolean;
@@ -105,10 +108,10 @@ export function BarberDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 px-6 py-4">
           <div>
-            <Label htmlFor="name">نام و نام خانوادگی</Label>
-            <Input id="name" {...register("name")} className="mt-1" />
+            <Label htmlFor="name" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>نام و نام خانوادگی</Label>
+            <Input id="name" {...register("name")} className={inputClass} />
             {errors.name && (
               <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
             )}
@@ -117,12 +120,12 @@ export function BarberDialog({
           {!isEditing && (
             <>
               <div>
-                <Label htmlFor="phone">شماره موبایل</Label>
+                <Label htmlFor="phone" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>شماره موبایل</Label>
                 <Input
                   id="phone"
                   placeholder="09123456789"
                   {...register("phone")}
-                  className="mt-1"
+                  className={inputClass}
                   dir="ltr"
                 />
                 {errors.phone && (
@@ -131,13 +134,13 @@ export function BarberDialog({
               </div>
 
               <div>
-                <Label htmlFor="password">رمز عبور</Label>
+                <Label htmlFor="password" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>رمز عبور</Label>
                 <Input
                   id="password"
                   type="password"
                   placeholder="حداقل ۶ کاراکتر"
                   {...register("password")}
-                  className="mt-1"
+                  className={inputClass}
                   dir="ltr"
                 />
                 {errors.password && (
@@ -148,13 +151,13 @@ export function BarberDialog({
           )}
 
           <div>
-            <Label htmlFor="experienceYears">سال‌های تجربه (اختیاری)</Label>
+            <Label htmlFor="experienceYears" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>سال‌های تجربه (اختیاری)</Label>
             <Input
               id="experienceYears"
               type="number"
               placeholder="مثلاً ۵"
               {...register("experienceYears", { valueAsNumber: true })}
-              className="mt-1"
+              className={inputClass}
             />
             {errors.experienceYears && (
               <p className="mt-1 text-xs text-red-500">
@@ -164,35 +167,36 @@ export function BarberDialog({
           </div>
 
           <div>
-            <Label htmlFor="bio">بیوگرافی (اختیاری)</Label>
+            <Label htmlFor="bio" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>بیوگرافی (اختیاری)</Label>
             <Textarea
               id="bio"
               placeholder="درباره آرایشگر..."
               {...register("bio")}
-              className="mt-1"
+              className={`${inputClass} min-h-[80px]`}
               rows={3}
             />
           </div>
-
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              انصراف
-            </Button>
-            <Button
-              type="submit"
-              disabled={saving}
-              className=""
-              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
-            >
-              {saving && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              {isEditing ? "ذخیره تغییرات" : "ایجاد آرایشگر"}
-            </Button>
-          </div>
         </form>
+
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
+            انصراف
+          </Button>
+          <Button
+            type="submit"
+            disabled={saving}
+            className="text-white"
+            style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
+            onClick={handleSubmit(onSubmit)}
+          >
+            {saving && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+            {isEditing ? "ذخیره تغییرات" : "ایجاد آرایشگر"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

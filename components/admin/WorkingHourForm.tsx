@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,8 @@ import { showSuccess, showError } from "@/lib/toast";
 import type { DayOfWeek } from "@/app/generated/prisma/enums";
 
 type WHFormInput = z.input<typeof createWorkingHourSchema>;
+
+const inputClass = "mt-1.5 h-10 rounded-xl border-[var(--surface-border)] bg-[var(--surface-base)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]";
 
 const DAYS = [
   { value: "SATURDAY", label: "شنبه" },
@@ -99,11 +102,11 @@ export function WorkingHourForm({
           <DialogTitle>ساعات کاری جدید</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 px-6 py-4">
           <div>
-            <Label>روز هفته</Label>
+            <Label className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>روز هفته</Label>
             <Select value={dayOfWeek} onValueChange={(v) => v && setDayOfWeek(v)}>
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className={inputClass}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -118,41 +121,41 @@ export function WorkingHourForm({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="startTime">زمان شروع</Label>
+              <Label htmlFor="startTime" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>زمان شروع</Label>
               <Input
                 id="startTime"
                 type="time"
                 {...register("startTime")}
-                className="mt-1"
+                className={inputClass}
               />
               {errors.startTime && (
                 <p className="mt-1 text-xs text-red-500">{errors.startTime.message}</p>
               )}
             </div>
             <div>
-              <Label htmlFor="endTime">زمان پایان</Label>
+              <Label htmlFor="endTime" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>زمان پایان</Label>
               <Input
                 id="endTime"
                 type="time"
                 {...register("endTime")}
-                className="mt-1"
+                className={inputClass}
               />
               {errors.endTime && (
                 <p className="mt-1 text-xs text-red-500">{errors.endTime.message}</p>
               )}
             </div>
           </div>
-
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              انصراف
-            </Button>
-            <Button type="submit" disabled={saving} style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}>
-              {saving && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              ذخیره
-            </Button>
-          </div>
         </form>
+
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            انصراف
+          </Button>
+          <Button type="submit" disabled={saving} style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }} onClick={handleSubmit(onSubmit)}>
+            {saving && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+            ذخیره
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
