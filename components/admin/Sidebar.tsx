@@ -30,14 +30,15 @@ const navItems = [
 const SIDEBAR_WIDTH = 256;
 const SIDEBAR_COLLAPSED_WIDTH = 72;
 
-export function Sidebar({ onClose }: { onClose?: () => void }) {
+export function Sidebar({ onClose, mobile }: { onClose?: () => void; mobile?: boolean }) {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(true);
 
   useEffect(() => {
+    if (mobile) return;
     const saved = localStorage.getItem("admin-sidebar-expanded");
     if (saved !== null) setExpanded(saved === "true");
-  }, []);
+  }, [mobile]);
 
   const toggle = () => {
     const next = !expanded;
@@ -45,16 +46,17 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
     localStorage.setItem("admin-sidebar-expanded", String(next));
   };
 
-  const width = expanded ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH;
+  const isExpanded = mobile || expanded;
+  const width = isExpanded ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH;
 
   return (
     <div
-      className="flex h-full flex-col transition-[width] duration-200"
+      className="flex h-full flex-col"
       style={{
-        width,
-        minWidth: width,
+        width: mobile ? undefined : width,
+        minWidth: mobile ? undefined : width,
         backgroundColor: "var(--surface-overlay)",
-        borderLeft: "1px solid var(--surface-border)",
+        borderLeft: mobile ? undefined : "1px solid var(--surface-border)",
       }}
     >
       {/* Logo + toggle */}
@@ -68,31 +70,31 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         >
           <Scissors className="h-4 w-4" style={{ color: "var(--surface-base)" }} />
         </div>
-        {expanded && (
-          <span
-            className="text-lg font-bold whitespace-nowrap"
-            style={{ color: "var(--text-primary)" }}
-          >
-            پنل مدیریت
-          </span>
-        )}
-        <button
-          type="button"
-          onClick={toggle}
-          className="mr-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-all duration-150 hover:scale-105 active:scale-95"
-          style={{
-            borderColor: "var(--surface-border)",
-            backgroundColor: "var(--surface-base)",
-            color: "var(--text-secondary)",
-          }}
-          aria-label={expanded ? "جمع کردن منو" : "باز کردن منو"}
+        <span
+          className="text-lg font-bold whitespace-nowrap"
+          style={{ color: "var(--text-primary)" }}
         >
-          {expanded ? (
-            <ChevronsRight className="h-4 w-4" />
-          ) : (
-            <ChevronsLeft className="h-4 w-4" />
-          )}
-        </button>
+          پنل مدیریت
+        </span>
+        {!mobile && (
+          <button
+            type="button"
+            onClick={toggle}
+            className="mr-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-all duration-150 hover:scale-105 active:scale-95"
+            style={{
+              borderColor: "var(--surface-border)",
+              backgroundColor: "var(--surface-base)",
+              color: "var(--text-secondary)",
+            }}
+            aria-label={expanded ? "جمع کردن منو" : "باز کردن منو"}
+          >
+            {expanded ? (
+              <ChevronsRight className="h-4 w-4" />
+            ) : (
+              <ChevronsLeft className="h-4 w-4" />
+            )}
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -108,18 +110,16 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
               key={item.href}
               href={item.href}
               onClick={onClose}
-              title={!expanded ? item.label : undefined}
-              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150 ${
-                isActive ? "" : ""
-              }`}
+              title={!isExpanded ? item.label : undefined}
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150"
               style={{
                 color: isActive ? "var(--booking-gold)" : "var(--text-secondary)",
                 backgroundColor: isActive ? "color-mix(in srgb, var(--booking-gold) 10%, transparent)" : undefined,
-                justifyContent: expanded ? "flex-start" : "center",
+                justifyContent: isExpanded ? "flex-start" : "center",
               }}
             >
               <item.icon className="h-5 w-5 shrink-0" />
-              {expanded && <span className="whitespace-nowrap">{item.label}</span>}
+              {isExpanded && <span className="whitespace-nowrap">{item.label}</span>}
             </Link>
           );
         })}
@@ -132,15 +132,15 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
       >
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          title={!expanded ? "خروج" : undefined}
+          title={!isExpanded ? "خروج" : undefined}
           className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150 hover:bg-red-500/10 hover:text-red-500"
           style={{
             color: "var(--text-secondary)",
-            justifyContent: expanded ? "flex-start" : "center",
+            justifyContent: isExpanded ? "flex-start" : "center",
           }}
         >
           <LogOut className="h-5 w-5 shrink-0" />
-          {expanded && <span className="whitespace-nowrap">خروج</span>}
+          {isExpanded && <span className="whitespace-nowrap">خروج</span>}
         </button>
       </div>
     </div>
