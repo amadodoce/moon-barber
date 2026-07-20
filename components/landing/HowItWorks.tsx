@@ -18,14 +18,14 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="bg-[#0f0e0c] py-20 md:py-28">
+    <section className="bg-[var(--surface-raised)] py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
         {/* Section header — left-aligned */}
         <div className="mb-12 max-w-md">
-          <h2 className="text-3xl font-bold text-[#f5f0e8] md:text-4xl">
+          <h2 className="text-3xl font-bold text-[var(--text-primary)] md:text-4xl">
             چگونه کار می‌کند؟
           </h2>
-          <p className="mt-3 text-[#6a6458]">
+          <p className="mt-3 text-[var(--text-muted)]">
             فرآیند رزرو
           </p>
         </div>
@@ -35,16 +35,16 @@ export function HowItWorks() {
           {steps.map((step, index) => (
             <div
               key={index}
-              className="flex items-start gap-5 rounded-2xl border border-[#2a2520] bg-[#1a1814] p-6 transition-colors duration-200 hover:border-[#D4A853]/20"
+              className="flex items-start gap-5 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-overlay)] p-6 transition-colors duration-200 hover:border-[var(--booking-gold)]/20"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#D4A853]/30 bg-[#D4A853]/5 text-sm font-bold text-[#D4A853]">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--booking-gold)]/30 bg-[var(--booking-gold)]/5 text-sm font-bold text-[var(--booking-gold)]">
                 {step.number}
               </div>
               <div>
-                <h3 className="text-base font-bold text-[#f5f0e8]">
+                <h3 className="text-base font-bold text-[var(--text-primary)]">
                   {step.title}
                 </h3>
-                <p className="mt-1 text-sm text-[#6a6458]">
+                <p className="mt-1 text-sm text-[var(--text-muted)]">
                   {step.description}
                 </p>
               </div>

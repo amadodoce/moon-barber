@@ -112,10 +112,10 @@ function SlotButton({
     <button
       type="button"
       onClick={onSelect}
-      className={`rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-all duration-200 active:scale-[0.95] ${
+      className={`rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-colors duration-150 ${
         isSelected
-          ? "border-[#D4A853] bg-[#D4A853] text-white shadow-md shadow-[#D4A853]/20"
-          : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-[#D4A853]/40 dark:hover:border-[#D4A853]/40 hover:bg-[#D4A853]/5 dark:hover:bg-[#D4A853]/10 hover:shadow-md hover:shadow-[#D4A853]/5"
+          ? "border-[#D4A853] bg-[#D4A853] text-white"
+          : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-[#D4A853]/40 dark:hover:border-[#D4A853]/40 hover:bg-[#D4A853]/5 dark:hover:bg-[#D4A853]/10"
       }`}
     >
       {slot.startTime}

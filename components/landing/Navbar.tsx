@@ -32,13 +32,13 @@ export function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)]">
       <div className="mx-auto max-w-6xl px-6 py-4">
-        <div className="flex items-center justify-between rounded-full border border-[#2a2520] bg-[#0c0b09]/90 px-5 py-2.5 backdrop-blur-md">
+        <div className="flex items-center justify-between rounded-full border border-[var(--surface-border)] bg-[var(--surface-base)]/90 px-5 py-2.5 backdrop-blur-md">
           {/* Logo — left */}
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#D4A853]">
-              <Scissors className="h-4 w-4 text-[#0c0b09]" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--booking-gold)]">
+              <Scissors className="h-4 w-4 text-[var(--surface-base)]" />
             </div>
-            <span className="text-base font-bold text-[#f5f0e8]">آرایشگاه</span>
+            <span className="text-base font-bold text-[var(--text-primary)]">آرایشگاه</span>
           </Link>
 
           {/* Nav links — hidden on mobile */}
@@ -47,8 +47,8 @@ export function Navbar() {
               href="/"
               className={`rounded-full px-3.5 py-1.5 text-sm transition-colors duration-150 ${
                 pathname === "/"
-                  ? "bg-[#D4A853]/10 text-[#D4A853]"
-                  : "text-[#8a8578] hover:text-[#f5f0e8]"
+                  ? "bg-[var(--booking-gold)]/10 text-[var(--booking-gold)]"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               }`}
             >
               صفحه اصلی
@@ -59,8 +59,8 @@ export function Navbar() {
                   href="/admin"
                   className={`rounded-full px-3.5 py-1.5 text-sm transition-colors duration-150 ${
                     pathname.startsWith("/admin")
-                      ? "bg-[#D4A853]/10 text-[#D4A853]"
-                      : "text-[#8a8578] hover:text-[#f5f0e8]"
+                      ? "bg-[var(--booking-gold)]/10 text-[var(--booking-gold)]"
+                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                   }`}
                 >
                   پنل مدیریت
@@ -71,8 +71,8 @@ export function Navbar() {
                 href="/dashboard"
                 className={`rounded-full px-3.5 py-1.5 text-sm transition-colors duration-150 ${
                   pathname === "/dashboard"
-                    ? "bg-[#D4A853]/10 text-[#D4A853]"
-                    : "text-[#8a8578] hover:text-[#f5f0e8]"
+                    ? "bg-[var(--booking-gold)]/10 text-[var(--booking-gold)]"
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 }`}
               >
                 نوبت‌های من
@@ -85,7 +85,7 @@ export function Navbar() {
             {isAuthenticated ? (
               <button
                 onClick={() => signOut({ callbackUrl: "/" })}
-                className="hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-[#8a8578] transition-colors duration-150 hover:text-[#f5f0e8] md:flex"
+                className="hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-[var(--text-secondary)] transition-colors duration-150 hover:text-[var(--text-primary)] md:flex"
               >
                 <LogOut className="h-3.5 w-3.5" />
                 خروج
@@ -93,14 +93,14 @@ export function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="hidden rounded-full px-3.5 py-1.5 text-sm text-[#8a8578] transition-colors duration-150 hover:text-[#f5f0e8] md:inline"
+                className="hidden rounded-full px-3.5 py-1.5 text-sm text-[var(--text-secondary)] transition-colors duration-150 hover:text-[var(--text-primary)] md:inline"
               >
                 ورود
               </Link>
             )}
             <Link
               href="/book"
-              className="rounded-full bg-[#D4A853] px-4 py-2 text-sm font-semibold text-[#0c0b09] transition-colors duration-150 hover:bg-[#C49A48]"
+              className="rounded-full bg-[var(--booking-gold)] px-4 py-2 text-sm font-semibold text-[var(--surface-base)] transition-colors duration-150 hover:bg-[var(--booking-gold-hover)]"
             >
               رزرو نوبت
             </Link>
@@ -109,7 +109,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setMenuOpen((prev) => !prev)}
-              className="p-2 text-[#8a8578] hover:text-[#f5f0e8] md:hidden touch-manipulation active:opacity-70"
+              className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:hidden touch-manipulation active:opacity-70"
               aria-expanded={menuOpen}
               aria-controls={menuId}
               aria-label={menuOpen ? "بستن منو" : "باز کردن منو"}
@@ -124,13 +124,13 @@ export function Navbar() {
       {menuOpen && (
         <div
           id={menuId}
-          className="mx-6 mb-4 rounded-2xl border border-[#2a2520] bg-[#0c0b09]/95 p-4 backdrop-blur-md md:hidden"
+          className="mx-6 mb-4 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-base)]/95 p-4 backdrop-blur-md md:hidden"
         >
           <nav className="flex flex-col gap-1">
             <Link
               href="/"
               onClick={() => setMenuOpen(false)}
-              className="rounded-xl px-4 py-2.5 text-sm text-[#8a8578] hover:bg-[#D4A853]/10 hover:text-[#f5f0e8]"
+              className="rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
             >
               صفحه اصلی
             </Link>
@@ -139,7 +139,7 @@ export function Navbar() {
                 <Link
                   href="/admin"
                   onClick={() => setMenuOpen(false)}
-                  className="rounded-xl px-4 py-2.5 text-sm text-[#8a8578] hover:bg-[#D4A853]/10 hover:text-[#f5f0e8]"
+                  className="rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
                 >
                   پنل مدیریت
                 </Link>
@@ -148,19 +148,19 @@ export function Navbar() {
               <Link
                 href="/dashboard"
                 onClick={() => setMenuOpen(false)}
-                className="rounded-xl px-4 py-2.5 text-sm text-[#8a8578] hover:bg-[#D4A853]/10 hover:text-[#f5f0e8]"
+                className="rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
               >
                 نوبت‌های من
               </Link>
             )}
-            <div className="my-1 h-px bg-[#2a2520]" />
+            <div className="my-1 h-px bg-[var(--surface-border)]" />
             {isAuthenticated ? (
               <button
                 onClick={() => {
                   setMenuOpen(false);
                   signOut({ callbackUrl: "/" });
                 }}
-                className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-[#8a8578] hover:bg-[#D4A853]/10 hover:text-[#f5f0e8]"
+                className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
               >
                 <LogOut className="h-4 w-4" />
                 خروج
@@ -169,7 +169,7 @@ export function Navbar() {
               <Link
                 href="/login"
                 onClick={() => setMenuOpen(false)}
-                className="rounded-xl px-4 py-2.5 text-sm text-[#8a8578] hover:bg-[#D4A853]/10 hover:text-[#f5f0e8]"
+                className="rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
               >
                 ورود
               </Link>

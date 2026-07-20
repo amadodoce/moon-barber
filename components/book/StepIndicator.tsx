@@ -22,7 +22,7 @@ export function StepIndicator() {
           <div key={step.num} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center gap-1.5">
               <div
-                className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300 ${
+                className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition-colors duration-200 ${
                   isCompleted
                     ? "bg-[#D4A853] text-white"
                     : isActive
