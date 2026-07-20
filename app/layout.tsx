@@ -9,8 +9,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Barber Shop",
-  description: "سیستم رزرو نوبت آرایشگاه مردانه",
+  title: "Moon Barber",
+  description: "سیستم رزرو نوبت مون باربر",
 };
 
 export default function RootLayout({

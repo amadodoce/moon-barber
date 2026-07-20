@@ -55,7 +55,7 @@ export function Footer({
 
         {/* Bottom line */}
         <div className="mt-10 border-t border-[var(--surface-border)] pt-6 text-xs text-[var(--text-faint)]">
-          <p>© {new Date().getFullYear()} آرایشگاه مردانه</p>
+          <p>© {new Date().getFullYear()} مون باربر</p>
         </div>
       </div>
     </footer>

@@ -6,7 +6,7 @@ interface HeroProps {
   subtitle?: string;
 }
 
-export function Hero({ shopName = "آرایشگاه مردانه", subtitle = "رزرو آنلاین نوبت در چند ثانیه" }: HeroProps) {
+export function Hero({ shopName = "مون باربر", subtitle = "رزرو آنلاین نوبت در چند ثانیه" }: HeroProps) {
   return (
     <section className="relative overflow-hidden" style={{ backgroundColor: "var(--surface-base)" }}>
       {/* Gold accent line at top */}
