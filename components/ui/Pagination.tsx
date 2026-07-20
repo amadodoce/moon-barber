@@ -38,8 +38,9 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
           size="sm"
           onClick={() => onPageChange(page)}
           className={`h-8 w-8 p-0 ${
-            page === currentPage ? "bg-amber-500 hover:bg-amber-600" : ""
+            page === currentPage ? "text-white" : ""
           }`}
+          style={page === currentPage ? { backgroundColor: "var(--booking-gold)" } : undefined}
         >
           {toPersianDigits(page)}
         </Button>

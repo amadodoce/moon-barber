@@ -54,8 +54,9 @@ export function ConfirmDialog({
             className={
               variant === "danger"
                 ? "bg-red-500 hover:bg-red-600 text-white"
-                : "bg-amber-500 hover:bg-amber-600 text-white"
+                : "text-white"
             }
+            style={variant !== "danger" ? { backgroundColor: "var(--booking-gold)" } : undefined}
           >
             {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
             {confirmLabel}

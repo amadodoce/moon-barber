@@ -147,7 +147,7 @@ export function WorkingHourForm({
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               انصراف
             </Button>
-            <Button type="submit" disabled={saving} className="bg-amber-500 hover:bg-amber-600">
+            <Button type="submit" disabled={saving} style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}>
               {saving && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
               ذخیره
             </Button>

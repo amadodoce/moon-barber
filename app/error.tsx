@@ -11,27 +11,29 @@ export default function Error({
   reset: () => void;
 }) {
   return (
-    <div className="flex min-h-screen min-h-dvh items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4">
+    <div className="flex min-h-screen min-h-dvh items-center justify-center px-4" style={{ backgroundColor: "var(--surface-base)" }}>
       <div className="w-full max-w-sm text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-          <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400" />
+        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full" style={{ backgroundColor: "color-mix(in srgb, #ef4444 12%, transparent)" }}>
+          <AlertTriangle className="h-8 w-8" style={{ color: "#ef4444" }} />
         </div>
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
           خطایی رخ داده
         </h1>
-        <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+        <p className="mt-2" style={{ color: "var(--text-muted)" }}>
           متأسفانه در پردازش درخواست شما خطایی پیش آمده است.
         </p>
         <div className="mt-8 space-y-3">
           <button
             onClick={reset}
-            className="flex w-full items-center justify-center rounded-xl bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-600 transition-colors"
+            className="flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors hover:opacity-90"
+            style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
           >
             تلاش مجدد
           </button>
           <Link
             href="/"
-            className="flex w-full items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+            className="flex w-full items-center justify-center rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
+            style={{ borderColor: "var(--surface-border)", color: "var(--text-secondary)" }}
           >
             بازگشت به صفحه اصلی
           </Link>

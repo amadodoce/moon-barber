@@ -12,7 +12,7 @@ export function Spinner({ size = "md", className = "" }: SpinnerProps) {
 
   return (
     <svg
-      className={`animate-spin text-amber-500 ${sizeClasses[size]} ${className}`}
+      className={`animate-spin ${sizeClasses[size]} ${className}`}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

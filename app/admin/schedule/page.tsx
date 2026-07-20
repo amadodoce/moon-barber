@@ -108,7 +108,8 @@ export default function SchedulePage() {
             variant={selectedBarber === "shop" ? "default" : "outline"}
             size="sm"
             onClick={() => handleBarberChange("shop")}
-            className={selectedBarber === "shop" ? "bg-amber-500 hover:bg-amber-600" : ""}
+            className={selectedBarber === "shop" ? "text-white" : ""}
+            style={selectedBarber === "shop" ? { backgroundColor: "var(--booking-gold)" } : undefined}
           >
             فروشگاه
           </Button>
@@ -118,7 +119,8 @@ export default function SchedulePage() {
               variant={selectedBarber === b.id ? "default" : "outline"}
               size="sm"
               onClick={() => handleBarberChange(b.id)}
-              className={selectedBarber === b.id ? "bg-amber-500 hover:bg-amber-600" : ""}
+              className={selectedBarber === b.id ? "text-white" : ""}
+              style={selectedBarber === b.id ? { backgroundColor: "var(--booking-gold)" } : undefined}
             >
               {b.user.name}
             </Button>
@@ -142,7 +144,7 @@ export default function SchedulePage() {
           <div className="flex justify-end">
             <Button
               onClick={() => setWhDialogOpen(true)}
-              className="bg-amber-500 hover:bg-amber-600"
+              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
             >
               <Plus className="ml-2 h-4 w-4" />
               ساعات جدید
@@ -201,7 +203,7 @@ export default function SchedulePage() {
           <div className="flex justify-end">
             <Button
               onClick={() => setHolDialogOpen(true)}
-              className="bg-amber-500 hover:bg-amber-600"
+              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
             >
               <Plus className="ml-2 h-4 w-4" />
               تعطیلی جدید

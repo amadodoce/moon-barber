@@ -12,27 +12,29 @@ async function PaymentResultContent({ searchParams }: PaymentResultProps) {
 
   if (status === "success") {
     return (
-      <div className="flex min-h-screen min-h-dvh items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4">
+      <div className="flex min-h-screen min-h-dvh items-center justify-center px-4" style={{ backgroundColor: "var(--surface-base)" }}>
         <div className="w-full max-w-md text-center">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-            <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full" style={{ backgroundColor: "color-mix(in srgb, #22c55e 12%, transparent)" }}>
+            <CheckCircle className="h-10 w-10" style={{ color: "#22c55e" }} />
           </div>
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+          <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
             پرداخت موفق
           </h1>
-          <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2" style={{ color: "var(--text-muted)" }}>
             نوبت شما با موفقیت رزرو و پرداخت شد.
           </p>
           <div className="mt-8 space-y-3">
             <Link
               href="/dashboard"
-              className="flex w-full items-center justify-center rounded-xl bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-600 transition-colors"
+              className="flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors hover:opacity-90"
+              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
             >
               مشاهده نوبت‌ها
             </Link>
             <Link
               href="/"
-              className="flex w-full items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+              className="flex w-full items-center justify-center rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
+              style={{ borderColor: "var(--surface-border)", color: "var(--text-secondary)" }}
             >
               بازگشت به صفحه اصلی
             </Link>
@@ -44,27 +46,29 @@ async function PaymentResultContent({ searchParams }: PaymentResultProps) {
 
   if (status === "failed") {
     return (
-      <div className="flex min-h-screen min-h-dvh items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4">
+      <div className="flex min-h-screen min-h-dvh items-center justify-center px-4" style={{ backgroundColor: "var(--surface-base)" }}>
         <div className="w-full max-w-md text-center">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-            <XCircle className="h-10 w-10 text-red-600 dark:text-red-400" />
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full" style={{ backgroundColor: "color-mix(in srgb, #ef4444 12%, transparent)" }}>
+            <XCircle className="h-10 w-10" style={{ color: "#ef4444" }} />
           </div>
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+          <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
             پرداخت ناموفق
           </h1>
-          <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2" style={{ color: "var(--text-muted)" }}>
             پرداخت شما انجام نشد. لطفاً دوباره تلاش کنید.
           </p>
           <div className="mt-8 space-y-3">
             <Link
               href="/book"
-              className="flex w-full items-center justify-center rounded-xl bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-600 transition-colors"
+              className="flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors hover:opacity-90"
+              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
             >
               رزرو مجدد
             </Link>
             <Link
               href="/"
-              className="flex w-full items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+              className="flex w-full items-center justify-center rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
+              style={{ borderColor: "var(--surface-border)", color: "var(--text-secondary)" }}
             >
               بازگشت به صفحه اصلی
             </Link>
@@ -74,29 +78,30 @@ async function PaymentResultContent({ searchParams }: PaymentResultProps) {
     );
   }
 
-  // Error status
   return (
-    <div className="flex min-h-screen min-h-dvh items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4">
+    <div className="flex min-h-screen min-h-dvh items-center justify-center px-4" style={{ backgroundColor: "var(--surface-base)" }}>
       <div className="w-full max-w-md text-center">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-          <AlertTriangle className="h-10 w-10 text-amber-600 dark:text-amber-400" />
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full" style={{ backgroundColor: "color-mix(in srgb, #eab308 12%, transparent)" }}>
+          <AlertTriangle className="h-10 w-10" style={{ color: "#eab308" }} />
         </div>
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
           خطای پرداخت
         </h1>
-        <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+        <p className="mt-2" style={{ color: "var(--text-muted)" }}>
           در پردازش پرداخت خطایی رخ داده است.
         </p>
         <div className="mt-8 space-y-3">
           <Link
             href="/book"
-            className="flex w-full items-center justify-center rounded-xl bg-amber-500 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-600 transition-colors"
+            className="flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors hover:opacity-90"
+            style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
           >
             تلاش مجدد
           </Link>
           <Link
             href="/"
-            className="flex w-full items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+            className="flex w-full items-center justify-center rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
+            style={{ borderColor: "var(--surface-border)", color: "var(--text-secondary)" }}
           >
             بازگشت به صفحه اصلی
           </Link>
@@ -110,8 +115,8 @@ export default function PaymentResultPage(props: PaymentResultProps) {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen min-h-dvh items-center justify-center bg-zinc-50 dark:bg-zinc-900">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-500 border-t-transparent" />
+        <div className="flex min-h-screen min-h-dvh items-center justify-center" style={{ backgroundColor: "var(--surface-base)" }}>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-t-transparent" style={{ borderColor: "var(--booking-gold)", borderTopColor: "transparent" }} />
         </div>
       }
     >
