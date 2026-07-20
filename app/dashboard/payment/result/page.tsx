@@ -25,7 +25,7 @@ async function PaymentResultContent({ searchParams }: PaymentResultProps) {
           </p>
           <div className="mt-8 space-y-3">
             <Link
-              href="/dashboard"
+              href="/customer"
               className="flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors hover:opacity-90"
               style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
             >
