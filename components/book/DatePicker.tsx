@@ -106,11 +106,11 @@ export function DatePicker() {
               type="button"
               disabled={isPast}
               onClick={() => setDate(format(day, "yyyy-MM-dd"))}
-              className={`relative flex h-11 items-center justify-center rounded-lg text-sm font-medium transition-all duration-150 active:scale-95 ${
+              className={`relative flex h-11 items-center justify-center rounded-lg text-sm font-medium transition-colors duration-150 ${
                 isPast
                   ? "text-zinc-300 dark:text-zinc-600 cursor-not-allowed"
                   : isSelected
-                    ? "bg-[#D4A853] text-white shadow-md shadow-[#D4A853]/20"
+                    ? "bg-[#D4A853] text-white"
                     : isToday
                       ? "bg-[#D4A853]/10 text-[#D4A853] font-bold"
                       : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700"

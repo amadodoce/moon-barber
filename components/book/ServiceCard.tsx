@@ -31,11 +31,10 @@ export function ServiceCard({
       onClick={() =>
         toggleService({ id, name, durationMinutes, price: Number(price) })
       }
-      style={{ animationDelay: `${index * 60}ms` }}
-      className={`relative flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-right transition-all duration-200 animate-[fade-in-up_0.4s_ease-out_both] active:scale-[0.98] ${
+      className={`relative flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-right transition-colors duration-150 ${
         isSelected
-          ? "border-[#D4A853] bg-[#D4A853]/5 shadow-md shadow-[#D4A853]/10"
-          : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600 hover:shadow-lg hover:shadow-[#D4A853]/5"
+          ? "border-[#D4A853] bg-[#D4A853]/5"
+          : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600"
       }`}
     >
       {/* Checkbox indicator */}

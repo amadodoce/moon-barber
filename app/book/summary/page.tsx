@@ -96,7 +96,7 @@ export default function SummaryPage() {
           <button
             onClick={handlePayment}
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#D4A853] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-[#D4A853]/20 transition-all duration-200 hover:bg-[#C49A48] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#D4A853] px-4 py-3 text-sm font-semibold text-[#0c0b09] transition-colors duration-150 hover:bg-[#C49A48] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? (
               <>
