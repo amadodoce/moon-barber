@@ -109,12 +109,13 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setMenuOpen((prev) => !prev)}
-              className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:hidden touch-manipulation active:opacity-70"
+              onTouchEnd={() => setMenuOpen((prev) => !prev)}
+              className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:hidden cursor-pointer select-none"
               aria-expanded={menuOpen}
               aria-controls={menuId}
               aria-label={menuOpen ? "بستن منو" : "باز کردن منو"}
             >
-              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {menuOpen ? <X className="h-5 w-5 pointer-events-none" /> : <Menu className="h-5 w-5 pointer-events-none" />}
             </button>
           </div>
         </div>
