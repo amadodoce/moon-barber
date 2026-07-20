@@ -82,7 +82,7 @@ export default function SummaryPage() {
 
   return (
     <div className={`space-y-6 ${canSubmit ? BOOKING_BOTTOM_BAR_PADDING : ""}`}>
-      <div className="animate-[fade-in-up_0.4s_ease-out_both]">
+      <div>
         <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">خلاصه رزرو</h2>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           اطلاعات رزرو خود را بررسی کنید
@@ -96,7 +96,8 @@ export default function SummaryPage() {
           <button
             onClick={handlePayment}
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#D4A853] px-4 py-3 text-sm font-semibold text-[#0c0b09] transition-colors duration-150 hover:bg-[#C49A48] disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-150 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
           >
             {loading ? (
               <>

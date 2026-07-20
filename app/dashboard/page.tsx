@@ -72,7 +72,8 @@ export default function DashboardPage() {
           <h1 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">نوبت‌های من</h1>
           <Link
             href="/book"
-            className="rounded-lg bg-amber-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-600 transition-colors"
+            className="rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
+            style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
           >
             رزرو جدید
           </Link>
@@ -81,7 +82,7 @@ export default function DashboardPage() {
 
       <main className="mx-auto max-w-2xl px-4 py-6">
         <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
-          سلام {user.name ?? "کاربر عزیز"} 👋
+          سلام {user.name ?? "کاربر عزیز"}.
         </p>
 
         {appointments.length === 0 ? (
@@ -92,7 +93,8 @@ export default function DashboardPage() {
             <p className="text-zinc-500 dark:text-zinc-400">هنوز نوبتی رزرو نکرده‌اید</p>
             <Link
               href="/book"
-              className="mt-4 rounded-xl bg-amber-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors"
+              className="mt-4 rounded-xl px-6 py-2.5 text-sm font-semibold transition-colors hover:opacity-90"
+              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
             >
               رزرو اولین نوبت
             </Link>

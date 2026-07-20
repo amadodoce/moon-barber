@@ -45,11 +45,11 @@ export default function BookLayout({
           <StepIndicator />
         </div>
         {/* Gold accent line */}
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#D4A853] to-transparent" />
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[var(--booking-gold)] to-transparent" />
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-6">
-        <div className="animate-[fade-in-up_0.3s_ease-out_both]">{children}</div>
+        <div>{children}</div>
       </main>
     </div>
   );

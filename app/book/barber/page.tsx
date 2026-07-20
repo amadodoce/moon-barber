@@ -68,7 +68,7 @@ export default function BarberPage() {
 
   return (
     <div className={`space-y-6 ${barberId ? BOOKING_BOTTOM_BAR_PADDING : ""}`}>
-      <div className="animate-[fade-in-up_0.4s_ease-out_both]">
+      <div>
         <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">انتخاب آرایشگر</h2>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           آرایشگر مورد نظر خود را انتخاب کنید
@@ -77,7 +77,7 @@ export default function BarberPage() {
 
       {/* Barber list */}
       {barbers.length === 0 ? (
-        <div className="py-16 text-center text-sm text-zinc-400 dark:text-zinc-500 animate-[fade-in-up_0.4s_ease-out_both]">
+        <div className="py-16 text-center text-sm text-zinc-400 dark:text-zinc-500">
           <Users className="mx-auto h-10 w-10 mb-3 text-zinc-300 dark:text-zinc-600" />
           <p>هیچ آرایشگری موجود نیست</p>
         </div>
@@ -112,7 +112,8 @@ export default function BarberPage() {
         <BookingBottomBar>
           <button
             onClick={handleNext}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#D4A853] px-4 py-3 text-sm font-semibold text-[#0c0b09] transition-colors duration-150 hover:bg-[#C49A48]"
+            className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-150 hover:opacity-90"
+            style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
           >
             ادامه
             <ArrowLeft className="h-4 w-4" />
