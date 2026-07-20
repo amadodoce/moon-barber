@@ -39,20 +39,9 @@ export function Hero({ shopName = "آرایشگاه مردانه", subtitle = "�
 
           {/* Visual block — right side, asymmetric */}
           <div className="hidden md:block">
-            <div className="relative h-64 w-56 rounded-2xl border border-[var(--booking-gold)]/15 p-6" style={{ backgroundColor: "var(--surface-overlay)" }}>
-              <div className="space-y-4">
-                <div className="h-3 w-3/4 rounded-full bg-[var(--booking-gold)]/20" />
-                <div className="h-3 w-1/2 rounded-full bg-[var(--booking-gold)]/10" />
-                <div className="h-3 w-2/3 rounded-full bg-[var(--booking-gold)]/10" />
-              </div>
-              <div className="mt-8 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--booking-gold)]/25 bg-[var(--booking-gold)]/10">
-                  <Scissors className="h-5 w-5" style={{ color: "var(--booking-gold)" }} />
-                </div>
-                <div>
-                  <div className="h-2.5 w-20 rounded-full bg-[var(--booking-gold)]/15" />
-                  <div className="mt-1.5 h-2 w-14 rounded-full bg-[var(--booking-gold)]/8" />
-                </div>
+            <div className="relative h-64 w-56 rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--surface-overlay)" }}>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Scissors className="h-16 w-16" style={{ color: "var(--booking-gold)", opacity: 0.15 }} />
               </div>
             </div>
           </div>

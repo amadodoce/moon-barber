@@ -30,7 +30,7 @@ interface BarbersProps {
 
 export function Barbers({ barbers = defaultBarbers }: BarbersProps) {
   return (
-    <section className="bg-[var(--surface-base)] py-20 md:py-28">
+    <section className="bg-[var(--surface-base)] py-16 md:py-24">
       <div className="mx-auto max-w-6xl px-6">
         {/* Section header — right-aligned for variety */}
         <div className="mb-12 text-right md:ml-auto md:max-w-md">

@@ -34,7 +34,7 @@ export default function BookLayout({
                 useBookingStore.getState().setStep((step - 1) as 1 | 2 | 3 | 4);
                 router.push(stepRoutes[step - 2]);
               }}
-              className="p-2 -mr-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors active:scale-95"
+              className="p-2 -mr-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors"
             >
               <ArrowRight className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
             </button>

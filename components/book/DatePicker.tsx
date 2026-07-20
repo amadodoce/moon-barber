@@ -62,7 +62,7 @@ export function DatePicker() {
         <button
           type="button"
           onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-          className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors active:scale-95"
+          className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors"
         >
           <ChevronRight className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
         </button>
@@ -72,7 +72,7 @@ export function DatePicker() {
         <button
           type="button"
           onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-          className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors active:scale-95"
+          className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors"
         >
           <ChevronLeft className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
         </button>
