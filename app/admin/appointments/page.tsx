@@ -137,7 +137,18 @@ export default function AppointmentsPage() {
             className="pr-9"
           />
         </div>
-        <Select value={statusFilter} onValueChange={(v) => v && setStatusFilter(v)}>
+        <Select
+          value={statusFilter}
+          onValueChange={(v) => v && setStatusFilter(v)}
+          items={[
+            { value: "all", label: "همه" },
+            { value: "PENDING", label: "در انتظار" },
+            { value: "CONFIRMED", label: "تایید شده" },
+            { value: "COMPLETED", label: "انجام شده" },
+            { value: "CANCELLED", label: "لغو شده" },
+            { value: "NO_SHOW", label: "عدم حضور" },
+          ]}
+        >
           <SelectTrigger className="w-full sm:w-40">
             <SelectValue placeholder="وضعیت" />
           </SelectTrigger>
@@ -214,6 +225,13 @@ export default function AppointmentsPage() {
                       value={appt.status}
                       onValueChange={(val) => val && handleStatusChange(appt.id, val)}
                       disabled={updating === appt.id}
+                      items={[
+                        { value: "PENDING", label: "در انتظار" },
+                        { value: "CONFIRMED", label: "تایید" },
+                        { value: "COMPLETED", label: "انجام شده" },
+                        { value: "CANCELLED", label: "لغو" },
+                        { value: "NO_SHOW", label: "عدم حضور" },
+                      ]}
                     >
                       <SelectTrigger className="w-32 h-8">
                         <SelectValue />

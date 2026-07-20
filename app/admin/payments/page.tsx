@@ -112,7 +112,17 @@ export default function PaymentsPage() {
             className="pr-9"
           />
         </div>
-        <Select value={statusFilter} onValueChange={(v) => v && setStatusFilter(v)}>
+        <Select
+          value={statusFilter}
+          onValueChange={(v) => v && setStatusFilter(v)}
+          items={[
+            { value: "all", label: "همه" },
+            { value: "PENDING", label: "در انتظار" },
+            { value: "PAID", label: "پرداخت شده" },
+            { value: "FAILED", label: "ناموفق" },
+            { value: "REFUNDED", label: "بازپرداخت" },
+          ]}
+        >
           <SelectTrigger className="w-full sm:w-40">
             <SelectValue placeholder="وضعیت" />
           </SelectTrigger>
