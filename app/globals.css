@@ -147,14 +147,6 @@
   --text-accent: #c8c2b8;
 }
 
-/* در globals.css یا styled component */
-button[aria-controls] {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  cursor: pointer;           /* مهم برای iOS */
-  user-select: none;
-}
-
 /* ─── Booking Animations ───────────────────────────────────────────────── */
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(12px); }
