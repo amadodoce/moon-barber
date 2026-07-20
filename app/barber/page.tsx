@@ -96,7 +96,7 @@ export default function BarberDashboardPage() {
 
       <main className="mx-auto max-w-2xl px-4 py-6">
         <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
-          سلام {session.user.name ?? "آرایشگر عزیز"} 👋
+          سلام {session.user.name ?? "آرایشگر عزیز"}.
         </p>
 
         {/* Today's appointments */}

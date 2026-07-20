@@ -31,7 +31,7 @@ export function BookingSummary() {
       {/* Services */}
       <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
         <div className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-          <Scissors className="h-4 w-4 text-[#D4A853]" />
+          <Scissors className="h-4 w-4 text-[var(--booking-gold)]" />
           سرویس‌های انتخابی
         </div>
         <div className="space-y-2">
@@ -43,7 +43,7 @@ export function BookingSummary() {
               <span className="text-zinc-700 dark:text-zinc-300">{service.name}</span>
               <div className="flex items-center gap-3 text-zinc-500 dark:text-zinc-400">
                 <span>{service.durationMinutes} دقیقه</span>
-                <span className="font-semibold text-[#D4A853]">
+                <span className="font-semibold text-[var(--booking-gold)]">
                   {service.price.toLocaleString("fa-IR")} تومان
                 </span>
               </div>
@@ -55,7 +55,7 @@ export function BookingSummary() {
       {/* Date & Time */}
       <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
         <div className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-          <Calendar className="h-4 w-4 text-[#D4A853]" />
+          <Calendar className="h-4 w-4 text-[var(--booking-gold)]" />
           تاریخ و ساعت
         </div>
         <div className="space-y-2 text-sm">
@@ -75,7 +75,7 @@ export function BookingSummary() {
       {barberName && (
         <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
           <div className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            <User className="h-4 w-4 text-[#D4A853]" />
+            <User className="h-4 w-4 text-[var(--booking-gold)]" />
             آرایشگر
           </div>
           <div className="text-sm text-zinc-700 dark:text-zinc-300">{barberName}</div>
@@ -85,7 +85,7 @@ export function BookingSummary() {
       {/* Notes */}
       <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
         <div className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-          <FileText className="h-4 w-4 text-[#D4A853]" />
+          <FileText className="h-4 w-4 text-[var(--booking-gold)]" />
           توضیحات (اختیاری)
         </div>
         <textarea
@@ -93,17 +93,17 @@ export function BookingSummary() {
           onChange={(e) => setNotes(e.target.value)}
           placeholder="توضیحات خود را اینجا بنویسید..."
           rows={3}
-          className="w-full resize-none rounded-xl border border-zinc-200 bg-white px-3 py-2 text-base text-zinc-700 transition-colors placeholder:text-zinc-400 focus:border-[#D4A853] focus:outline-2 focus:outline-[#D4A853] focus:outline-offset-1 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:placeholder:text-zinc-500 md:text-sm"
+          className="w-full resize-none rounded-xl border border-zinc-200 bg-white px-3 py-2 text-base text-zinc-700 transition-colors placeholder:text-zinc-400 focus:border-[var(--booking-gold)] focus:outline-2 focus:outline-[var(--booking-gold)] focus:outline-offset-1 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:placeholder:text-zinc-500 md:text-sm"
         />
       </div>
 
       {/* Total */}
-      <div className="rounded-2xl bg-gradient-to-l from-[#D4A853]/10 to-[#D4A853]/5 border border-[#D4A853]/20 p-4">
+      <div className="rounded-2xl bg-gradient-to-l from-[var(--booking-gold)]/10 to-[var(--booking-gold)]/5 border border-[var(--booking-gold)]/20 p-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-[#D4A853]">
+          <span className="text-sm font-medium text-[var(--booking-gold)]">
             مبلغ قابل پرداخت
           </span>
-          <span className="text-lg font-bold text-[#D4A853]">
+          <span className="text-lg font-bold text-[var(--booking-gold)]">
             {totalPrice.toLocaleString("fa-IR")} تومان
           </span>
         </div>

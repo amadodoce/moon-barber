@@ -70,7 +70,7 @@ export function AppointmentCard({ appointment, onCancel }: AppointmentCardProps)
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <Scissors className="h-4 w-4 text-amber-500" />
+              <Scissors className="h-4 w-4" style={{ color: "var(--booking-gold)" }} />
               <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
                 {appointment.appointmentServices
                   .map((as) => as.service.name)
@@ -115,7 +115,7 @@ export function AppointmentCard({ appointment, onCancel }: AppointmentCardProps)
                 ? "پرداخت شده"
                 : "در انتظار پرداخت"}
             </span>
-            <span className="font-medium text-amber-600 dark:text-amber-400">
+            <span className="font-medium" style={{ color: "var(--booking-gold)" }}>
               {totalAmount.toLocaleString("fa-IR")} تومان
             </span>
           </div>

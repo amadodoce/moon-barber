@@ -66,7 +66,7 @@ export default function DateTimePage() {
     <div
       className={`space-y-6 ${date && startTime ? BOOKING_BOTTOM_BAR_PADDING : ""}`}
     >
-      <div className="animate-[fade-in-up_0.4s_ease-out_both]">
+      <div>
         <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">تاریخ و ساعت</h2>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           تاریخ و ساعت مورد نظر خود را انتخاب کنید
@@ -74,14 +74,14 @@ export default function DateTimePage() {
       </div>
 
       {/* Date picker */}
-      <div className="animate-[fade-in-up_0.4s_ease-out_both] [animation-delay:60ms]">
+      <div>
         <DatePicker />
       </div>
 
       {/* Time slots */}
       {date && barberId && (
         <div>
-          <h3 className="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400 animate-[fade-in-up_0.4s_ease-out_both] [animation-delay:120ms]">
+          <h3 className="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
             ساعات خالی
           </h3>
           <TimeSlotPicker slots={slots} loading={loading} error={error} />
@@ -92,7 +92,8 @@ export default function DateTimePage() {
         <BookingBottomBar>
           <button
             onClick={handleNext}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#D4A853] px-4 py-3 text-sm font-semibold text-[#0c0b09] transition-colors duration-150 hover:bg-[#C49A48]"
+            className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-150 hover:opacity-90"
+            style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
           >
             ادامه
             <ArrowLeft className="h-4 w-4" />
