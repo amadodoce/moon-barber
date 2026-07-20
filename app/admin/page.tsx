@@ -61,12 +61,12 @@ async function getStats() {
   };
 }
 
-const statusLabels: Record<string, { label: string; color: string }> = {
-  PENDING: { label: "در انتظار", color: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400" },
-  CONFIRMED: { label: "تایید شده", color: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400" },
-  COMPLETED: { label: "انجام شده", color: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400" },
-  CANCELLED: { label: "لغو شده", color: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400" },
-  NO_SHOW: { label: "عدم حضور", color: "bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300" },
+const statusConfig: Record<string, { label: string; bg: string; text: string }> = {
+  PENDING: { label: "در انتظار", bg: "color-mix(in srgb, #eab308 12%, transparent)", text: "#eab308" },
+  CONFIRMED: { label: "تایید شده", bg: "color-mix(in srgb, #3b82f6 12%, transparent)", text: "#3b82f6" },
+  COMPLETED: { label: "انجام شده", bg: "color-mix(in srgb, #22c55e 12%, transparent)", text: "#22c55e" },
+  CANCELLED: { label: "لغو شده", bg: "color-mix(in srgb, #ef4444 12%, transparent)", text: "#ef4444" },
+  NO_SHOW: { label: "عدم حضور", bg: "color-mix(in srgb, #71717a 12%, transparent)", text: "#71717a" },
 };
 
 export default async function AdminDashboard() {
@@ -74,7 +74,7 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">داشبورد</h1>
+      <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>داشبورد</h1>
 
       {/* Stats grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -82,64 +82,72 @@ export default async function AdminDashboard() {
           icon={Calendar}
           label="نوبت‌های امروز"
           value={stats.todayAppointments}
-          color="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+          accentColor="#3b82f6"
         />
         <StatCard
           icon={Clock}
           label="در انتظار تایید"
           value={stats.pendingAppointments}
-          color="bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400"
+          accentColor="#eab308"
         />
         <StatCard
           icon={CreditCard}
           label="درآمد کل"
           value={`${stats.totalRevenue.toLocaleString("fa-IR")} تومان`}
-          color="bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+          accentColor="#22c55e"
         />
         <StatCard
           icon={Scissors}
           label="سرویس‌های فعال"
           value={stats.activeServices}
-          color="bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
+          accentColor="#a855f7"
         />
       </div>
 
       {/* Recent appointments */}
-      <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-6">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
+      <div
+        className="rounded-2xl border p-6"
+        style={{ backgroundColor: "var(--surface-overlay)", borderColor: "var(--surface-border)" }}
+      >
+        <h2 className="mb-4 text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
           آخرین نوبت‌ها
         </h2>
         <div className="space-y-3">
           {stats.recentAppointments.map((appt) => {
-            const status = statusLabels[appt.status] ?? {
+            const status = statusConfig[appt.status] ?? {
               label: appt.status,
-              color: "bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300",
+              bg: "color-mix(in srgb, #71717a 12%, transparent)",
+              text: "#71717a",
             };
             return (
               <div
                 key={appt.id}
-                className="flex items-center justify-between rounded-xl border border-zinc-100 dark:border-zinc-700/50 p-4"
+                className="flex items-center justify-between rounded-xl border p-4"
+                style={{ borderColor: "var(--surface-border)" }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-zinc-100 dark:bg-zinc-700 flex items-center justify-center text-sm font-bold text-zinc-600 dark:text-zinc-300">
+                  <div
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold"
+                    style={{ backgroundColor: "var(--surface-border)", color: "var(--text-secondary)" }}
+                  >
                     {appt.user.name?.charAt(0) ?? "?"}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                    <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                       {appt.user.name}
                     </p>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                      {appt.barber.user.name} •{" "}
-                      {formatFaDate(appt.date)}
+                    <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                      {appt.barber.user.name} • {formatFaDate(appt.date)}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+                  <span className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
                     {appt.startTime}
                   </span>
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${status.color}`}
+                    className="rounded-full px-2.5 py-0.5 text-xs font-medium"
+                    style={{ backgroundColor: status.bg, color: status.text }}
                   >
                     {status.label}
                   </span>
@@ -148,7 +156,7 @@ export default async function AdminDashboard() {
             );
           })}
           {stats.recentAppointments.length === 0 && (
-            <p className="text-center text-sm text-zinc-400 dark:text-zinc-500 py-8">
+            <p className="py-8 text-center text-sm" style={{ color: "var(--text-muted)" }}>
               هنوز نوبتی ثبت نشده است
             </p>
           )}
@@ -162,22 +170,28 @@ function StatCard({
   icon: Icon,
   label,
   value,
-  color,
+  accentColor,
 }: {
   icon: React.ElementType;
   label: string;
   value: string | number;
-  color: string;
+  accentColor: string;
 }) {
   return (
-    <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-5">
+    <div
+      className="rounded-2xl border p-5"
+      style={{ backgroundColor: "var(--surface-overlay)", borderColor: "var(--surface-border)" }}
+    >
       <div className="flex items-center gap-3">
-        <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${color}`}>
-          <Icon className="h-6 w-6" />
+        <div
+          className="flex h-12 w-12 items-center justify-center rounded-xl"
+          style={{ backgroundColor: `color-mix(in srgb, ${accentColor} 12%, transparent)` }}
+        >
+          <Icon className="h-6 w-6" style={{ color: accentColor }} />
         </div>
         <div>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">{label}</p>
-          <p className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{value}</p>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>{label}</p>
+          <p className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>{value}</p>
         </div>
       </div>
     </div>
