@@ -298,3 +298,31 @@ export async function getPayments(): Promise<ActionResponse<PaymentWithRelations
     return handleActionError(error);
   }
 }
+
+/** Get current user's payments */
+export async function getMyPayments(): Promise<ActionResponse<PaymentWithRelations[]>> {
+  try {
+    const user = await requireAuth();
+
+    const payments = await prisma.payment.findMany({
+      where: {
+        appointment: { userId: user.userId },
+      },
+      include: {
+        appointment: {
+          include: {
+            user: { select: { name: true, phone: true } },
+            barber: {
+              include: { user: { select: { name: true } } },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return { success: true, data: payments };
+  } catch (error) {
+    return handleActionError(error);
+  }
+}

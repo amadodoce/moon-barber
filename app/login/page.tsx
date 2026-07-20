@@ -50,6 +50,8 @@ function LoginForm() {
       router.push("/admin");
     } else if (role === "BARBER") {
       router.push("/barber");
+    } else if (role === "CUSTOMER") {
+      router.push("/customer");
     } else {
       router.push(callbackUrl);
     }
