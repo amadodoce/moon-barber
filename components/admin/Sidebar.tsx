@@ -79,13 +79,18 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         <button
           type="button"
           onClick={toggle}
-          className="mr-auto rounded-lg p-1.5 transition-colors hover:bg-[var(--surface-border)]"
+          className="mr-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-all duration-150 hover:scale-105 active:scale-95"
+          style={{
+            borderColor: "var(--surface-border)",
+            backgroundColor: "var(--surface-base)",
+            color: "var(--text-secondary)",
+          }}
           aria-label={expanded ? "جمع کردن منو" : "باز کردن منو"}
         >
           {expanded ? (
-            <ChevronsRight className="h-4 w-4" style={{ color: "var(--text-secondary)" }} />
+            <ChevronsRight className="h-4 w-4" />
           ) : (
-            <ChevronsLeft className="h-4 w-4" style={{ color: "var(--text-secondary)" }} />
+            <ChevronsLeft className="h-4 w-4" />
           )}
         </button>
       </div>

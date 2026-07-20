@@ -82,12 +82,39 @@ export function AdminHeader() {
           <Sidebar onClose={() => setSidebarOpen(false)} />
         </SheetContent>
       </Sheet>
-
-      {/* Spacer for desktop sidebar */}
-      <div
-        className="hidden sm:block sm:transition-[width] sm:duration-200"
-        style={{ width: sidebarWidth }}
-      />
     </>
+  );
+}
+
+export function AdminSidebarSpacer() {
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("admin-sidebar-expanded");
+    if (saved !== null) setSidebarExpanded(saved === "true");
+
+    const observer = new MutationObserver(() => {
+      const sidebar = document.querySelector("[data-admin-sidebar]");
+      if (sidebar) {
+        const w = sidebar.getBoundingClientRect().width;
+        setSidebarExpanded(w > SIDEBAR_COLLAPSED_WIDTH + 20);
+      }
+    });
+
+    const target = document.querySelector("[data-admin-sidebar]");
+    if (target) {
+      observer.observe(target, { attributes: true, attributeFilter: ["style"] });
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  const sidebarWidth = sidebarExpanded ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH;
+
+  return (
+    <div
+      className="hidden sm:block sm:shrink-0 sm:transition-[width] sm:duration-200"
+      style={{ width: sidebarWidth }}
+    />
   );
 }
