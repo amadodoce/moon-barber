@@ -58,21 +58,13 @@ export function About({ text = "ما با سال‌ها تجربه در ارائ
 
           {/* Visual block — right side, asymmetric */}
           <div className="hidden md:block">
-            <div className="relative h-72 w-60 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-overlay)] p-6">
-              <div className="space-y-3">
-                <div className="h-2.5 w-3/4 rounded-full bg-[var(--booking-gold)]/15" />
-                <div className="h-2.5 w-1/2 rounded-full bg-[var(--booking-gold)]/8" />
-                <div className="h-2.5 w-2/3 rounded-full bg-[var(--booking-gold)]/8" />
-              </div>
-              <div className="mt-8 flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--booking-gold)]/20 bg-[var(--booking-gold)]/8">
-                  <Shield className="h-4 w-4 text-[var(--booking-gold)]" />
-                </div>
-                <div>
-                  <div className="h-2 w-16 rounded-full bg-[var(--booking-gold)]/12" />
-                  <div className="mt-1.5 h-2 w-10 rounded-full bg-[var(--booking-gold)]/6" />
-                </div>
-              </div>
+            <div className="relative h-72 w-60 overflow-hidden rounded-2xl" style={{ backgroundColor: "var(--surface-overlay)" }}>
+              <img
+                src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=500&h=700&fit=crop&crop=center"
+                alt="مون باربر"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-base)]/40 to-transparent" />
             </div>
           </div>
         </div>
