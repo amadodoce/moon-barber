@@ -315,6 +315,9 @@ export async function getMyPayments(): Promise<ActionResponse<PaymentWithRelatio
             barber: {
               include: { user: { select: { name: true } } },
             },
+            appointmentServices: {
+              include: { service: { select: { name: true, durationMinutes: true } } },
+            },
           },
         },
       },
