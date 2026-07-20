@@ -30,9 +30,9 @@ export function Navbar() {
   }, [menuOpen]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
-      <div className="mx-auto max-w-6xl px-6 pt-[env(safe-area-inset-top)] pb-4">
-        <div className="relative flex items-center justify-between rounded-full border border-[var(--surface-border)] bg-[var(--surface-base)] px-5 py-2.5">
+    <header className="fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)]">
+      <div className="mx-auto max-w-6xl px-6 py-4">
+        <div className="flex items-center justify-between rounded-full border border-[var(--surface-border)] bg-[var(--surface-base)] px-5 py-2.5">
           {/* Logo — left */}
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--booking-gold)]">
@@ -109,11 +109,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setMenuOpen((prev) => !prev)}
-              onTouchStart={(e) => {
-                e.preventDefault();
-                setMenuOpen((prev) => !prev);
-              }}
-              className="relative z-10 p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:hidden cursor-pointer"
+              className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:hidden touch-manipulation active:opacity-70"
               aria-expanded={menuOpen}
               aria-controls={menuId}
               aria-label={menuOpen ? "بستن منو" : "باز کردن منو"}
