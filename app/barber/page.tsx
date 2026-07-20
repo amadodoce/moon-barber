@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Calendar, Clock, CheckCircle, UserX } from "lucide-react";
+import { Calendar, Clock, CheckCircle, UserX, Scissors, LogOut } from "lucide-react";
 import { getBarberAppointments, updateAppointmentStatus } from "@/app/actions/appointment";
 import { Spinner } from "@/components/ui/Spinner";
 import { showSuccess, showError } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { getTodayLocalDateString, toLocalDateString } from "@/lib/dates";
+import { signOut } from "next-auth/react";
 
 interface Appointment {
   id: string;
@@ -22,12 +23,12 @@ interface Appointment {
   }>;
 }
 
-const statusConfig: Record<string, { label: string; color: string }> = {
-  PENDING: { label: "در انتظار", color: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400" },
-  CONFIRMED: { label: "تایید شده", color: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400" },
-  COMPLETED: { label: "انجام شده", color: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400" },
-  CANCELLED: { label: "لغو شده", color: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400" },
-  NO_SHOW: { label: "عدم حضور", color: "bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300" },
+const statusConfig: Record<string, { label: string; bg: string; text: string }> = {
+  PENDING: { label: "در انتظار", bg: "color-mix(in srgb, #eab308 12%, transparent)", text: "#eab308" },
+  CONFIRMED: { label: "تایید شده", bg: "color-mix(in srgb, #3b82f6 12%, transparent)", text: "#3b82f6" },
+  COMPLETED: { label: "انجام شده", bg: "color-mix(in srgb, #22c55e 12%, transparent)", text: "#22c55e" },
+  CANCELLED: { label: "لغو شده", bg: "color-mix(in srgb, #ef4444 12%, transparent)", text: "#ef4444" },
+  NO_SHOW: { label: "عدم حضور", bg: "color-mix(in srgb, #71717a 12%, transparent)", text: "#71717a" },
 };
 
 export default function BarberDashboardPage() {
@@ -70,7 +71,7 @@ export default function BarberDashboardPage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen min-h-dvh bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
+      <div className="flex min-h-screen min-h-dvh items-center justify-center" style={{ backgroundColor: "var(--surface-base)" }}>
         <Spinner size="lg" />
       </div>
     );
@@ -87,27 +88,89 @@ export default function BarberDashboardPage() {
   );
 
   return (
-    <div className="min-h-screen min-h-dvh bg-zinc-50 dark:bg-zinc-900">
-      <header className="sticky top-0 z-10 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm border-b border-zinc-100 dark:border-zinc-700">
-        <div className="mx-auto flex h-14 max-w-2xl items-center px-4">
-          <h1 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">پنل آرایشگر</h1>
+    <div className="min-h-screen min-h-dvh" style={{ backgroundColor: "var(--surface-base)" }}>
+      {/* Header */}
+      <header
+        className="sticky top-0 z-10 border-b backdrop-blur-sm"
+        style={{ borderColor: "var(--surface-border)", backgroundColor: "color-mix(in srgb, var(--surface-overlay) 80%, transparent)" }}
+      >
+        <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
+          <div className="flex items-center gap-2.5">
+            <div
+              className="flex h-8 w-8 items-center justify-center rounded-lg"
+              style={{ backgroundColor: "var(--booking-gold)" }}
+            >
+              <Scissors className="h-4 w-4" style={{ color: "var(--surface-base)" }} />
+            </div>
+            <h1 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>پنل آرایشگر</h1>
+          </div>
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            <LogOut className="h-4 w-4" />
+            خروج
+          </button>
         </div>
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-6">
-        <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+        {/* Greeting */}
+        <p className="mb-6 text-sm" style={{ color: "var(--text-muted)" }}>
           سلام {session.user.name ?? "آرایشگر عزیز"}.
         </p>
 
+        {/* Stats */}
+        <div className="mb-8 grid grid-cols-2 gap-3">
+          <div
+            className="rounded-xl border p-4"
+            style={{ borderColor: "var(--surface-border)", backgroundColor: "var(--surface-overlay)" }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-lg"
+                style={{ backgroundColor: "color-mix(in srgb, #3b82f6 12%, transparent)" }}
+              >
+                <Calendar className="h-5 w-5" style={{ color: "#3b82f6" }} />
+              </div>
+              <div>
+                <p className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>{todayAppointments.length}</p>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>نوبت امروز</p>
+              </div>
+            </div>
+          </div>
+          <div
+            className="rounded-xl border p-4"
+            style={{ borderColor: "var(--surface-border)", backgroundColor: "var(--surface-overlay)" }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-lg"
+                style={{ backgroundColor: "color-mix(in srgb, #eab308 12%, transparent)" }}
+              >
+                <Clock className="h-5 w-5" style={{ color: "#eab308" }} />
+              </div>
+              <div>
+                <p className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>{upcomingAppointments.length}</p>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>نوبت آینده</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Today's appointments */}
         <div className="mb-8">
-          <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          <h2 className="mb-3 text-base font-semibold" style={{ color: "var(--text-primary)" }}>
             نوبت‌های امروز
           </h2>
           {todayAppointments.length === 0 ? (
-            <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-8 text-center">
-              <Calendar className="mx-auto h-8 w-8 text-zinc-400 dark:text-zinc-500" />
-              <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+            <div
+              className="rounded-xl border p-8 text-center"
+              style={{ borderColor: "var(--surface-border)", backgroundColor: "var(--surface-overlay)" }}
+            >
+              <Calendar className="mx-auto h-8 w-8" style={{ color: "var(--text-faint)" }} />
+              <p className="mt-2 text-sm" style={{ color: "var(--text-muted)" }}>
                 امروز نوبتی ندارید
               </p>
             </div>
@@ -127,13 +190,16 @@ export default function BarberDashboardPage() {
 
         {/* Upcoming appointments */}
         <div>
-          <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          <h2 className="mb-3 text-base font-semibold" style={{ color: "var(--text-primary)" }}>
             نوبت‌های آینده
           </h2>
           {upcomingAppointments.length === 0 ? (
-            <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-8 text-center">
-              <Clock className="mx-auto h-8 w-8 text-zinc-400 dark:text-zinc-500" />
-              <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+            <div
+              className="rounded-xl border p-8 text-center"
+              style={{ borderColor: "var(--surface-border)", backgroundColor: "var(--surface-overlay)" }}
+            >
+              <Clock className="mx-auto h-8 w-8" style={{ color: "var(--text-faint)" }} />
+              <p className="mt-2 text-sm" style={{ color: "var(--text-muted)" }}>
                 نوبت آینده‌ای ندارید
               </p>
             </div>
@@ -166,41 +232,48 @@ function BarberAppointmentCard({
 }) {
   const st = statusConfig[appointment.status] ?? {
     label: appointment.status,
-    color: "bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300",
+    bg: "color-mix(in srgb, #71717a 12%, transparent)",
+    text: "#71717a",
   };
 
   return (
-    <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
+    <div
+      className="rounded-xl border p-4"
+      style={{ borderColor: "var(--surface-border)", backgroundColor: "var(--surface-overlay)" }}
+    >
       <div className="flex items-start justify-between">
-        <div>
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
               {appointment.user.name}
             </span>
-            <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${st.color}`}>
+            <span
+              className="rounded-full px-2 py-0.5 text-xs font-medium"
+              style={{ backgroundColor: st.bg, color: st.text }}
+            >
               {st.label}
             </span>
           </div>
-          <div className="mt-1 flex items-center gap-4 text-xs text-zinc-500 dark:text-zinc-400">
+          <div className="mt-1.5 flex items-center gap-3 text-xs" style={{ color: "var(--text-muted)" }}>
             <span className="flex items-center gap-1">
               <Clock className="h-3.5 w-3.5" />
               {appointment.startTime} - {appointment.endTime}
             </span>
           </div>
-          <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
-            {appointment.appointmentServices.map((as) => as.service.name).join(", ")}
+          <p className="mt-1 text-xs" style={{ color: "var(--text-faint)" }}>
+            {appointment.appointmentServices.map((as) => as.service.name).join(" · ")}
           </p>
         </div>
         {appointment.status === "CONFIRMED" && (
-          <div className="flex gap-1">
+          <div className="flex gap-1.5 shrink-0">
             <Button
               size="sm"
               variant="outline"
               onClick={() => onStatusChange(appointment.id, "COMPLETED")}
               disabled={updating}
-              className="h-7 text-xs"
+              className="h-7 gap-1 text-xs"
             >
-              <CheckCircle className="ml-1 h-3.5 w-3.5 text-green-500" />
+              <CheckCircle className="h-3.5 w-3.5" style={{ color: "#22c55e" }} />
               انجام شد
             </Button>
             <Button
@@ -208,9 +281,9 @@ function BarberAppointmentCard({
               variant="outline"
               onClick={() => onStatusChange(appointment.id, "NO_SHOW")}
               disabled={updating}
-              className="h-7 text-xs"
+              className="h-7 gap-1 text-xs"
             >
-              <UserX className="ml-1 h-3.5 w-3.5 text-red-500" />
+              <UserX className="h-3.5 w-3.5" style={{ color: "#ef4444" }} />
               عدم حضور
             </Button>
           </div>
