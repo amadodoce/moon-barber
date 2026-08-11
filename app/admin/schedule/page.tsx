@@ -7,14 +7,19 @@ import { getHolidays, deleteHoliday } from "@/app/actions/holiday";
 import { getAllBarbers, type BarberWithUser } from "@/app/actions/barber";
 import { WorkingHourForm } from "@/components/admin/WorkingHourForm";
 import { HolidayForm } from "@/components/admin/HolidayForm";
-import { Spinner } from "@/components/ui/Spinner";
 import { showSuccess, showError } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { WorkingHour } from "@/app/generated/prisma/client";
 import { formatFaDate } from "@/lib/dates";
 import type { Holiday } from "@/app/generated/prisma/client";
+import {
+  EmptyState,
+  PageHeader,
+  Skeleton,
+  StatusBadge,
+  SurfaceCard,
+} from "@/components/brand";
 
 const DAY_LABELS: Record<string, string> = {
   SATURDAY: "شنبه",
@@ -88,28 +93,36 @@ export default function SchedulePage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-20">
-        <Spinner size="lg" />
+      <div className="space-y-[var(--space-md)]">
+        <PageHeader title="ساعات کاری و تعطیلات" eyebrow="پیکربندی" />
+        <Skeleton className="h-64 w-full" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">ساعات کاری و تعطیلات</h1>
-      </div>
+    <div className="space-y-[var(--space-md)]">
+      <PageHeader
+        title="ساعات کاری و تعطیلات"
+        description="تنظیم برنامه کاری فروشگاه و آرایشگران"
+        eyebrow="پیکربندی"
+      />
 
-      {/* Barber filter */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm text-zinc-500 dark:text-zinc-400">فیتر:</span>
+      <div className="flex flex-wrap items-center gap-[var(--space-2xs)]">
+        <span className="text-sm text-[var(--color-ink-muted)]">فیلتر:</span>
         <div className="flex flex-wrap gap-1">
           <Button
             variant={selectedBarber === "shop" ? "default" : "outline"}
             size="sm"
             onClick={() => handleBarberChange("shop")}
-            className={selectedBarber === "shop" ? "text-white" : ""}
-            style={selectedBarber === "shop" ? { backgroundColor: "var(--booking-gold)" } : undefined}
+            style={
+              selectedBarber === "shop"
+                ? {
+                    backgroundColor: "var(--color-accent)",
+                    color: "var(--color-accent-ink)",
+                  }
+                : undefined
+            }
           >
             فروشگاه
           </Button>
@@ -119,8 +132,14 @@ export default function SchedulePage() {
               variant={selectedBarber === b.id ? "default" : "outline"}
               size="sm"
               onClick={() => handleBarberChange(b.id)}
-              className={selectedBarber === b.id ? "text-white" : ""}
-              style={selectedBarber === b.id ? { backgroundColor: "var(--booking-gold)" } : undefined}
+              style={
+                selectedBarber === b.id
+                  ? {
+                      backgroundColor: "var(--color-accent)",
+                      color: "var(--color-accent-ink)",
+                    }
+                  : undefined
+              }
             >
               {b.user.name}
             </Button>
@@ -140,109 +159,128 @@ export default function SchedulePage() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="hours" className="space-y-4">
+        <TabsContent value="hours" className="space-y-[var(--space-sm)]">
           <div className="flex justify-end">
             <Button
               onClick={() => setWhDialogOpen(true)}
-              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
+              style={{
+                backgroundColor: "var(--color-accent)",
+                color: "var(--color-accent-ink)",
+              }}
             >
               <Plus className="ml-2 h-4 w-4" />
               ساعات جدید
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {workingHours.map((wh) => (
-              <div
-                key={wh.id}
-                className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                      {DAY_LABELS[wh.dayOfWeek] ?? wh.dayOfWeek}
-                    </p>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                      {wh.startTime} - {wh.endTime}
-                    </p>
-                    {wh.specificDate && (
-                      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
-                        تاریخ خاص: {formatFaDate(wh.specificDate)}
+          {workingHours.length === 0 ? (
+            <EmptyState
+              title="ساعات کاری تعریف نشده است"
+              icon={<Clock className="h-8 w-8" />}
+              action={{ label: "افزودن ساعات", onClick: () => setWhDialogOpen(true) }}
+            />
+          ) : (
+            <div className="grid grid-cols-1 gap-[var(--space-xs)] sm:grid-cols-2 lg:grid-cols-3">
+              {workingHours.map((wh) => (
+                <SurfaceCard key={wh.id} padding="sm">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <p className="font-medium text-[var(--color-ink)]">
+                        {DAY_LABELS[wh.dayOfWeek] ?? wh.dayOfWeek}
                       </p>
-                    )}
+                      <p className="text-sm text-[var(--color-ink-muted)]">
+                        {wh.startTime} – {wh.endTime}
+                      </p>
+                      {wh.specificDate ? (
+                        <p className="mt-1 text-xs text-[var(--color-ink-faint)]">
+                          تاریخ خاص: {formatFaDate(wh.specificDate)}
+                        </p>
+                      ) : null}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <StatusBadge
+                        label={wh.isRecurring ? "تکراری" : "یکبار"}
+                        bgVar="var(--color-paper-3)"
+                        fgVar="var(--color-ink-2)"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteWH(wh.id)}
+                        disabled={deleting === wh.id}
+                        aria-label="حذف ساعت کاری"
+                      >
+                        {deleting === wh.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4 text-[var(--status-failed-fg)]" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Badge variant={wh.isActive ? "default" : "secondary"}>
-                      {wh.isRecurring ? "تکراری" : "یکبار"}
-                    </Badge>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteWH(wh.id)}
-                      disabled={deleting === wh.id}
-                    >
-                      {deleting === wh.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-            {workingHours.length === 0 && (
-              <p className="col-span-full text-center py-8 text-zinc-400">
-                ساعات کاری تعریف نشده است
-              </p>
-            )}
-          </div>
+                </SurfaceCard>
+              ))}
+            </div>
+          )}
         </TabsContent>
 
-        <TabsContent value="holidays" className="space-y-4">
+        <TabsContent value="holidays" className="space-y-[var(--space-sm)]">
           <div className="flex justify-end">
             <Button
               onClick={() => setHolDialogOpen(true)}
-              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
+              style={{
+                backgroundColor: "var(--color-accent)",
+                color: "var(--color-accent-ink)",
+              }}
             >
               <Plus className="ml-2 h-4 w-4" />
               تعطیلی جدید
             </Button>
           </div>
 
-          <div className="space-y-2">
-            {holidays.map((hol) => (
-              <div
-                key={hol.id}
-                className="flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4"
-              >
-                <div>
-                  <p className="font-medium text-zinc-900 dark:text-zinc-100">{hol.title}</p>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                    {formatFaDate(hol.date)} •{" "}
-                    {hol.type === "FULL_DAY" ? "تمام روز" : `${hol.startTime} - ${hol.endTime}`}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDeleteHoliday(hol.id)}
-                  disabled={deleting === hol.id}
-                >
-                  {deleting === hol.id ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                  )}
-                </Button>
-              </div>
-            ))}
-            {holidays.length === 0 && (
-              <p className="text-center py-8 text-zinc-400">
-                تعطیلی تعریف نشده است
-              </p>
-            )}
-          </div>
+          {holidays.length === 0 ? (
+            <EmptyState
+              title="تعطیلی تعریف نشده است"
+              icon={<Calendar className="h-8 w-8" />}
+              action={{
+                label: "افزودن تعطیلی",
+                onClick: () => setHolDialogOpen(true),
+              }}
+            />
+          ) : (
+            <div className="space-y-[var(--space-xs)]">
+              {holidays.map((hol) => (
+                <SurfaceCard key={hol.id} padding="sm">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <p className="font-medium text-[var(--color-ink)]">
+                        {hol.title}
+                      </p>
+                      <p className="text-sm text-[var(--color-ink-muted)]">
+                        {formatFaDate(hol.date)} ·{" "}
+                        {hol.type === "FULL_DAY"
+                          ? "تمام روز"
+                          : `${hol.startTime} – ${hol.endTime}`}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteHoliday(hol.id)}
+                      disabled={deleting === hol.id}
+                      aria-label="حذف تعطیلی"
+                    >
+                      {deleting === hol.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4 text-[var(--status-failed-fg)]" />
+                      )}
+                    </Button>
+                  </div>
+                </SurfaceCard>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 
@@ -252,7 +290,7 @@ export default function SchedulePage() {
         barberId={selectedBarber === "shop" ? null : selectedBarber}
         onSaved={() => {
           setWhDialogOpen(false);
-          loadData(selectedBarber);
+          void loadData(selectedBarber);
         }}
       />
 
@@ -262,7 +300,7 @@ export default function SchedulePage() {
         barberId={selectedBarber === "shop" ? null : selectedBarber}
         onSaved={() => {
           setHolDialogOpen(false);
-          loadData(selectedBarber);
+          void loadData(selectedBarber);
         }}
       />
     </div>

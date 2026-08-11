@@ -1,45 +1,110 @@
 import { Suspense } from "react";
-import { CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import {
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  Calendar,
+  Clock,
+  Scissors,
+} from "lucide-react";
 import { ResetBookingOnPaymentSuccess } from "@/components/book/ResetBookingOnPaymentSuccess";
+import { SurfaceCard } from "@/components/brand/SurfaceCard";
+import { Button } from "@/components/ui/button";
+import { getMyAppointments } from "@/app/actions/appointment";
+import { formatFaDate } from "@/lib/dates";
+import { PaymentRetryButton } from "@/components/customer/PaymentRetryButton";
 
 interface PaymentResultProps {
   searchParams: Promise<{ status?: string; appointmentId?: string }>;
 }
 
+interface AppointmentContext {
+  id: string;
+  date: Date;
+  startTime: string;
+  endTime: string;
+  barber: { user: { name: string } };
+  appointmentServices: Array<{ service: { name: string } }>;
+}
+
+async function loadAppointmentContext(
+  appointmentId: string
+): Promise<AppointmentContext | null> {
+  const result = await getMyAppointments();
+  if (!result.success || !result.data) return null;
+  const match = result.data.find((a) => a.id === appointmentId);
+  if (!match) return null;
+  return match as unknown as AppointmentContext;
+}
+
+function AppointmentContextCard({
+  appointment,
+}: {
+  appointment: AppointmentContext;
+}) {
+  const services = appointment.appointmentServices
+    .map((as) => as.service.name)
+    .join(" · ");
+
+  return (
+    <SurfaceCard padding="md" className="mt-[var(--space-md)] text-start">
+      <p className="mb-[var(--space-sm)] text-xs font-medium text-[var(--color-ink-muted)]">
+        جزئیات نوبت
+      </p>
+      {services ? (
+        <div className="flex items-center gap-2 text-sm text-[var(--color-ink)]">
+          <Scissors className="h-4 w-4 shrink-0 text-[var(--color-accent)]" aria-hidden="true" />
+          <span>{services}</span>
+        </div>
+      ) : null}
+      <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[var(--color-ink-muted)]">
+        <span className="inline-flex items-center gap-1">
+          <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
+          {formatFaDate(appointment.date)}
+        </span>
+        <span aria-hidden="true">•</span>
+        <span className="inline-flex items-center gap-1">
+          <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+          {appointment.startTime} - {appointment.endTime}
+        </span>
+      </div>
+      <p className="mt-2 text-xs text-[var(--color-ink-faint)]">
+        آرایشگر: {appointment.barber.user.name}
+      </p>
+    </SurfaceCard>
+  );
+}
+
 async function PaymentResultContent({ searchParams }: PaymentResultProps) {
   const params = await searchParams;
   const status = params.status || "error";
+  const appointmentId = params.appointmentId;
+  const appointment =
+    appointmentId ? await loadAppointmentContext(appointmentId) : null;
 
   if (status === "success") {
     return (
-      <div className="flex min-h-screen min-h-dvh items-center justify-center px-4" style={{ backgroundColor: "var(--surface-base)" }}>
+      <div className="flex min-h-screen min-h-dvh items-center justify-center bg-[var(--color-paper)] px-[var(--space-md)] py-[var(--space-xl)]">
         <ResetBookingOnPaymentSuccess status={status} />
         <div className="w-full max-w-md text-center">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full" style={{ backgroundColor: "color-mix(in srgb, #22c55e 12%, transparent)" }}>
-            <CheckCircle className="h-10 w-10" style={{ color: "#22c55e" }} />
+          <div className="mx-auto mb-[var(--space-md)] flex h-20 w-20 items-center justify-center rounded-full bg-[var(--status-paid-bg)]">
+            <CheckCircle className="h-10 w-10 text-[var(--status-paid-fg)]" />
           </div>
-          <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
+          <h1 className="text-[var(--text-2xl)] font-semibold text-[var(--color-ink)]">
             پرداخت موفق
           </h1>
-          <p className="mt-2" style={{ color: "var(--text-muted)" }}>
+          <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
             نوبت شما با موفقیت رزرو و پرداخت شد.
           </p>
-          <div className="mt-8 space-y-3">
-            <Link
-              href="/customer"
-              className="flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors hover:opacity-90"
-              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
-            >
+          {appointment ? <AppointmentContextCard appointment={appointment} /> : null}
+          <div className="mt-[var(--space-lg)] space-y-[var(--space-sm)]">
+            <Button variant="brand" className="w-full" render={<Link href="/customer" />}>
               مشاهده نوبت‌ها
-            </Link>
-            <Link
-              href="/"
-              className="flex w-full items-center justify-center rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
-              style={{ borderColor: "var(--surface-border)", color: "var(--text-secondary)" }}
-            >
+            </Button>
+            <Button variant="outline" className="w-full" render={<Link href="/" />}>
               بازگشت به صفحه اصلی
-            </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -48,32 +113,29 @@ async function PaymentResultContent({ searchParams }: PaymentResultProps) {
 
   if (status === "failed") {
     return (
-      <div className="flex min-h-screen min-h-dvh items-center justify-center px-4" style={{ backgroundColor: "var(--surface-base)" }}>
+      <div className="flex min-h-screen min-h-dvh items-center justify-center bg-[var(--color-paper)] px-[var(--space-md)] py-[var(--space-xl)]">
         <div className="w-full max-w-md text-center">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full" style={{ backgroundColor: "color-mix(in srgb, #ef4444 12%, transparent)" }}>
-            <XCircle className="h-10 w-10" style={{ color: "#ef4444" }} />
+          <div className="mx-auto mb-[var(--space-md)] flex h-20 w-20 items-center justify-center rounded-full bg-[var(--status-failed-bg)]">
+            <XCircle className="h-10 w-10 text-[var(--status-failed-fg)]" />
           </div>
-          <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
+          <h1 className="text-[var(--text-2xl)] font-semibold text-[var(--color-ink)]">
             پرداخت ناموفق
           </h1>
-          <p className="mt-2" style={{ color: "var(--text-muted)" }}>
+          <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
             پرداخت شما انجام نشد. لطفاً دوباره تلاش کنید.
           </p>
-          <div className="mt-8 space-y-3">
-            <Link
-              href="/book"
-              className="flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors hover:opacity-90"
-              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
-            >
-              رزرو مجدد
-            </Link>
-            <Link
-              href="/"
-              className="flex w-full items-center justify-center rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
-              style={{ borderColor: "var(--surface-border)", color: "var(--text-secondary)" }}
-            >
+          {appointment ? <AppointmentContextCard appointment={appointment} /> : null}
+          <div className="mt-[var(--space-lg)] space-y-[var(--space-sm)]">
+            {appointmentId ? (
+              <PaymentRetryButton appointmentId={appointmentId} />
+            ) : (
+              <Button variant="brand" className="w-full" render={<Link href="/book" />}>
+                رزرو مجدد
+              </Button>
+            )}
+            <Button variant="outline" className="w-full" render={<Link href="/" />}>
               بازگشت به صفحه اصلی
-            </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -81,32 +143,29 @@ async function PaymentResultContent({ searchParams }: PaymentResultProps) {
   }
 
   return (
-    <div className="flex min-h-screen min-h-dvh items-center justify-center px-4" style={{ backgroundColor: "var(--surface-base)" }}>
+    <div className="flex min-h-screen min-h-dvh items-center justify-center bg-[var(--color-paper)] px-[var(--space-md)] py-[var(--space-xl)]">
       <div className="w-full max-w-md text-center">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full" style={{ backgroundColor: "color-mix(in srgb, #eab308 12%, transparent)" }}>
-          <AlertTriangle className="h-10 w-10" style={{ color: "#eab308" }} />
+        <div className="mx-auto mb-[var(--space-md)] flex h-20 w-20 items-center justify-center rounded-full bg-[var(--status-pending-bg)]">
+          <AlertTriangle className="h-10 w-10 text-[var(--status-pending-fg)]" />
         </div>
-        <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
+        <h1 className="text-[var(--text-2xl)] font-semibold text-[var(--color-ink)]">
           خطای پرداخت
         </h1>
-        <p className="mt-2" style={{ color: "var(--text-muted)" }}>
+        <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
           در پردازش پرداخت خطایی رخ داده است.
         </p>
-        <div className="mt-8 space-y-3">
-          <Link
-            href="/book"
-            className="flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors hover:opacity-90"
-            style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
-          >
-            تلاش مجدد
-          </Link>
-          <Link
-            href="/"
-            className="flex w-full items-center justify-center rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
-            style={{ borderColor: "var(--surface-border)", color: "var(--text-secondary)" }}
-          >
+        {appointment ? <AppointmentContextCard appointment={appointment} /> : null}
+        <div className="mt-[var(--space-lg)] space-y-[var(--space-sm)]">
+          {appointmentId ? (
+            <PaymentRetryButton appointmentId={appointmentId} />
+          ) : (
+            <Button variant="brand" className="w-full" render={<Link href="/book" />}>
+              تلاش مجدد
+            </Button>
+          )}
+          <Button variant="outline" className="w-full" render={<Link href="/" />}>
             بازگشت به صفحه اصلی
-          </Link>
+          </Button>
         </div>
       </div>
     </div>
@@ -117,8 +176,8 @@ export default function PaymentResultPage(props: PaymentResultProps) {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen min-h-dvh items-center justify-center" style={{ backgroundColor: "var(--surface-base)" }}>
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-t-transparent" style={{ borderColor: "var(--booking-gold)", borderTopColor: "transparent" }} />
+        <div className="flex min-h-screen min-h-dvh items-center justify-center bg-[var(--color-paper)]">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--color-accent)] border-t-transparent" />
         </div>
       }
     >

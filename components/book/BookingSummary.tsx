@@ -3,6 +3,7 @@
 import { Calendar, Clock, Scissors, User, FileText } from "lucide-react";
 import { useBookingStore } from "@/stores/booking";
 import { formatFaDate } from "@/lib/dates";
+import { SurfaceCard } from "@/components/brand/SurfaceCard";
 
 export function BookingSummary() {
   const {
@@ -27,84 +28,82 @@ export function BookingSummary() {
     : "";
 
   return (
-    <div className="space-y-4">
-      {/* Services */}
-      <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
-        <div className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-          <Scissors className="h-4 w-4 text-[var(--booking-gold)]" />
+    <div className="space-y-[var(--space-sm)]">
+      <SurfaceCard>
+        <div className="mb-3 flex items-center gap-2 text-sm font-medium text-[var(--color-ink-muted)]">
+          <Scissors className="h-4 w-4 text-[var(--color-accent)]" aria-hidden="true" />
           سرویس‌های انتخابی
         </div>
         <div className="space-y-2">
           {serviceDetails.map((service) => (
             <div
               key={service.id}
-              className="flex items-center justify-between text-sm"
+              className="flex items-center justify-between gap-3 text-sm"
             >
-              <span className="text-zinc-700 dark:text-zinc-300">{service.name}</span>
-              <div className="flex items-center gap-3 text-zinc-500 dark:text-zinc-400">
+              <span className="text-[var(--color-ink-2)]">{service.name}</span>
+              <div className="flex shrink-0 items-center gap-3 text-[var(--color-ink-muted)]">
                 <span>{service.durationMinutes} دقیقه</span>
-                <span className="font-semibold text-[var(--booking-gold)]">
+                <span className="font-semibold text-[var(--color-accent)]">
                   {service.price.toLocaleString("fa-IR")} تومان
                 </span>
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </SurfaceCard>
 
-      {/* Date & Time */}
-      <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
-        <div className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-          <Calendar className="h-4 w-4 text-[var(--booking-gold)]" />
+      <SurfaceCard>
+        <div className="mb-3 flex items-center gap-2 text-sm font-medium text-[var(--color-ink-muted)]">
+          <Calendar className="h-4 w-4 text-[var(--color-accent)]" aria-hidden="true" />
           تاریخ و ساعت
         </div>
         <div className="space-y-2 text-sm">
-          <div className="flex items-center gap-2 text-zinc-700 dark:text-zinc-300">
-            <Calendar className="h-4 w-4 text-zinc-400 dark:text-zinc-500" />
+          <div className="flex items-center gap-2 text-[var(--color-ink-2)]">
+            <Calendar className="h-4 w-4 text-[var(--color-ink-faint)]" aria-hidden="true" />
             {formattedDate}
           </div>
-          <div className="flex items-center gap-2 text-zinc-700 dark:text-zinc-300">
-            <Clock className="h-4 w-4 text-zinc-400 dark:text-zinc-500" />
-            {startTime} - {endTime}
-            <span className="text-zinc-400 dark:text-zinc-500">({totalDuration} دقیقه)</span>
+          <div className="flex flex-wrap items-center gap-2 text-[var(--color-ink-2)]">
+            <Clock className="h-4 w-4 text-[var(--color-ink-faint)]" aria-hidden="true" />
+            {startTime} – {endTime}
+            <span className="text-[var(--color-ink-muted)]">({totalDuration} دقیقه)</span>
           </div>
         </div>
-      </div>
+      </SurfaceCard>
 
-      {/* Barber */}
       {barberName && (
-        <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
-          <div className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            <User className="h-4 w-4 text-[var(--booking-gold)]" />
+        <SurfaceCard>
+          <div className="mb-3 flex items-center gap-2 text-sm font-medium text-[var(--color-ink-muted)]">
+            <User className="h-4 w-4 text-[var(--color-accent)]" aria-hidden="true" />
             آرایشگر
           </div>
-          <div className="text-sm text-zinc-700 dark:text-zinc-300">{barberName}</div>
-        </div>
+          <div className="text-sm text-[var(--color-ink-2)]">{barberName}</div>
+        </SurfaceCard>
       )}
 
-      {/* Notes */}
-      <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
-        <label htmlFor="booking-notes" className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-          <FileText className="h-4 w-4 text-[var(--booking-gold)]" />
+      <SurfaceCard>
+        <label
+          htmlFor="booking-notes"
+          className="mb-3 flex items-center gap-2 text-sm font-medium text-[var(--color-ink-muted)]"
+        >
+          <FileText className="h-4 w-4 text-[var(--color-accent)]" aria-hidden="true" />
           توضیحات (اختیاری)
         </label>
         <textarea
           id="booking-notes"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="توضیحات خود را اینجا بنویسید..."
+          placeholder="درخواست یا نکته‌ای برای آرایشگر بنویسید…"
           rows={3}
-          className="w-full resize-none rounded-xl border border-zinc-200 bg-white px-3 py-2 text-base text-zinc-700 transition-colors placeholder:text-zinc-400 focus:border-[var(--booking-gold)] focus:outline-2 focus:outline-[var(--booking-gold)] focus:outline-offset-1 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:placeholder:text-zinc-500 md:text-sm"
+          className="w-full resize-none rounded-[var(--radius-input)] border border-[var(--color-rule)] bg-[var(--color-paper-3)] px-3 py-2 text-base text-[var(--color-ink)] transition-colors placeholder:text-[var(--color-ink-faint)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus)] md:text-sm"
         />
-      </div>
+      </SurfaceCard>
 
-      {/* Total */}
-      <div className="rounded-2xl bg-gradient-to-l from-[var(--booking-gold)]/10 to-[var(--booking-gold)]/5 border border-[var(--booking-gold)]/20 p-4">
+      <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklch,var(--color-accent)_20%,transparent)] bg-[var(--color-accent-soft)] p-[var(--space-md)]">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-[var(--booking-gold)]">
+          <span className="text-sm font-medium text-[var(--color-accent)]">
             مبلغ قابل پرداخت
           </span>
-          <span className="text-lg font-bold text-[var(--booking-gold)]">
+          <span className="text-[var(--text-lg)] font-bold text-[var(--color-accent)]">
             {totalPrice.toLocaleString("fa-IR")} تومان
           </span>
         </div>

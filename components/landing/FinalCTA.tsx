@@ -1,24 +1,28 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export function FinalCTA() {
   return (
-    <section className="bg-[var(--surface-base)] py-16 md:py-20">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+    <section className="border-y border-[var(--color-rule)] bg-[var(--color-paper)] py-[var(--space-2xl)] md:py-[var(--space-3xl)]">
+      <div className="mx-auto max-w-6xl px-[var(--space-md)]">
+        <div className="flex flex-col items-start gap-[var(--space-lg)] md:flex-row md:items-center md:justify-between">
           <div className="max-w-md">
-            <h2 className="text-2xl font-bold text-[var(--text-primary)] md:text-3xl">
+            <p className="text-[var(--text-xs)] uppercase tracking-[0.14em] text-[var(--color-accent)]">
+              آماده رزرو
+            </p>
+            <h2
+              className="mt-[var(--space-2xs)] font-semibold text-[var(--color-ink)]"
+              style={{ fontSize: "var(--text-2xl)" }}
+            >
               همین الان نوبت خود را رزرو کنید
             </h2>
-            <p className="mt-2 text-sm text-[var(--text-muted)]">
+            <p className="mt-[var(--space-sm)] text-[var(--text-sm)] text-[var(--color-ink-muted)]">
               وقت شما ارزشمند است.
             </p>
           </div>
-          <Link
-            href="/book"
-            className="inline-flex items-center gap-2 rounded-lg bg-[var(--booking-gold)] px-7 py-3.5 text-base font-semibold text-[var(--surface-base)] transition-colors duration-200 hover:bg-[var(--booking-gold-hover)]"
-          >
+          <Button variant="brand" render={<Link href="/book" />}>
             رزرو نوبت
-          </Link>
+          </Button>
         </div>
       </div>
     </section>

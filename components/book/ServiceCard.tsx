@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { Clock, Banknote, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useBookingStore } from "@/stores/booking";
 
 interface ServiceCardProps {
@@ -20,7 +22,6 @@ export function ServiceCard({
   durationMinutes,
   price,
   imageUrl,
-  index = 0,
 }: ServiceCardProps) {
   const { serviceIds, toggleService } = useBookingStore();
   const isSelected = serviceIds.includes(id);
@@ -32,47 +33,51 @@ export function ServiceCard({
       onClick={() =>
         toggleService({ id, name, durationMinutes, price: Number(price) })
       }
-      className={`relative flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-right transition-colors duration-150 ${
+      className={cn(
+        "relative flex w-full items-start gap-[var(--space-sm)] rounded-[var(--radius-card)] border p-[var(--space-md)] text-start transition-[border-color,background-color] duration-[var(--dur-short)]",
+        "min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)]",
         isSelected
-          ? "border-[#D4A853] bg-[#D4A853]/5"
-          : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600"
-      }`}
+          ? "border-[var(--color-accent)] bg-[var(--color-accent-soft)]"
+          : "border-[var(--color-rule)] bg-[var(--color-paper-2)] hover:border-[color-mix(in_oklch,var(--color-accent)_40%,var(--color-rule))]"
+      )}
     >
-      {/* Checkbox indicator */}
       <div
-        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-200 mt-0.5 ${
+        aria-hidden="true"
+        className={cn(
+          "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-[var(--dur-short)]",
           isSelected
-            ? "border-[#D4A853] bg-[#D4A853] text-white"
-            : "border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700"
-        }`}
+            ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-accent-ink)]"
+            : "border-[var(--color-rule)] bg-[var(--color-paper-3)]"
+        )}
       >
         {isSelected && <Check className="h-4 w-4" />}
       </div>
 
-      {/* Service image */}
       {imageUrl && (
-        <img
+        <Image
           src={imageUrl}
-          alt={name}
-          className="h-16 w-16 rounded-xl object-cover"
+          alt=""
+          width={64}
+          height={64}
+          unoptimized
+          className="h-16 w-16 shrink-0 rounded-[var(--radius-input)] object-cover"
         />
       )}
 
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">{name}</h3>
+      <div className="min-w-0 flex-1">
+        <h3 className="font-medium text-[var(--color-ink)]">{name}</h3>
         {description && (
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400 line-clamp-2">
+          <p className="mt-1 line-clamp-2 text-sm text-[var(--color-ink-muted)]">
             {description}
           </p>
         )}
-        <div className="mt-2 flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400">
+        <div className="mt-2 flex flex-wrap items-center gap-[var(--space-sm)] text-sm text-[var(--color-ink-2)]">
           <span className="flex items-center gap-1">
-            <Clock className="h-4 w-4" />
+            <Clock className="h-4 w-4" aria-hidden="true" />
             {durationMinutes} دقیقه
           </span>
-          <span className="flex items-center gap-1 font-semibold text-[#D4A853]">
-            <Banknote className="h-4 w-4" />
+          <span className="flex items-center gap-1 font-semibold text-[var(--color-accent)]">
+            <Banknote className="h-4 w-4" aria-hidden="true" />
             {Number(price).toLocaleString("fa-IR")} تومان
           </span>
         </div>

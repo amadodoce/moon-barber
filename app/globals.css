@@ -1,7 +1,8 @@
-/* Hallmark · macrostructure: custom · genre: editorial · theme: custom (vibe: "warm dark luxury barbershop") · nav: N5 floating pill · footer: Ft5 statement · contrast: pass (40–41) */
+/* Hallmark · macrostructure: Marquee+Split · genre: editorial-luxury · theme: warm charcoal + gold · nav: N9 edge · footer: Ft1 masthead */
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "../tokens.css";
 
 @font-face {
   font-family: "Yekan";
@@ -16,9 +17,21 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Yekan", sans-serif;
+  --color-paper: var(--color-paper);
+  --color-paper-2: var(--color-paper-2);
+  --color-paper-3: var(--color-paper-3);
+  --color-ink: var(--color-ink);
+  --color-ink-2: var(--color-ink-2);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-ink-faint: var(--color-ink-faint);
+  --color-rule: var(--color-rule);
+  --color-accent-brand: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-ink: var(--color-accent-ink);
+  --color-focus-ring: var(--color-focus);
+  --font-sans: var(--font-body);
   --font-mono: "Yekan", monospace;
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-display);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -93,24 +106,24 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: var(--color-paper);
+  --foreground: var(--color-ink);
+  --card: var(--color-paper-2);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-paper-2);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-accent);
+  --primary-foreground: var(--color-accent-ink);
+  --secondary: var(--color-paper-3);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-paper-3);
+  --muted-foreground: var(--color-ink-muted);
+  --accent: var(--color-paper-3);
+  --accent-foreground: var(--color-ink);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --border: var(--color-rule);
+  --input: var(--color-rule);
+  --ring: var(--color-focus);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -126,25 +139,21 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-/* ─── Booking Gold Palette ──────────────────────────────────────────────── */
+/* Legacy aliases — migrate components gradually */
 :root {
-  --booking-gold: #D4A853;
-  --booking-gold-hover: #C49A48;
-  --booking-gold-light: #D4A85315;
-  --booking-gold-border: #D4A85333;
-
-  /* Surface scale — warm-tinted darks */
-  --surface-base: #0c0b09;
-  --surface-raised: #0f0e0c;
-  --surface-overlay: #1a1814;
-  --surface-border: #2a2520;
-
-  /* Text scale */
-  --text-primary: #f5f0e8;
-  --text-secondary: #8a8578;
-  --text-muted: #6a6458;
-  --text-faint: #4a4538;
-  --text-accent: #c8c2b8;
+  --booking-gold: var(--color-accent);
+  --booking-gold-hover: var(--color-accent-hover);
+  --booking-gold-light: var(--color-accent-soft);
+  --booking-gold-border: color-mix(in oklch, var(--color-accent) 20%, transparent);
+  --surface-base: var(--color-paper);
+  --surface-raised: var(--color-paper-2);
+  --surface-overlay: var(--color-paper-3);
+  --surface-border: var(--color-rule);
+  --text-primary: var(--color-ink);
+  --text-secondary: var(--color-ink-2);
+  --text-muted: var(--color-ink-muted);
+  --text-faint: var(--color-ink-faint);
+  --text-accent: var(--color-ink-2);
 }
 
 /* ─── Booking Animations ───────────────────────────────────────────────── */
@@ -178,19 +187,65 @@
   100% { background-position: 200% 0; }
 }
 
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 32s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-    font-family: "Yekan", system-ui, sans-serif;
-  }
   html {
     @apply font-sans;
-    font-family: "Yekan", system-ui, sans-serif;
+    font-family: var(--font-body);
+    overflow-x: clip;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    background-color: var(--color-paper);
+    color: var(--color-ink);
   }
   input, textarea, select, button {
-    font-family: "Yekan", system-ui, sans-serif;
+    font-family: var(--font-body);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .skip-link {
+    position: absolute;
+    inset-inline-start: var(--space-sm);
+    top: var(--space-sm);
+    z-index: 100;
+    transform: translateY(-200%);
+    padding: var(--space-2xs) var(--space-sm);
+    border-radius: var(--radius-input);
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    transition: transform var(--dur-short) var(--ease-out);
+  }
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }

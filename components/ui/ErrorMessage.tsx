@@ -6,13 +6,15 @@ interface ErrorMessageProps {
 export function ErrorMessage({ message, className = "" }: ErrorMessageProps) {
   return (
     <div
-      className={`rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-700 ${className}`}
+      role="alert"
+      className={`rounded-[var(--radius-card)] border border-[color-mix(in_oklch,var(--status-cancelled-fg)_30%,transparent)] bg-[var(--status-cancelled-bg)] p-4 text-sm text-[var(--status-cancelled-fg)] ${className}`}
     >
       <div className="flex items-center gap-2">
         <svg
-          className="h-5 w-5 shrink-0 text-red-500"
+          className="h-5 w-5 shrink-0"
           viewBox="0 0 20 20"
           fill="currentColor"
+          aria-hidden="true"
         >
           <path
             fillRule="evenodd"

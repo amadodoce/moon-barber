@@ -30,6 +30,9 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
+        <a href="#main-content" className="skip-link">
+          رفتن به محتوای اصلی
+        </a>
         <Providers>{children}</Providers>
       </body>
     </html>

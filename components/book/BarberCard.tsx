@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { User, Star } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useBookingStore } from "@/stores/booking";
 
 interface BarberCardProps {
@@ -18,7 +20,6 @@ export function BarberCard({
   bio,
   experienceYears,
   avatar,
-  index = 0,
 }: BarberCardProps) {
   const { barberId, setBarber } = useBookingStore();
   const isSelected = barberId === id;
@@ -29,49 +30,60 @@ export function BarberCard({
       role="radio"
       aria-checked={isSelected}
       onClick={() => setBarber(id, name)}
-      className={`relative flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-right transition-colors duration-150 ${
+      className={cn(
+        "relative flex w-full items-start gap-[var(--space-sm)] rounded-[var(--radius-card)] border p-[var(--space-md)] text-start transition-[border-color,background-color] duration-[var(--dur-short)]",
+        "min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)]",
         isSelected
-          ? "border-[#D4A853] bg-[#D4A853]/5"
-          : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600"
-      }`}
+          ? "border-[var(--color-accent)] bg-[var(--color-accent-soft)]"
+          : "border-[var(--color-rule)] bg-[var(--color-paper-2)] hover:border-[color-mix(in_oklch,var(--color-accent)_40%,var(--color-rule))]"
+      )}
     >
-      {/* Radio indicator */}
       <div
-        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-200 mt-0.5 ${
+        aria-hidden="true"
+        className={cn(
+          "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-[var(--dur-short)]",
           isSelected
-            ? "border-[#D4A853] bg-[#D4A853]"
-            : "border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700"
-        }`}
+            ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
+            : "border-[var(--color-rule)] bg-[var(--color-paper-3)]"
+        )}
       >
-        {isSelected && <div className="h-2 w-2 rounded-full bg-white" />}
+        {isSelected && (
+          <div className="h-2 w-2 rounded-full bg-[var(--color-accent-ink)]" />
+        )}
       </div>
 
-      {/* Avatar */}
       <div
-        className={`h-16 w-16 shrink-0 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-700 transition-shadow duration-150 ${
-          isSelected ? "ring-2 ring-[#D4A853] ring-offset-2 ring-offset-white dark:ring-offset-zinc-800" : ""
-        }`}
+        className={cn(
+          "h-16 w-16 shrink-0 overflow-hidden rounded-full bg-[var(--color-paper-3)] transition-shadow duration-[var(--dur-short)]",
+          isSelected && "ring-2 ring-[var(--color-accent)] ring-offset-2 ring-offset-[var(--color-paper-2)]"
+        )}
       >
         {avatar ? (
-          <img src={avatar} alt={name} className="h-full w-full object-cover" />
+          <Image
+            src={avatar}
+            alt=""
+            width={64}
+            height={64}
+            unoptimized
+            className="h-full w-full object-cover"
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <User className="h-8 w-8 text-zinc-400 dark:text-zinc-500" />
+            <User className="h-8 w-8 text-[var(--color-ink-faint)]" aria-hidden="true" />
           </div>
         )}
       </div>
 
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">{name}</h3>
-        {experienceYears && (
-          <div className="mt-1 flex items-center gap-1 text-sm text-[#D4A853]">
-            <Star className="h-3.5 w-3.5 fill-current" />
+      <div className="min-w-0 flex-1">
+        <h3 className="font-medium text-[var(--color-ink)]">{name}</h3>
+        {experienceYears ? (
+          <div className="mt-1 flex items-center gap-1 text-sm text-[var(--color-accent)]">
+            <Star className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
             <span>{experienceYears} سال تجربه</span>
           </div>
-        )}
+        ) : null}
         {bio && (
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400 line-clamp-2">{bio}</p>
+          <p className="mt-1 line-clamp-2 text-sm text-[var(--color-ink-muted)]">{bio}</p>
         )}
       </div>
     </button>

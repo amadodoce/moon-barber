@@ -5,8 +5,14 @@ import { Calendar, Clock, CreditCard, Scissors, X } from "lucide-react";
 import { cancelAppointment } from "@/app/actions/appointment";
 import { showSuccess, showError } from "@/lib/toast";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Loader2 } from "lucide-react";
+import { StatusBadge } from "@/components/brand/StatusBadge";
+import { SurfaceCard } from "@/components/brand/SurfaceCard";
+import { Button } from "@/components/ui/button";
 import { formatFaDate } from "@/lib/dates";
+import {
+  getAppointmentStatus,
+  getPaymentStatus,
+} from "@/lib/status-config";
 
 interface AppointmentService {
   service: { name: string };
@@ -27,30 +33,19 @@ interface AppointmentCardProps {
   onCancel?: () => void;
 }
 
-const statusConfig: Record<string, { label: string; bg: string; text: string }> = {
-  PENDING: { label: "در انتظار", bg: "color-mix(in srgb, #eab308 12%, transparent)", text: "#eab308" },
-  CONFIRMED: { label: "تایید شده", bg: "color-mix(in srgb, #3b82f6 12%, transparent)", text: "#3b82f6" },
-  COMPLETED: { label: "انجام شده", bg: "color-mix(in srgb, #22c55e 12%, transparent)", text: "#22c55e" },
-  CANCELLED: { label: "لغو شده", bg: "color-mix(in srgb, #ef4444 12%, transparent)", text: "#ef4444" },
-  NO_SHOW: { label: "عدم حضور", bg: "color-mix(in srgb, #71717a 12%, transparent)", text: "#71717a" },
-};
-
 export function AppointmentCard({ appointment, onCancel }: AppointmentCardProps) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [cancelling, setCancelling] = useState(false);
 
-  const st = statusConfig[appointment.status] ?? {
-    label: appointment.status,
-    bg: "color-mix(in srgb, #71717a 12%, transparent)",
-    text: "#71717a",
-  };
+  const appointmentStatus = getAppointmentStatus(appointment.status);
 
   const totalAmount = appointment.appointmentServices.reduce(
     (sum, as) => sum + Number(as.priceAtBooking),
     0
   );
 
-  const canCancel = appointment.status === "PENDING" || appointment.status === "CONFIRMED";
+  const canCancel =
+    appointment.status === "PENDING" || appointment.status === "CONFIRMED";
 
   const handleCancel = async () => {
     setCancelling(true);
@@ -65,73 +60,76 @@ export function AppointmentCard({ appointment, onCancel }: AppointmentCardProps)
     setShowConfirm(false);
   };
 
+  const paymentStatus = appointment.payment
+    ? getPaymentStatus(appointment.payment.status)
+    : null;
+
   return (
     <>
-      <div
-        className="rounded-xl border p-4"
-        style={{ borderColor: "var(--surface-border)", backgroundColor: "var(--surface-overlay)" }}
-      >
-        <div className="flex items-start justify-between">
+      <SurfaceCard padding="md">
+        <div className="flex items-start justify-between gap-[var(--space-sm)]">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <Scissors className="h-4 w-4 shrink-0" style={{ color: "var(--booking-gold)" }} />
-              <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+              <Scissors
+                className="h-4 w-4 shrink-0 text-[var(--color-accent)]"
+                aria-hidden="true"
+              />
+              <span className="text-sm font-medium text-[var(--color-ink)]">
                 {appointment.appointmentServices
                   .map((as) => as.service.name)
                   .join(" · ")}
               </span>
             </div>
-            <div className="mt-2 flex items-center gap-3 text-xs" style={{ color: "var(--text-muted)" }}>
-              <span className="flex items-center gap-1">
-                <Calendar className="h-3.5 w-3.5" />
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--color-ink-muted)]">
+              <span className="inline-flex items-center gap-1">
+                <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
                 {formatFaDate(appointment.date)}
               </span>
-              <span className="flex items-center gap-1">
-                <Clock className="h-3.5 w-3.5" />
+              <span className="inline-flex items-center gap-1">
+                <Clock className="h-3.5 w-3.5" aria-hidden="true" />
                 {appointment.startTime} - {appointment.endTime}
               </span>
             </div>
-            <p className="mt-1 text-xs" style={{ color: "var(--text-faint)" }}>
+            <p className="mt-1 text-xs text-[var(--color-ink-faint)]">
               آرایشگر: {appointment.barber.user.name}
             </p>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <span
-              className="rounded-full px-2 py-0.5 text-xs font-medium"
-              style={{ backgroundColor: st.bg, color: st.text }}
-            >
-              {st.label}
-            </span>
-            {canCancel && (
-              <button
+          <div className="flex shrink-0 items-center gap-2">
+            <StatusBadge
+              label={appointmentStatus.label}
+              bgVar={appointmentStatus.bgVar}
+              fgVar={appointmentStatus.fgVar}
+            />
+            {canCancel ? (
+              <Button
+                variant="ghost"
+                size="icon-sm"
                 onClick={() => setShowConfirm(true)}
-                className="rounded-lg p-1.5 transition-colors hover:bg-red-500/10 hover:text-red-500"
-                style={{ color: "var(--text-faint)" }}
-                title="لغو نوبت"
+                aria-label="لغو نوبت"
+                className="text-[var(--color-ink-faint)] hover:bg-[var(--status-cancelled-bg)] hover:text-[var(--status-cancelled-fg)]"
               >
                 <X className="h-4 w-4" />
-              </button>
-            )}
+              </Button>
+            ) : null}
           </div>
         </div>
 
-        {appointment.payment && (
-          <div
-            className="mt-3 flex items-center justify-between border-t pt-3 text-xs"
-            style={{ borderColor: "var(--surface-border)" }}
-          >
-            <span className="flex items-center gap-1" style={{ color: "var(--text-muted)" }}>
-              <CreditCard className="h-3.5 w-3.5" />
-              {appointment.payment.status === "PAID"
-                ? "پرداخت شده"
-                : "در انتظار پرداخت"}
+        {appointment.payment && paymentStatus ? (
+          <div className="mt-[var(--space-sm)] flex items-center justify-between border-t border-[var(--color-rule)] pt-[var(--space-sm)] text-xs">
+            <span className="inline-flex items-center gap-1 text-[var(--color-ink-muted)]">
+              <CreditCard className="h-3.5 w-3.5" aria-hidden="true" />
+              <StatusBadge
+                label={paymentStatus.label}
+                bgVar={paymentStatus.bgVar}
+                fgVar={paymentStatus.fgVar}
+              />
             </span>
-            <span className="font-medium" style={{ color: "var(--booking-gold)" }}>
+            <span className="font-medium text-[var(--color-accent)]">
               {totalAmount.toLocaleString("fa-IR")} تومان
             </span>
           </div>
-        )}
-      </div>
+        ) : null}
+      </SurfaceCard>
 
       <ConfirmDialog
         open={showConfirm}
