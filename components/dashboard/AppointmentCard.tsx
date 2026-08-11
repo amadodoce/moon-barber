@@ -8,6 +8,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { StatusBadge } from "@/components/brand/StatusBadge";
 import { SurfaceCard } from "@/components/brand/SurfaceCard";
 import { Button } from "@/components/ui/button";
+import { PaymentRetryButton } from "@/components/customer/PaymentRetryButton";
 import { formatFaDate } from "@/lib/dates";
 import {
   getAppointmentStatus,
@@ -46,6 +47,10 @@ export function AppointmentCard({ appointment, onCancel }: AppointmentCardProps)
 
   const canCancel =
     appointment.status === "PENDING" || appointment.status === "CONFIRMED";
+
+  const canPay =
+    appointment.status === "PENDING" &&
+    appointment.payment?.status === "PENDING";
 
   const handleCancel = async () => {
     setCancelling(true);
@@ -115,18 +120,26 @@ export function AppointmentCard({ appointment, onCancel }: AppointmentCardProps)
         </div>
 
         {appointment.payment && paymentStatus ? (
-          <div className="mt-[var(--space-sm)] flex items-center justify-between border-t border-[var(--color-rule)] pt-[var(--space-sm)] text-xs">
-            <span className="inline-flex items-center gap-1 text-[var(--color-ink-muted)]">
-              <CreditCard className="h-3.5 w-3.5" aria-hidden="true" />
-              <StatusBadge
-                label={paymentStatus.label}
-                bgVar={paymentStatus.bgVar}
-                fgVar={paymentStatus.fgVar}
+          <div className="mt-[var(--space-sm)] space-y-[var(--space-sm)] border-t border-[var(--color-rule)] pt-[var(--space-sm)]">
+            <div className="flex items-center justify-between text-xs">
+              <span className="inline-flex items-center gap-1 text-[var(--color-ink-muted)]">
+                <CreditCard className="h-3.5 w-3.5" aria-hidden="true" />
+                <StatusBadge
+                  label={paymentStatus.label}
+                  bgVar={paymentStatus.bgVar}
+                  fgVar={paymentStatus.fgVar}
+                />
+              </span>
+              <span className="font-medium text-[var(--color-accent)]">
+                {totalAmount.toLocaleString("fa-IR")} تومان
+              </span>
+            </div>
+            {canPay ? (
+              <PaymentRetryButton
+                appointmentId={appointment.id}
+                label="ادامه پرداخت"
               />
-            </span>
-            <span className="font-medium text-[var(--color-accent)]">
-              {totalAmount.toLocaleString("fa-IR")} تومان
-            </span>
+            ) : null}
           </div>
         ) : null}
       </SurfaceCard>

@@ -7,6 +7,7 @@ import {
   Calendar,
   Clock,
   Scissors,
+  Info,
 } from "lucide-react";
 import { ResetBookingOnPaymentSuccess } from "@/components/book/ResetBookingOnPaymentSuccess";
 import { SurfaceCard } from "@/components/brand/SurfaceCard";
@@ -76,6 +77,34 @@ function AppointmentContextCard({
   );
 }
 
+function ResultActions({
+  appointmentId,
+  primaryLabel,
+  showRetry = true,
+}: {
+  appointmentId?: string;
+  primaryLabel?: string;
+  showRetry?: boolean;
+}) {
+  return (
+    <div className="mt-[var(--space-lg)] space-y-[var(--space-sm)]">
+      {showRetry && appointmentId ? (
+        <PaymentRetryButton appointmentId={appointmentId} label={primaryLabel} />
+      ) : (
+        <Button variant="brand" className="w-full" render={<Link href="/book" />}>
+          {primaryLabel ?? "رزرو مجدد"}
+        </Button>
+      )}
+      <Button variant="outline" className="w-full" render={<Link href="/customer" />}>
+        نوبت‌های من
+      </Button>
+      <Button variant="ghost" className="w-full" render={<Link href="/" />}>
+        بازگشت به صفحه اصلی
+      </Button>
+    </div>
+  );
+}
+
 async function PaymentResultContent({ searchParams }: PaymentResultProps) {
   const params = await searchParams;
   const status = params.status || "error";
@@ -111,6 +140,53 @@ async function PaymentResultContent({ searchParams }: PaymentResultProps) {
     );
   }
 
+  if (status === "late_paid") {
+    return (
+      <div className="flex min-h-screen min-h-dvh items-center justify-center bg-[var(--color-paper)] px-[var(--space-md)] py-[var(--space-xl)]">
+        <div className="w-full max-w-md text-center">
+          <div className="mx-auto mb-[var(--space-md)] flex h-20 w-20 items-center justify-center rounded-full bg-[var(--status-pending-bg)]">
+            <Info className="h-10 w-10 text-[var(--status-pending-fg)]" />
+          </div>
+          <h1 className="text-[var(--text-2xl)] font-semibold text-[var(--color-ink)]">
+            پرداخت ثبت شد — نیاز به پیگیری
+          </h1>
+          <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
+            مبلغ پرداخت شده است، اما نوبت به‌دلیل اتمام مهلت رزرو لغو شده بود. تیم پشتیبانی برای هماهنگی با شما تماس خواهد گرفت.
+          </p>
+          {appointment ? <AppointmentContextCard appointment={appointment} /> : null}
+          <div className="mt-[var(--space-lg)] space-y-[var(--space-sm)]">
+            <Button variant="brand" className="w-full" render={<Link href="/customer" />}>
+              مشاهده وضعیت
+            </Button>
+            <Button variant="outline" className="w-full" render={<Link href="/" />}>
+              بازگشت به صفحه اصلی
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "cancelled") {
+    return (
+      <div className="flex min-h-screen min-h-dvh items-center justify-center bg-[var(--color-paper)] px-[var(--space-md)] py-[var(--space-xl)]">
+        <div className="w-full max-w-md text-center">
+          <div className="mx-auto mb-[var(--space-md)] flex h-20 w-20 items-center justify-center rounded-full bg-[var(--status-pending-bg)]">
+            <AlertTriangle className="h-10 w-10 text-[var(--status-pending-fg)]" />
+          </div>
+          <h1 className="text-[var(--text-2xl)] font-semibold text-[var(--color-ink)]">
+            پرداخت لغو شد
+          </h1>
+          <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
+            پرداخت در درگاه لغو شد. نوبت شما همچنان برای پرداخت باز است.
+          </p>
+          {appointment ? <AppointmentContextCard appointment={appointment} /> : null}
+          <ResultActions appointmentId={appointmentId} primaryLabel="ادامه پرداخت" />
+        </div>
+      </div>
+    );
+  }
+
   if (status === "failed") {
     return (
       <div className="flex min-h-screen min-h-dvh items-center justify-center bg-[var(--color-paper)] px-[var(--space-md)] py-[var(--space-xl)]">
@@ -122,21 +198,10 @@ async function PaymentResultContent({ searchParams }: PaymentResultProps) {
             پرداخت ناموفق
           </h1>
           <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
-            پرداخت شما انجام نشد. لطفاً دوباره تلاش کنید.
+            تأیید پرداخت انجام نشد. می‌توانید دوباره تلاش کنید.
           </p>
           {appointment ? <AppointmentContextCard appointment={appointment} /> : null}
-          <div className="mt-[var(--space-lg)] space-y-[var(--space-sm)]">
-            {appointmentId ? (
-              <PaymentRetryButton appointmentId={appointmentId} />
-            ) : (
-              <Button variant="brand" className="w-full" render={<Link href="/book" />}>
-                رزرو مجدد
-              </Button>
-            )}
-            <Button variant="outline" className="w-full" render={<Link href="/" />}>
-              بازگشت به صفحه اصلی
-            </Button>
-          </div>
+          <ResultActions appointmentId={appointmentId} primaryLabel="تلاش مجدد پرداخت" />
         </div>
       </div>
     );
@@ -152,21 +217,10 @@ async function PaymentResultContent({ searchParams }: PaymentResultProps) {
           خطای پرداخت
         </h1>
         <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
-          در پردازش پرداخت خطایی رخ داده است.
+          در پردازش پرداخت خطایی رخ داده است. لطفاً دوباره تلاش کنید.
         </p>
         {appointment ? <AppointmentContextCard appointment={appointment} /> : null}
-        <div className="mt-[var(--space-lg)] space-y-[var(--space-sm)]">
-          {appointmentId ? (
-            <PaymentRetryButton appointmentId={appointmentId} />
-          ) : (
-            <Button variant="brand" className="w-full" render={<Link href="/book" />}>
-              تلاش مجدد
-            </Button>
-          )}
-          <Button variant="outline" className="w-full" render={<Link href="/" />}>
-            بازگشت به صفحه اصلی
-          </Button>
-        </div>
+        <ResultActions appointmentId={appointmentId} primaryLabel="تلاش مجدد" />
       </div>
     </div>
   );

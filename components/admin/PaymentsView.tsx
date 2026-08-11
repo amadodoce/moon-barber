@@ -152,11 +152,20 @@ export function PaymentsView({ data, filters, error }: PaymentsViewProps) {
                       {Number(pay.amount).toLocaleString("fa-IR")} تومان
                     </TableCell>
                     <TableCell>
-                      <StatusBadge
-                        label={st.label}
-                        bgVar={st.bgVar}
-                        fgVar={st.fgVar}
-                      />
+                      <div className="flex flex-wrap items-center gap-1">
+                        <StatusBadge
+                          label={st.label}
+                          bgVar={st.bgVar}
+                          fgVar={st.fgVar}
+                        />
+                        {pay.needsReview ? (
+                          <StatusBadge
+                            label="نیاز به بررسی"
+                            bgVar="var(--status-pending-bg)"
+                            fgVar="var(--status-pending-fg)"
+                          />
+                        ) : null}
+                      </div>
                     </TableCell>
                     <TableCell>
                       {formatFaDate(pay.appointment.date)}{" "}

@@ -5,7 +5,8 @@ export const PENDING_APPOINTMENT_TTL_MS = 30 * 60 * 1000;
 
 /**
  * Cancel stale PENDING appointments whose payment was never completed.
- * Called before slot queries and appointment creation to release inventory.
+ * Only affects appointments still PENDING with unpaid aggregate payment.
+ * Does not erase PaymentAttempt history.
  */
 export async function releaseStalePendingAppointments(): Promise<number> {
   const cutoff = new Date(Date.now() - PENDING_APPOINTMENT_TTL_MS);
@@ -25,15 +26,26 @@ export async function releaseStalePendingAppointments(): Promise<number> {
   }
 
   const ids = stale.map((a) => a.id);
+  const now = new Date();
 
   await prisma.$transaction([
     prisma.appointment.updateMany({
-      where: { id: { in: ids } },
+      where: { id: { in: ids }, status: "PENDING" },
       data: { status: "CANCELLED" },
     }),
     prisma.payment.updateMany({
       where: { appointmentId: { in: ids }, status: "PENDING" },
-      data: { status: "FAILED" },
+      data: {
+        status: "FAILED",
+        reviewNote: "نوبت به‌دلیل عدم پرداخت در مهلت مقرر لغو شد",
+      },
+    }),
+    prisma.paymentAttempt.updateMany({
+      where: {
+        payment: { appointmentId: { in: ids } },
+        status: { in: ["INITIATED", "REDIRECTED"] },
+      },
+      data: { status: "FAILED", completedAt: now, gatewayMessage: "Expired with appointment TTL" },
     }),
   ]);
 
