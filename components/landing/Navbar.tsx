@@ -53,8 +53,7 @@ export function Navbar() {
             >
               صفحه اصلی
             </Link>
-            {isAuthenticated &&
-              (user?.role === "ADMIN" || user?.role === "BARBER") && (
+            {isAuthenticated && user?.role === "ADMIN" && (
                 <Link
                   href="/admin"
                   className={`rounded-full px-3.5 py-1.5 text-sm transition-colors duration-150 ${
@@ -64,6 +63,18 @@ export function Navbar() {
                   }`}
                 >
                   پنل مدیریت
+                </Link>
+              )}
+            {isAuthenticated && user?.role === "BARBER" && (
+                <Link
+                  href="/barber"
+                  className={`rounded-full px-3.5 py-1.5 text-sm transition-colors duration-150 ${
+                    pathname.startsWith("/barber")
+                      ? "bg-[var(--booking-gold)]/10 text-[var(--booking-gold)]"
+                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  }`}
+                >
+                  پنل آرایشگر
                 </Link>
               )}
             {isAuthenticated && user?.role === "CUSTOMER" && (
@@ -134,14 +145,22 @@ export function Navbar() {
             >
               صفحه اصلی
             </Link>
-            {isAuthenticated &&
-              (user?.role === "ADMIN" || user?.role === "BARBER") && (
+            {isAuthenticated && user?.role === "ADMIN" && (
                 <Link
                   href="/admin"
                   onClick={() => setMenuOpen(false)}
                   className="rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
                 >
                   پنل مدیریت
+                </Link>
+              )}
+            {isAuthenticated && user?.role === "BARBER" && (
+                <Link
+                  href="/barber"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
+                >
+                  پنل آرایشگر
                 </Link>
               )}
             {isAuthenticated && user?.role === "CUSTOMER" && (

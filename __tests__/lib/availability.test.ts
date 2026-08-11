@@ -1,66 +1,12 @@
 import { describe, it, expect } from "vitest";
-
-// We test the pure functions from availability.ts by importing them directly
-// Since availability.ts uses Prisma in getAvailableSlots, we test the utility functions
-
-function timeToMinutes(time: string): number {
-  const [h, m] = time.split(":").map(Number);
-  return h * 60 + m;
-}
-
-function minutesToTime(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-}
-
-function rangesOverlap(
-  a: { start: string; end: string },
-  b: { start: string; end: string }
-): boolean {
-  return timeToMinutes(a.start) < timeToMinutes(b.end) && timeToMinutes(b.start) < timeToMinutes(a.end);
-}
-
-function subtractRanges(
-  available: Array<{ start: string; end: string }>,
-  blocked: Array<{ start: string; end: string }>
-): Array<{ start: string; end: string }> {
-  const result: Array<{ start: string; end: string }> = [];
-
-  for (const avail of available) {
-    let current = { ...avail };
-
-    const relevantBlocked = blocked
-      .filter((b) => rangesOverlap(current, b))
-      .sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
-
-    for (const block of relevantBlocked) {
-      const currentStart = timeToMinutes(current.start);
-      const currentEnd = timeToMinutes(current.end);
-      const blockStart = timeToMinutes(block.start);
-      const blockEnd = timeToMinutes(block.end);
-
-      if (blockStart > currentStart) {
-        result.push({
-          start: current.start,
-          end: minutesToTime(Math.min(blockStart, currentEnd)),
-        });
-      }
-
-      if (blockEnd < currentEnd) {
-        current = { start: minutesToTime(blockEnd), end: current.end };
-      } else {
-        current = { start: current.end, end: current.end };
-      }
-    }
-
-    if (timeToMinutes(current.start) < timeToMinutes(current.end)) {
-      result.push(current);
-    }
-  }
-
-  return result;
-}
+import {
+  timeToMinutes,
+  minutesToTime,
+  rangesOverlap,
+  subtractRanges,
+  filterPastSlots,
+} from "@/lib/availability";
+import { getTodayLocalDateString } from "@/lib/dates";
 
 describe("timeToMinutes", () => {
   it("converts midnight", () => {
@@ -92,15 +38,21 @@ describe("minutesToTime", () => {
 
 describe("rangesOverlap", () => {
   it("detects overlapping ranges", () => {
-    expect(rangesOverlap({ start: "09:00", end: "12:00" }, { start: "11:00", end: "13:00" })).toBe(true);
+    expect(
+      rangesOverlap({ start: "09:00", end: "12:00" }, { start: "11:00", end: "13:00" })
+    ).toBe(true);
   });
 
   it("detects non-overlapping ranges", () => {
-    expect(rangesOverlap({ start: "09:00", end: "11:00" }, { start: "11:00", end: "13:00" })).toBe(false);
+    expect(
+      rangesOverlap({ start: "09:00", end: "11:00" }, { start: "11:00", end: "13:00" })
+    ).toBe(false);
   });
 
   it("detects contained range", () => {
-    expect(rangesOverlap({ start: "09:00", end: "14:00" }, { start: "10:00", end: "12:00" })).toBe(true);
+    expect(
+      rangesOverlap({ start: "09:00", end: "14:00" }, { start: "10:00", end: "12:00" })
+    ).toBe(true);
   });
 });
 
@@ -154,5 +106,33 @@ describe("subtractRanges", () => {
       { start: "11:00", end: "14:00" },
       { start: "15:00", end: "18:00" },
     ]);
+  });
+});
+
+describe("filterPastSlots", () => {
+  it("returns all slots for future dates", () => {
+    const slots = [
+      { startTime: "09:00", endTime: "10:00" },
+      { startTime: "10:00", endTime: "11:00" },
+    ];
+    expect(filterPastSlots(slots, "2099-01-01")).toEqual(slots);
+  });
+
+  it("filters elapsed slots for today", () => {
+    const today = getTodayLocalDateString();
+    const nowMinutes = new Date().getHours() * 60 + new Date().getMinutes();
+    const pastSlot = minutesToTime(Math.max(0, nowMinutes - 60));
+    const futureSlot = minutesToTime(Math.min(23 * 60 + 45, nowMinutes + 120));
+
+    const result = filterPastSlots(
+      [
+        { startTime: pastSlot, endTime: minutesToTime(Math.max(0, nowMinutes - 30)) },
+        { startTime: futureSlot, endTime: minutesToTime(Math.min(23 * 60 + 59, nowMinutes + 180)) },
+      ],
+      today
+    );
+
+    expect(result.some((slot) => slot.startTime === futureSlot)).toBe(true);
+    expect(result.some((slot) => slot.startTime === pastSlot)).toBe(false);
   });
 });

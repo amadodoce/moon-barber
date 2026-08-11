@@ -50,12 +50,15 @@ export async function createAppointment(
 
     const data = createAppointmentSchema.parse(input);
 
-    // Verify barber exists
+    // Verify barber exists and is active
     const barber = await prisma.barber.findUnique({
       where: { id: data.barberId },
     });
-    if (!barber) {
+    if (!barber || barber.deletedAt) {
       throw new Error("آرایشگر یافت نشد");
+    }
+    if (!barber.isActive) {
+      throw new Error("این آرایشگر در حال حاضر فعال نیست");
     }
 
     // Verify all services exist and are active
@@ -79,39 +82,22 @@ export async function createAppointment(
       parseInt(data.startTime.split(":")[0]) * 60 +
       parseInt(data.startTime.split(":")[1]);
     const endMinutes = startMinutes + totalDuration;
+    if (endMinutes >= 24 * 60) {
+      throw new Error("مدت زمان سرویس‌ها از ساعات کاری فراتر می‌رود");
+    }
     const endTime = `${String(Math.floor(endMinutes / 60)).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
 
-    // Check for overlapping appointments
-    const overlapping = await prisma.appointment.findFirst({
-      where: {
-        barberId: data.barberId,
-        date: parseLocalDate(data.date),
-        status: { notIn: ["CANCELLED"] },
-        deletedAt: null,
-        OR: [
-          {
-            // New appointment starts during an existing one
-            startTime: { lte: data.startTime },
-            endTime: { gt: data.startTime },
-          },
-          {
-            // New appointment ends during an existing one
-            startTime: { lt: endTime },
-            endTime: { gte: endTime },
-          },
-          {
-            // New appointment completely contains an existing one
-            startTime: { gte: data.startTime },
-            endTime: { lte: endTime },
-          },
-        ],
-      },
-    });
-
-    if (overlapping) {
-      throw new Error(
-        "این بازه زمانی قبلاً رزرو شده است. لطفاً زمان دیگری انتخاب کنید"
-      );
+    // Validate selected slot is currently available
+    const availableSlots = await getAvailableSlots(
+      data.barberId,
+      data.serviceIds,
+      data.date
+    );
+    const slotIsAvailable = availableSlots.some(
+      (slot) => slot.startTime === data.startTime
+    );
+    if (!slotIsAvailable) {
+      throw new Error("زمان انتخاب شده دیگر در دسترس نیست. لطفاً زمان دیگری انتخاب کنید");
     }
 
     // Calculate total amount for payment
@@ -120,8 +106,37 @@ export async function createAppointment(
       0
     );
 
-    // Create appointment with related services and payment in a transaction
+    // Create appointment with overlap prevention inside transaction
     const appointment = await prisma.$transaction(async (tx) => {
+      const overlapping = await tx.appointment.findFirst({
+        where: {
+          barberId: data.barberId,
+          date: parseLocalDate(data.date),
+          status: { notIn: ["CANCELLED"] },
+          deletedAt: null,
+          OR: [
+            {
+              startTime: { lte: data.startTime },
+              endTime: { gt: data.startTime },
+            },
+            {
+              startTime: { lt: endTime },
+              endTime: { gte: endTime },
+            },
+            {
+              startTime: { gte: data.startTime },
+              endTime: { lte: endTime },
+            },
+          ],
+        },
+      });
+
+      if (overlapping) {
+        throw new Error(
+          "این بازه زمانی قبلاً رزرو شده است. لطفاً زمان دیگری انتخاب کنید"
+        );
+      }
+
       const appt = await tx.appointment.create({
         data: {
           userId: user.userId,
@@ -134,7 +149,6 @@ export async function createAppointment(
         },
       });
 
-      // Create AppointmentService records with price snapshots
       await tx.appointmentService.createMany({
         data: services.map((service) => ({
           appointmentId: appt.id,
@@ -143,7 +157,6 @@ export async function createAppointment(
         })),
       });
 
-      // Create Payment record for this appointment
       await tx.payment.create({
         data: {
           appointmentId: appt.id,
@@ -198,9 +211,21 @@ export async function cancelAppointment(
       throw new Error("این نوبت قابل لغو نیست");
     }
 
-    const updated = await prisma.appointment.update({
-      where: { id },
-      data: { status: "CANCELLED" },
+    const updated = await prisma.$transaction(async (tx) => {
+      const appt = await tx.appointment.update({
+        where: { id },
+        data: { status: "CANCELLED" },
+      });
+
+      await tx.payment.updateMany({
+        where: {
+          appointmentId: id,
+          status: "PENDING",
+        },
+        data: { status: "FAILED" },
+      });
+
+      return appt;
     });
 
     revalidatePath("/customer");
@@ -274,6 +299,7 @@ export async function getMyAppointments(): Promise<ActionResponse<Appointment[]>
         deletedAt: null,
       },
       include: {
+        payment: true,
         appointmentServices: {
           include: { service: true },
         },

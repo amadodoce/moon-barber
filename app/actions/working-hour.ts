@@ -26,18 +26,18 @@ export async function createWorkingHour(
 
     const data = createWorkingHourSchema.parse(input);
 
-    // Barbers can only set their own hours
-    if (user.role === "BARBER" && data.barberId) {
+    // Barbers can only set their own hours, not shop-wide schedules
+    if (user.role === "BARBER") {
+      if (!data.barberId) {
+        throw new Error("FORBIDDEN");
+      }
       const barber = await prisma.barber.findUnique({
         where: { userId: user.userId },
       });
       if (!barber || barber.id !== data.barberId) {
         throw new Error("FORBIDDEN");
       }
-    }
-
-    // If barberId is provided, verify the barber exists
-    if (data.barberId) {
+    } else if (data.barberId) {
       const barber = await prisma.barber.findUnique({
         where: { id: data.barberId },
       });
@@ -83,7 +83,10 @@ export async function updateWorkingHour(
       throw new Error("ساعات کاری یافت نشد");
     }
 
-    if (user.role === "BARBER" && existing.barberId) {
+    if (user.role === "BARBER") {
+      if (!existing.barberId) {
+        throw new Error("FORBIDDEN");
+      }
       const barber = await prisma.barber.findUnique({
         where: { userId: user.userId },
       });
@@ -125,7 +128,10 @@ export async function deleteWorkingHour(
       throw new Error("ساعات کاری یافت نشد");
     }
 
-    if (user.role === "BARBER" && existing.barberId) {
+    if (user.role === "BARBER") {
+      if (!existing.barberId) {
+        throw new Error("FORBIDDEN");
+      }
       const barber = await prisma.barber.findUnique({
         where: { userId: user.userId },
       });

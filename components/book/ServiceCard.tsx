@@ -28,6 +28,7 @@ export function ServiceCard({
   return (
     <button
       type="button"
+      aria-pressed={isSelected}
       onClick={() =>
         toggleService({ id, name, durationMinutes, price: Number(price) })
       }

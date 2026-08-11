@@ -84,11 +84,12 @@ export function BookingSummary() {
 
       {/* Notes */}
       <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
-        <div className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+        <label htmlFor="booking-notes" className="flex items-center gap-2 mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
           <FileText className="h-4 w-4 text-[var(--booking-gold)]" />
           توضیحات (اختیاری)
-        </div>
+        </label>
         <textarea
+          id="booking-notes"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="توضیحات خود را اینجا بنویسید..."

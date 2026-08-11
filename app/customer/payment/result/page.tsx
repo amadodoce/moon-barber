@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import { ResetBookingOnPaymentSuccess } from "@/components/book/ResetBookingOnPaymentSuccess";
 
 interface PaymentResultProps {
   searchParams: Promise<{ status?: string; appointmentId?: string }>;
@@ -13,6 +14,7 @@ async function PaymentResultContent({ searchParams }: PaymentResultProps) {
   if (status === "success") {
     return (
       <div className="flex min-h-screen min-h-dvh items-center justify-center px-4" style={{ backgroundColor: "var(--surface-base)" }}>
+        <ResetBookingOnPaymentSuccess status={status} />
         <div className="w-full max-w-md text-center">
           <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full" style={{ backgroundColor: "color-mix(in srgb, #22c55e 12%, transparent)" }}>
             <CheckCircle className="h-10 w-10" style={{ color: "#22c55e" }} />

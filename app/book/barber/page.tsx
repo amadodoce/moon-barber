@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, UserX, Users } from "lucide-react";
 import { useBookingStore } from "@/stores/booking";
+import { useBookingGuard } from "@/hooks/useBookingGuard";
 import { getBarbers, type PublicBarber } from "@/app/actions/barber";
 import { BarberCard } from "@/components/book/BarberCard";
 import { Spinner } from "@/components/ui/Spinner";
@@ -19,6 +20,8 @@ export default function BarberPage() {
   const [barbers, setBarbers] = useState<PublicBarber[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useBookingGuard(2);
 
   useEffect(() => {
     setStep(2);
@@ -82,7 +85,7 @@ export default function BarberPage() {
           <p>هیچ آرایشگری موجود نیست</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3" role="radiogroup" aria-label="انتخاب آرایشگر">
           {barbers.map((barber, i) => (
             <BarberCard
               key={barber.id}

@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 import { useBookingStore } from "@/stores/booking";
 import { StepIndicator } from "@/components/book/StepIndicator";
-import { ArrowRight } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 const stepRoutes = ["/book", "/book/barber", "/book/date-time", "/book/summary"];
 
@@ -13,15 +13,25 @@ export default function BookLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const step = useBookingStore((s) => s.step);
   const hasHydrated = useBookingStore((s) => s._hasHydrated);
   const router = useRouter();
+  const pathname = usePathname();
+  const routeStep = Math.max(
+    1,
+    stepRoutes.findIndex((route) => route === pathname) + 1
+  ) as 1 | 2 | 3 | 4;
 
   useEffect(() => {
     useBookingStore.persist.rehydrate();
   }, []);
 
-  const showBackButton = hasHydrated && step > 1;
+  useEffect(() => {
+    if (routeStep >= 1) {
+      useBookingStore.getState().setStep(routeStep);
+    }
+  }, [routeStep]);
+
+  const showBackButton = hasHydrated && routeStep > 1;
 
   return (
     <div className="min-h-screen min-h-dvh bg-zinc-50 dark:bg-zinc-900">
@@ -30,9 +40,11 @@ export default function BookLayout({
         <div className="mx-auto flex h-14 max-w-2xl items-center gap-3 px-4">
           {showBackButton && (
             <button
+              type="button"
+              aria-label="بازگشت به مرحله قبل"
               onClick={() => {
-                useBookingStore.getState().setStep((step - 1) as 1 | 2 | 3 | 4);
-                router.push(stepRoutes[step - 2]);
+                useBookingStore.getState().setStep((routeStep - 1) as 1 | 2 | 3 | 4);
+                router.push(stepRoutes[routeStep - 2]);
               }}
               className="p-2 -mr-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors"
             >

@@ -35,13 +35,18 @@ export const updateAppointmentStatusSchema = z.object({
   ]),
 });
 
-export const getAvailableSlotsSchema = z.object({
-  barberId: z.string().cuid("شناسه آرایشگر معتبر نیست"),
-  serviceIds: z
-    .array(z.string().cuid())
-    .min(1, "حداقل یک سرویس انتخاب کنید"),
-  date: z.string().min(1, "تاریخ الزامی است"), // ISO date string
-});
+export const getAvailableSlotsSchema = z
+  .object({
+    barberId: z.string().cuid("شناسه آرایشگر معتبر نیست"),
+    serviceIds: z
+      .array(z.string().cuid())
+      .min(1, "حداقل یک سرویس انتخاب کنید"),
+    date: z.string().min(1, "تاریخ الزامی است"), // ISO date string
+  })
+  .refine(
+    (data) => isTodayOrFuture(data.date),
+    { message: "تاریخ رزرو باید امروز یا بعد از آن باشد", path: ["date"] }
+  );
 
 export type CreateAppointmentInput = z.infer<typeof createAppointmentSchema>;
 export type AppointmentIdInput = z.infer<typeof appointmentIdSchema>;

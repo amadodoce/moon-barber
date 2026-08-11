@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { CreditCard, Loader2 } from "lucide-react";
 import { useBookingStore } from "@/stores/booking";
+import { useBookingGuard } from "@/hooks/useBookingGuard";
 import { createAppointment } from "@/app/actions/appointment";
 import { initiatePayment } from "@/app/actions/payment";
 import { BookingSummary } from "@/components/book/BookingSummary";
-import { showSuccess, showError } from "@/lib/toast";
+import { showError } from "@/lib/toast";
 import {
   BookingBottomBar,
   BOOKING_BOTTOM_BAR_PADDING,
@@ -23,9 +24,10 @@ export default function SummaryPage() {
     startTime,
     barberId,
     notes,
-    reset,
     setStep,
   } = useBookingStore();
+
+  useBookingGuard(4);
 
   useEffect(() => {
     setStep(4);
@@ -60,8 +62,6 @@ export default function SummaryPage() {
         return;
       }
 
-      showSuccess("نوبت با موفقیت ایجاد شد");
-
       const paymentResult = await initiatePayment({
         appointmentId: appointmentResult.data!.id,
       });
@@ -72,7 +72,6 @@ export default function SummaryPage() {
         return;
       }
 
-      reset();
       window.location.href = paymentResult.data!.paymentUrl;
     } catch (err) {
       showError(err instanceof Error ? err.message : "خطای داخلی سرور");
