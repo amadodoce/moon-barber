@@ -149,10 +149,10 @@ async function main() {
   // Friday: closed
 
   const workDays = ["SATURDAY", "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY"] as const;
-  const morningStart = "09:00";
-  const morningEnd = "12:00";
-  const afternoonStart = "14:00";
-  const afternoonEnd = "20:00";
+  const morningStart = 9 * 60;
+  const morningEnd = 12 * 60;
+  const afternoonStart = 14 * 60;
+  const afternoonEnd = 20 * 60;
 
   // Clear existing shop-wide hours
   await prisma.workingHour.deleteMany({
@@ -164,8 +164,8 @@ async function main() {
       data: {
         barberId: null,
         dayOfWeek: day,
-        startTime: morningStart,
-        endTime: morningEnd,
+        startMinute: morningStart,
+        endMinute: morningEnd,
         isRecurring: true,
       },
     });
@@ -173,8 +173,8 @@ async function main() {
       data: {
         barberId: null,
         dayOfWeek: day,
-        startTime: afternoonStart,
-        endTime: afternoonEnd,
+        startMinute: afternoonStart,
+        endMinute: afternoonEnd,
         isRecurring: true,
       },
     });
@@ -198,8 +198,8 @@ async function main() {
         data: {
           barberId: barber.id,
           dayOfWeek: day,
-          startTime: morningStart,
-          endTime: morningEnd,
+          startMinute: morningStart,
+          endMinute: morningEnd,
           isRecurring: true,
         },
       });
@@ -207,8 +207,8 @@ async function main() {
         data: {
           barberId: barber.id,
           dayOfWeek: day,
-          startTime: afternoonStart,
-          endTime: afternoonEnd,
+          startMinute: afternoonStart,
+          endMinute: afternoonEnd,
           isRecurring: true,
         },
       });
@@ -242,8 +242,8 @@ async function main() {
       userId: customer.id,
       barberId: barber1.id,
       date: new Date(tomorrowStr),
-      startTime: "09:00",
-      endTime: "09:30",
+      startMinute: 9 * 60,
+      endMinute: 9 * 60 + 30,
       status: "CONFIRMED",
       notes: "لطفاً موها را کوتاه‌تر کنید",
     },
@@ -274,8 +274,8 @@ async function main() {
       userId: customer2.id,
       barberId: barber2.id,
       date: new Date(dayAfterStr),
-      startTime: "14:00",
-      endTime: "15:00",
+      startMinute: 14 * 60,
+      endMinute: 15 * 60,
       status: "PENDING",
     },
   });
@@ -303,8 +303,8 @@ async function main() {
       userId: customer.id,
       barberId: barber3.id,
       date: new Date(tomorrowStr),
-      startTime: "10:00",
-      endTime: "10:50",
+      startMinute: 10 * 60,
+      endMinute: 10 * 60 + 50,
       status: "PENDING",
     },
   });

@@ -1,10 +1,20 @@
-/** Parse a date string "YYYY-MM-DD" to a Date at local midnight */
-export function parseLocalDate(dateStr: string): Date {
-  const [year, month, day] = dateStr.split("-").map(Number);
-  return new Date(year, month - 1, day);
-}
+/** @deprecated Use @/lib/booking/timezone — kept for backward compatibility */
 
-/** Format a Date as local "YYYY-MM-DD" */
+import { toDateString, parseBookingDate } from "@/lib/booking/timezone";
+
+export {
+  parseBookingDate as parseLocalDate,
+  getTehranTodayString as getTodayLocalDateString,
+  isTodayOrFutureInTehran as isTodayOrFuture,
+  formatJalaliDate,
+  formatFaDate,
+  toDateString,
+  parseBookingDate,
+  getTehranTodayString,
+  isTodayOrFutureInTehran,
+} from "@/lib/booking/timezone";
+
+/** Format Date as local "YYYY-MM-DD" (for UI Date objects) */
 export function toLocalDateString(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -12,43 +22,15 @@ export function toLocalDateString(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-/** Today's date as local "YYYY-MM-DD" */
-export function getTodayLocalDateString(): string {
-  return toLocalDateString(new Date());
-}
-
-/** Normalize Date or "YYYY-MM-DD" string to local Date at midnight */
+/** Normalize Date or "YYYY-MM-DD" string to UTC midnight Date */
 export function toLocalDate(value: Date | string): Date {
   if (typeof value === "string") {
     if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-      return parseLocalDate(value);
+      return parseBookingDate(value);
     }
     return new Date(value);
   }
-  return new Date(value.getFullYear(), value.getMonth(), value.getDate());
-}
-
-/** Format for Persian locale display */
-export function formatFaDate(
-  value: Date | string,
-  options?: Intl.DateTimeFormatOptions
-): string {
-  const date = toLocalDate(value);
-  return date.toLocaleDateString("fa-IR", options);
-}
-
-/** Jalali calendar presentation while preserving Gregorian storage */
-export function formatJalaliDate(
-  value: Date | string,
-  options?: Intl.DateTimeFormatOptions
-): string {
-  const date = toLocalDate(value);
-  return date.toLocaleDateString("fa-IR-u-ca-persian", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    ...options,
-  });
+  return parseBookingDate(toDateString(value));
 }
 
 /** Jalali month + year label for calendar headers */
@@ -59,15 +41,11 @@ export function formatJalaliMonthYear(date: Date): string {
   });
 }
 
-/** Compare calendar day equality in local timezone */
+/** Compare calendar day equality */
 export function isSameLocalDate(a: Date | string, b: Date | string): boolean {
-  return toLocalDateString(toLocalDate(a)) === toLocalDateString(toLocalDate(b));
-}
-
-/** Compare date-only string to today in local timezone */
-export function isTodayOrFuture(dateStr: string): boolean {
-  const selected = parseLocalDate(dateStr);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return selected >= today;
+  const toStr = (v: Date | string) =>
+    typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)
+      ? v
+      : toDateString(v);
+  return toStr(a) === toStr(b);
 }

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { formatFaDate } from "@/lib/dates";
+import { minutesToTime } from "@/lib/booking/time";
 import {
   PageHeader,
   StatCard,
@@ -127,7 +128,7 @@ export default async function AdminDashboard() {
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
                     <span className="text-sm text-[var(--color-ink-2)]">
-                      {appt.startTime}
+                      {minutesToTime(appt.startMinute)}
                     </span>
                     <StatusBadge
                       label={status.label}

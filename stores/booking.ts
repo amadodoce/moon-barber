@@ -57,7 +57,7 @@ export interface BookingState {
     price: number;
   }) => void;
   setDate: (date: string) => void;
-  setTime: (start: string, end: string) => void;
+  setTime: (start: string | null, end: string | null) => void;
   setBarber: (id: string | null, name: string | null) => void;
   setNotes: (notes: string) => void;
   setHasHydrated: (value: boolean) => void;

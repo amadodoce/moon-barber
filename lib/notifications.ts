@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { formatFaDate } from "@/lib/dates";
+import { minutesToTime } from "@/lib/booking/time";
 
 /**
  * Notification system for appointment events.
  * Currently logs notifications to console.
- * Can be extended to send emails/SMS via external providers.
  */
 
 interface NotificationContext {
@@ -41,8 +41,8 @@ async function getNotificationContext(
     barberName: appointment.barber.user.name,
     services: appointment.appointmentServices.map((as) => as.service.name),
     date: formatFaDate(appointment.date),
-    startTime: appointment.startTime,
-    endTime: appointment.endTime,
+    startTime: minutesToTime(appointment.startMinute),
+    endTime: minutesToTime(appointment.endMinute),
     totalAmount: Number(appointment.payment?.amount ?? 0),
   };
 }
@@ -53,11 +53,11 @@ export async function notifyAppointmentCreated(appointmentId: string) {
 
   console.log(
     `[Notification] Appointment Created:\n` +
-    `  User: ${ctx.userName} (${ctx.userPhone})\n` +
-    `  Barber: ${ctx.barberName}\n` +
-    `  Services: ${ctx.services.join(", ")}\n` +
-    `  Date: ${ctx.date} ${ctx.startTime}-${ctx.endTime}\n` +
-    `  Amount: ${ctx.totalAmount.toLocaleString("fa-IR")} تومان`
+      `  User: ${ctx.userName} (${ctx.userPhone})\n` +
+      `  Barber: ${ctx.barberName}\n` +
+      `  Services: ${ctx.services.join(", ")}\n` +
+      `  Date: ${ctx.date} ${ctx.startTime}-${ctx.endTime}\n` +
+      `  Amount: ${ctx.totalAmount.toLocaleString("fa-IR")} تومان`
   );
 }
 
@@ -67,9 +67,9 @@ export async function notifyPaymentConfirmed(appointmentId: string) {
 
   console.log(
     `[Notification] Payment Confirmed:\n` +
-    `  User: ${ctx.userName} (${ctx.userPhone})\n` +
-    `  Appointment: ${ctx.date} ${ctx.startTime}-${ctx.endTime}\n` +
-    `  Amount: ${ctx.totalAmount.toLocaleString("fa-IR")} تومان`
+      `  User: ${ctx.userName} (${ctx.userPhone})\n` +
+      `  Appointment: ${ctx.date} ${ctx.startTime}-${ctx.endTime}\n` +
+      `  Amount: ${ctx.totalAmount.toLocaleString("fa-IR")} تومان`
   );
 }
 
@@ -79,7 +79,7 @@ export async function notifyAppointmentCancelled(appointmentId: string) {
 
   console.log(
     `[Notification] Appointment Cancelled:\n` +
-    `  User: ${ctx.userName} (${ctx.userPhone})\n` +
-    `  Appointment: ${ctx.date} ${ctx.startTime}-${ctx.endTime}`
+      `  User: ${ctx.userName} (${ctx.userPhone})\n` +
+      `  Appointment: ${ctx.date} ${ctx.startTime}-${ctx.endTime}`
   );
 }

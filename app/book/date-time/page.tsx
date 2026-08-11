@@ -10,7 +10,7 @@ import { DatePicker } from "@/components/book/DatePicker";
 import { TimeSlotPicker } from "@/components/book/TimeSlotPicker";
 import { PageHeader } from "@/components/brand/PageHeader";
 import { Button } from "@/components/ui/button";
-import type { AvailableSlot } from "@/lib/availability";
+import type { AvailableSlot } from "@/lib/booking/types";
 import {
   BookingBottomBar,
   BOOKING_BOTTOM_BAR_PADDING,
@@ -77,7 +77,7 @@ export default function DateTimePage() {
         description="روز و ساعت مناسب را از تقویم انتخاب کنید."
       />
 
-      <DatePicker />
+      <DatePicker barberId={barberId} serviceIds={serviceIds} />
 
       {date && barberId && (
         <section aria-labelledby="time-slots-heading">

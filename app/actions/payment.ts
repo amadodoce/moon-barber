@@ -24,17 +24,32 @@ import {
 import type { Prisma } from "@/app/generated/prisma/client";
 import { logPaymentEvent } from "@/lib/payment-log";
 import { releaseStalePendingAppointments } from "@/lib/appointment-lifecycle";
+import { withTimeLabels } from "@/lib/booking/serializers";
 
 /** Payment with nested appointment, user, and barber relations */
 export type PaymentWithRelations = Payment & {
   appointment: {
     id: string;
     date: Date;
+    startMinute: number;
+    endMinute: number;
     startTime: string;
+    endTime: string;
     user: { name: string; phone: string };
     barber: { user: { name: string } };
+    appointmentServices?: unknown;
   };
 };
+
+function labelPayment(payment: {
+  appointment: { startMinute: number; endMinute: number; [key: string]: unknown };
+  [key: string]: unknown;
+}): PaymentWithRelations {
+  return {
+    ...payment,
+    appointment: withTimeLabels(payment.appointment as { startMinute: number; endMinute: number }),
+  } as PaymentWithRelations;
+}
 
 /** Result returned to client after initiating payment */
 export interface PaymentUrlResult {
@@ -456,7 +471,12 @@ export async function getPayments(
 
     return {
       success: true,
-      data: buildPaginatedResult(payments, total, page, pageSize),
+      data: buildPaginatedResult(
+        payments.map(labelPayment),
+        total,
+        page,
+        pageSize
+      ),
     };
   } catch (error) {
     return handleActionError(error);
@@ -488,7 +508,7 @@ export async function getMyPayments(): Promise<ActionResponse<PaymentWithRelatio
       orderBy: { createdAt: "desc" },
     });
 
-    return { success: true, data: payments };
+    return { success: true, data: payments.map(labelPayment) };
   } catch (error) {
     return handleActionError(error);
   }

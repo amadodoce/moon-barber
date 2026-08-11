@@ -112,8 +112,8 @@ describe("subtractRanges", () => {
 describe("filterPastSlots", () => {
   it("returns all slots for future dates", () => {
     const slots = [
-      { startTime: "09:00", endTime: "10:00" },
-      { startTime: "10:00", endTime: "11:00" },
+      { startTime: "09:00", endTime: "10:00", startMinute: 540, endMinute: 600 },
+      { startTime: "10:00", endTime: "11:00", startMinute: 600, endMinute: 660 },
     ];
     expect(filterPastSlots(slots, "2099-01-01")).toEqual(slots);
   });
@@ -126,8 +126,18 @@ describe("filterPastSlots", () => {
 
     const result = filterPastSlots(
       [
-        { startTime: pastSlot, endTime: minutesToTime(Math.max(0, nowMinutes - 30)) },
-        { startTime: futureSlot, endTime: minutesToTime(Math.min(23 * 60 + 59, nowMinutes + 180)) },
+        {
+          startTime: pastSlot,
+          endTime: minutesToTime(Math.max(0, nowMinutes - 30)),
+          startMinute: timeToMinutes(pastSlot),
+          endMinute: Math.max(0, nowMinutes - 30),
+        },
+        {
+          startTime: futureSlot,
+          endTime: minutesToTime(Math.min(23 * 60 + 59, nowMinutes + 180)),
+          startMinute: timeToMinutes(futureSlot),
+          endMinute: Math.min(23 * 60 + 59, nowMinutes + 180),
+        },
       ],
       today
     );

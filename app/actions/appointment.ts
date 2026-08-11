@@ -17,12 +17,26 @@ import {
   appointmentIdSchema,
   updateAppointmentStatusSchema,
   getAvailableSlotsSchema,
+  getMonthAvailabilitySchema,
+  deriveAppointmentMinutes,
   type CreateAppointmentInput,
   type UpdateAppointmentStatusInput,
   type GetAvailableSlotsInput,
+  type GetMonthAvailabilityInput,
 } from "@/lib/validations/appointment";
-import { getAvailableSlots, parseLocalDate, type AvailableSlot } from "@/lib/availability";
-import { releaseStalePendingAppointments, canBarberUpdateAppointmentStatus } from "@/lib/appointment-lifecycle";
+import { queryAvailableSlots, queryMonthAvailability } from "@/lib/booking/queries";
+import {
+  computeDaySlots,
+  hasAppointmentOverlap,
+  isSlotAvailable,
+} from "@/lib/booking/engine";
+import { parseBookingDate } from "@/lib/booking/timezone";
+import { withTimeLabels } from "@/lib/booking/serializers";
+import type { AvailableSlot, DayAvailability } from "@/lib/booking/types";
+import {
+  releaseStalePendingAppointments,
+  canBarberUpdateAppointmentStatus,
+} from "@/lib/appointment-lifecycle";
 import type { Appointment } from "@/app/generated/prisma/client";
 import {
   buildPaginatedResult,
@@ -32,8 +46,13 @@ import {
 } from "@/lib/pagination";
 import type { Prisma } from "@/app/generated/prisma/client";
 
+type AppointmentWithLabels = Appointment & {
+  startTime: string;
+  endTime: string;
+};
+
 /** Appointment with admin list relations */
-export type AdminAppointment = Appointment & {
+export type AdminAppointment = AppointmentWithLabels & {
   appointmentServices: Array<{
     service: { name: string };
     priceAtBooking: unknown;
@@ -43,6 +62,12 @@ export type AdminAppointment = Appointment & {
   payment: { status: string; amount: unknown } | null;
 };
 
+function labelAppointments<T extends { startMinute: number; endMinute: number }>(
+  rows: T[]
+): (T & { startTime: string; endTime: string })[] {
+  return rows.map(withTimeLabels);
+}
+
 /** Get available booking slots for a barber + services + date */
 export async function getAvailableBookingSlots(
   input: GetAvailableSlotsInput
@@ -50,7 +75,7 @@ export async function getAvailableBookingSlots(
   try {
     const data = getAvailableSlotsSchema.parse(input);
     await releaseStalePendingAppointments();
-    const slots = await getAvailableSlots(
+    const slots = await queryAvailableSlots(
       data.barberId,
       data.serviceIds,
       data.date
@@ -61,29 +86,41 @@ export async function getAvailableBookingSlots(
   }
 }
 
-/** Create a new appointment with overlap prevention */
+/** Get day-level availability for a Jalali month (calendar preview) */
+export async function getMonthAvailability(
+  input: GetMonthAvailabilityInput
+): Promise<ActionResponse<DayAvailability[]>> {
+  try {
+    const data = getMonthAvailabilitySchema.parse(input);
+    await releaseStalePendingAppointments();
+    const days = await queryMonthAvailability(
+      data.barberId,
+      data.serviceIds,
+      data.jalaliYear,
+      data.jalaliMonth
+    );
+    return { success: true, data: days };
+  } catch (error) {
+    return handleActionError(error);
+  }
+}
+
+/** Create a new appointment with advisory lock + full in-transaction validation */
 export async function createAppointment(
   input: CreateAppointmentInput
-): Promise<ActionResponse<Appointment>> {
+): Promise<ActionResponse<AppointmentWithLabels>> {
   try {
     const user = await requireAuth();
-
     const data = createAppointmentSchema.parse(input);
 
-    // Verify barber exists and is active
     const barber = await prisma.barber.findUnique({
       where: { id: data.barberId },
     });
-    if (!barber) {
-      throw new Error("آرایشگر یافت نشد");
-    }
-    if (!barber.isActive) {
-      throw new Error("این آرایشگر در حال حاضر فعال نیست");
-    }
+    if (!barber) throw new Error("آرایشگر یافت نشد");
+    if (!barber.isActive) throw new Error("این آرایشگر در حال حاضر فعال نیست");
 
     await releaseStalePendingAppointments();
 
-    // Verify all services exist and are active
     const services = await prisma.service.findMany({
       where: {
         id: { in: data.serviceIds },
@@ -95,65 +132,76 @@ export async function createAppointment(
       throw new Error("یک یا چند سرویس نامعتبر است");
     }
 
-    // Calculate total duration and end time
     const totalDuration = services.reduce(
       (sum, s) => sum + s.durationMinutes,
       0
     );
-    const startMinutes =
-      parseInt(data.startTime.split(":")[0]) * 60 +
-      parseInt(data.startTime.split(":")[1]);
-    const endMinutes = startMinutes + totalDuration;
-    if (endMinutes >= 24 * 60) {
-      throw new Error("مدت زمان سرویس‌ها از ساعات کاری فراتر می‌رود");
-    }
-    const endTime = `${String(Math.floor(endMinutes / 60)).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
-
-    // Validate selected slot is currently available
-    const availableSlots = await getAvailableSlots(
-      data.barberId,
-      data.serviceIds,
-      data.date
-    );
-    const slotIsAvailable = availableSlots.some(
-      (slot) => slot.startTime === data.startTime
-    );
-    if (!slotIsAvailable) {
-      throw new Error("زمان انتخاب شده دیگر در دسترس نیست. لطفاً زمان دیگری انتخاب کنید");
-    }
-
-    // Calculate total amount for payment
-    const totalAmount = services.reduce(
-      (sum, s) => sum + Number(s.price),
-      0
+    const { startMinute, endMinute } = deriveAppointmentMinutes(
+      data.startTime,
+      totalDuration
     );
 
-    // Create appointment with overlap prevention inside transaction
+    const totalAmount = services.reduce((sum, s) => sum + Number(s.price), 0);
+    const dateObj = parseBookingDate(data.date);
+    const lockKey = `${data.barberId}:${data.date}`;
+
     const appointment = await prisma.$transaction(async (tx) => {
-      const overlapping = await tx.appointment.findFirst({
-        where: {
-          barberId: data.barberId,
-          date: parseLocalDate(data.date),
-          status: { notIn: ["CANCELLED"] },
-          deletedAt: null,
-          OR: [
-            {
-              startTime: { lte: data.startTime },
-              endTime: { gt: data.startTime },
-            },
-            {
-              startTime: { lt: endTime },
-              endTime: { gte: endTime },
-            },
-            {
-              startTime: { gte: data.startTime },
-              endTime: { lte: endTime },
-            },
-          ],
-        },
-      });
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`;
 
-      if (overlapping) {
+      const [workingHours, holidays, existingAppts] = await Promise.all([
+        tx.workingHour.findMany({
+          where: {
+            OR: [{ barberId: data.barberId }, { barberId: null }],
+            isActive: true,
+          },
+        }),
+        tx.holiday.findMany({
+          where: {
+            OR: [{ barberId: data.barberId }, { barberId: null }],
+            date: dateObj,
+          },
+        }),
+        tx.appointment.findMany({
+          where: {
+            barberId: data.barberId,
+            date: dateObj,
+            status: { notIn: ["CANCELLED"] },
+            deletedAt: null,
+          },
+          select: { startMinute: true, endMinute: true },
+        }),
+      ]);
+
+      const slots = computeDaySlots(
+        workingHours.map((wh) => ({
+          barberId: wh.barberId,
+          dayOfWeek: wh.dayOfWeek,
+          startMinute: wh.startMinute,
+          endMinute: wh.endMinute,
+          isRecurring: wh.isRecurring,
+          specificDate: wh.specificDate,
+          isActive: wh.isActive,
+        })),
+        holidays.map((h) => ({
+          barberId: h.barberId,
+          date: h.date,
+          startMinute: h.startMinute,
+          endMinute: h.endMinute,
+          type: h.type,
+        })),
+        existingAppts,
+        data.barberId,
+        data.date,
+        totalDuration
+      );
+
+      if (!isSlotAvailable(slots, startMinute)) {
+        throw new Error(
+          "زمان انتخاب شده دیگر در دسترس نیست. لطفاً زمان دیگری انتخاب کنید"
+        );
+      }
+
+      if (hasAppointmentOverlap(existingAppts, startMinute, endMinute)) {
         throw new Error(
           "این بازه زمانی قبلاً رزرو شده است. لطفاً زمان دیگری انتخاب کنید"
         );
@@ -163,9 +211,9 @@ export async function createAppointment(
         data: {
           userId: user.userId,
           barberId: data.barberId,
-          date: parseLocalDate(data.date),
-          startTime: data.startTime,
-          endTime,
+          date: dateObj,
+          startMinute,
+          endMinute,
           notes: data.notes,
           status: "PENDING",
         },
@@ -193,39 +241,28 @@ export async function createAppointment(
 
     revalidatePath("/customer");
     revalidatePath("/admin/appointments");
-
-    // Send notification (non-blocking)
     void notifyAppointmentCreated(appointment.id);
 
-    return { success: true, data: appointment };
+    return { success: true, data: withTimeLabels(appointment) };
   } catch (error) {
     return handleActionError(error);
   }
 }
 
-/** Cancel an appointment (customer can cancel their own, admin can cancel any) */
 export async function cancelAppointment(
   input: { id: string }
-): Promise<ActionResponse<Appointment>> {
+): Promise<ActionResponse<AppointmentWithLabels>> {
   try {
     const user = await requireAuth();
-
     const { id } = appointmentIdSchema.parse(input);
 
-    const appointment = await prisma.appointment.findUnique({
-      where: { id },
-    });
-
+    const appointment = await prisma.appointment.findUnique({ where: { id } });
     if (!appointment || appointment.deletedAt) {
       throw new Error("نوبت یافت نشد");
     }
-
-    // Only the owner or admin can cancel
     if (appointment.userId !== user.userId && user.role !== "ADMIN") {
       throw new Error("FORBIDDEN");
     }
-
-    // Can only cancel pending or confirmed appointments
     if (
       appointment.status !== "PENDING" &&
       appointment.status !== "CONFIRMED"
@@ -238,54 +275,43 @@ export async function cancelAppointment(
         where: { id },
         data: { status: "CANCELLED" },
       });
-
       await tx.payment.updateMany({
-        where: {
-          appointmentId: id,
-          status: "PENDING",
-        },
+        where: { appointmentId: id, status: "PENDING" },
         data: { status: "FAILED" },
       });
-
       return appt;
     });
 
     revalidatePath("/customer");
     revalidatePath("/admin/appointments");
-
-    // Send notification (non-blocking)
     void notifyAppointmentCancelled(id);
 
-    return { success: true, data: updated };
+    return { success: true, data: withTimeLabels(updated) };
   } catch (error) {
     return handleActionError(error);
   }
 }
 
-/** Update appointment status (ADMIN or owning BARBER for COMPLETED/NO_SHOW) */
 export async function updateAppointmentStatus(
   input: UpdateAppointmentStatusInput
-): Promise<ActionResponse<Appointment>> {
+): Promise<ActionResponse<AppointmentWithLabels>> {
   try {
     const user = await requireAuth();
-
     const data = updateAppointmentStatusSchema.parse(input);
 
     const appointment = await prisma.appointment.findUnique({
       where: { id: data.id },
     });
-
     if (!appointment || appointment.deletedAt) {
       throw new Error("نوبت یافت نشد");
     }
 
     if (user.role === "ADMIN") {
-      // Full status control for admins
+      // ok
     } else if (user.role === "BARBER") {
       const barber = await prisma.barber.findUnique({
         where: { userId: user.userId },
       });
-
       if (
         !barber ||
         !canBarberUpdateAppointmentStatus(
@@ -307,47 +333,41 @@ export async function updateAppointmentStatus(
 
     revalidatePath("/admin/appointments");
     revalidatePath("/barber");
-    return { success: true, data: updated };
+    return { success: true, data: withTimeLabels(updated) };
   } catch (error) {
     return handleActionError(error);
   }
 }
 
-/** Get current user's appointments */
-export async function getMyAppointments(): Promise<ActionResponse<Appointment[]>> {
+export async function getMyAppointments(): Promise<
+  ActionResponse<(AppointmentWithLabels & {
+    payment: unknown;
+    appointmentServices: unknown;
+    barber: unknown;
+  })[]>
+> {
   try {
     const user = await requireAuth();
-
     const appointments = await prisma.appointment.findMany({
-      where: {
-        userId: user.userId,
-        deletedAt: null,
-      },
+      where: { userId: user.userId, deletedAt: null },
       include: {
         payment: true,
-        appointmentServices: {
-          include: { service: true },
-        },
-        barber: {
-          include: { user: { select: { name: true } } },
-        },
+        appointmentServices: { include: { service: true } },
+        barber: { include: { user: { select: { name: true } } } },
       },
-      orderBy: [{ date: "desc" }, { startTime: "desc" }],
+      orderBy: [{ date: "desc" }, { startMinute: "desc" }],
     });
-
-    return { success: true, data: appointments };
+    return { success: true, data: labelAppointments(appointments) };
   } catch (error) {
     return handleActionError(error);
   }
 }
 
-/** Get appointments for admin with optional pagination, search, and status filter */
 export async function getAllAppointments(
   params: ListQueryParams = {}
 ): Promise<ActionResponse<PaginatedResult<AdminAppointment>>> {
   try {
     await requireAdmin();
-
     const { page, pageSize, status, search } = normalizeListQuery(params);
 
     const where: Prisma.AppointmentWhereInput = {
@@ -377,12 +397,10 @@ export async function getAllAppointments(
             include: { service: { select: { name: true } } },
           },
           user: { select: { name: true, phone: true } },
-          barber: {
-            include: { user: { select: { name: true } } },
-          },
+          barber: { include: { user: { select: { name: true } } } },
           payment: { select: { status: true, amount: true } },
         },
-        orderBy: [{ date: "desc" }, { startTime: "desc" }],
+        orderBy: [{ date: "desc" }, { startMinute: "desc" }],
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),
@@ -390,32 +408,32 @@ export async function getAllAppointments(
 
     return {
       success: true,
-      data: buildPaginatedResult(appointments, total, page, pageSize),
+      data: buildPaginatedResult(
+        labelAppointments(appointments) as AdminAppointment[],
+        total,
+        page,
+        pageSize
+      ),
     };
   } catch (error) {
     return handleActionError(error);
   }
 }
 
-/** Soft-delete an appointment (ADMIN only) */
 export async function deleteAppointment(
   input: { id: string }
 ): Promise<ActionResponse> {
   try {
     await requireAdmin();
-
     const { id } = appointmentIdSchema.parse(input);
-
     const existing = await prisma.appointment.findUnique({ where: { id } });
     if (!existing || existing.deletedAt) {
       throw new Error("نوبت یافت نشد");
     }
-
     await prisma.appointment.update({
       where: { id },
       data: { deletedAt: new Date() },
     });
-
     revalidatePath("/admin/appointments");
     return { success: true };
   } catch (error) {
@@ -423,19 +441,18 @@ export async function deleteAppointment(
   }
 }
 
-/** Get appointments for the logged-in barber */
-export async function getBarberAppointments(): Promise<ActionResponse<Appointment[]>> {
+export async function getBarberAppointments(): Promise<
+  ActionResponse<(AppointmentWithLabels & {
+    user: { name: string; phone: string };
+    appointmentServices: unknown;
+  })[]>
+> {
   try {
     const user = await requireAuth();
-
-    // Find the barber record for this user
     const barber = await prisma.barber.findUnique({
       where: { userId: user.userId },
     });
-
-    if (!barber) {
-      throw new Error("پروفایل آرایشگر یافت نشد");
-    }
+    if (!barber) throw new Error("پروفایل آرایشگر یافت نشد");
 
     const appointments = await prisma.appointment.findMany({
       where: {
@@ -449,10 +466,10 @@ export async function getBarberAppointments(): Promise<ActionResponse<Appointmen
           include: { service: { select: { name: true } } },
         },
       },
-      orderBy: [{ date: "asc" }, { startTime: "asc" }],
+      orderBy: [{ date: "asc" }, { startMinute: "asc" }],
     });
 
-    return { success: true, data: appointments };
+    return { success: true, data: labelAppointments(appointments) };
   } catch (error) {
     return handleActionError(error);
   }

@@ -70,34 +70,34 @@ enum ContentType {
 
 /// Core user identity. Phone + password auth. Soft-deletable.
 model User {
-  id        String   @id @default(cuid())
-  phone     String   @unique
+  id        String    @id @default(cuid())
+  phone     String    @unique
   password  String
   name      String
-  role      UserRole @default(CUSTOMER)
+  role      UserRole  @default(CUSTOMER)
   avatar    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   // Relations
-  barber      Barber?       @relation("UserBarber")
+  barber       Barber?       @relation("UserBarber")
   appointments Appointment[]
 }
 
 /// Extended profile for staff members. Linked 1:1 to a User with role=BARBER.
 /// Each barber has their own working hours and appointments.
 model Barber {
-  id              String  @id @default(cuid())
-  userId          String  @unique
+  id              String   @id @default(cuid())
+  userId          String   @unique
   bio             String?
   experienceYears Int?
-  isActive        Boolean @default(true)
+  isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   // Relations
-  user         User           @relation("UserBarber", fields: [userId], references: [id])
+  user         User          @relation("UserBarber", fields: [userId], references: [id])
   workingHours WorkingHour[]
   holidays     Holiday[]
   appointments Appointment[]
@@ -106,15 +106,15 @@ model Barber {
 /// Barbershop services with duration and price. Soft-deletable.
 /// Admin defines these; customers select them when booking.
 model Service {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   name            String
   description     String?
-  durationMinutes Int      // e.g. 30, 45, 60
-  price           Decimal  @db.Decimal(10, 2)
+  durationMinutes Int // e.g. 30, 45, 60
+  price           Decimal   @db.Decimal(10, 2)
   imageUrl        String?
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
   deletedAt       DateTime?
 
   // Relations
@@ -124,17 +124,18 @@ model Service {
 /// Working hours for the shop (barberId=null) or a specific barber.
 /// Supports multiple time ranges per day (e.g. 09:00-12:00 and 14:00-18:00).
 /// Each record is one continuous time range on one day.
+/// Times stored as minutes from midnight (Tehran local).
 model WorkingHour {
-  id          String    @id @default(cuid())
-  barberId    String?   // null = shop-wide hours
-  dayOfWeek   DayOfWeek
-  startTime   String    // "HH:mm" format, e.g. "09:00"
-  endTime     String    // "HH:mm" format, e.g. "12:00"
-  isRecurring Boolean   @default(true)
-  specificDate DateTime? // null for recurring; set for one-off overrides
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id           String    @id @default(cuid())
+  barberId     String? // null = shop-wide hours
+  dayOfWeek    DayOfWeek
+  startMinute  Int // minutes from midnight, e.g. 540 = 09:00
+  endMinute    Int // minutes from midnight, e.g. 720 = 12:00
+  isRecurring  Boolean   @default(true)
+  specificDate DateTime? @db.Date // null for recurring; set for one-off overrides
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   // Relations
   barber Barber? @relation(fields: [barberId], references: [id])
@@ -146,11 +147,11 @@ model WorkingHour {
 /// FULL_DAY closes the entire day; TIME_RANGE closes only the given hours.
 model Holiday {
   id          String      @id @default(cuid())
-  barberId    String?     // null = shop-wide holiday
+  barberId    String? // null = shop-wide holiday
   title       String
   date        DateTime    @db.Date
-  startTime   String?     // "HH:mm" — only for TIME_RANGE
-  endTime     String?     // "HH:mm" — only for TIME_RANGE
+  startMinute Int? // minutes from midnight — only for TIME_RANGE
+  endMinute   Int? // minutes from midnight — only for TIME_RANGE
   type        HolidayType @default(FULL_DAY)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -163,28 +164,27 @@ model Holiday {
 
 /// A customer's booking. Links to a barber, a date, and a time range.
 /// Multiple services per appointment via AppointmentService.
-/// Overlap prevention is enforced at the application layer by querying
-/// existing appointments for the same barber + date and checking time ranges.
+/// Overlap prevention: advisory lock + in-transaction slot revalidation.
 model Appointment {
-  id        String            @id @default(cuid())
-  userId    String
-  barberId  String
-  date      DateTime          @db.Date
-  startTime String            // "HH:mm"
-  endTime   String            // "HH:mm"
-  status    AppointmentStatus @default(PENDING)
-  notes     String?
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
-  deletedAt DateTime?
+  id          String            @id @default(cuid())
+  userId      String
+  barberId    String
+  date        DateTime          @db.Date
+  startMinute Int // minutes from midnight (Tehran local)
+  endMinute   Int
+  status      AppointmentStatus @default(PENDING)
+  notes       String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  deletedAt   DateTime?
 
   // Relations
-  user                User                @relation(fields: [userId], references: [id])
-  barber              Barber              @relation(fields: [barberId], references: [id])
+  user                User                 @relation(fields: [userId], references: [id])
+  barber              Barber               @relation(fields: [barberId], references: [id])
   appointmentServices AppointmentService[]
   payment             Payment?
 
-  @@index([barberId, date]) // Fast overlap checks per barber per day
+  @@index([barberId, date, status])
   @@index([userId])
   @@index([status])
 }
@@ -213,8 +213,8 @@ model Payment {
   amount            Decimal       @db.Decimal(10, 2)
   status            PaymentStatus @default(PENDING)
   method            PaymentMethod @default(ZARINPAL)
-  zarinpalAuthority String?       // Latest authority (legacy + quick lookup)
-  zarinpalRefId     String?       // Reference ID from Zarinpal verification
+  zarinpalAuthority String? // Latest authority (legacy + quick lookup)
+  zarinpalRefId     String? // Reference ID from Zarinpal verification
   paidAt            DateTime?
   needsReview       Boolean       @default(false)
   reviewNote        String?

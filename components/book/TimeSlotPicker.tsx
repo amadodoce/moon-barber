@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Clock, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useBookingStore } from "@/stores/booking";
@@ -16,6 +17,15 @@ const shimmerClass =
 
 export function TimeSlotPicker({ slots, loading, error }: TimeSlotPickerProps) {
   const { startTime, setTime } = useBookingStore();
+
+  useEffect(() => {
+    if (startTime && !loading && slots.length > 0) {
+      const stillValid = slots.some((s) => s.startTime === startTime);
+      if (!stillValid) {
+        setTime(null, null);
+      }
+    }
+  }, [slots, loading, startTime, setTime]);
 
   if (loading) {
     return (
@@ -120,7 +130,7 @@ function SlotButton({
     <button
       type="button"
       aria-pressed={isSelected}
-      aria-label={`ساعت ${slot.startTime}`}
+      aria-label={`ساعت ${slot.startTime} تا ${slot.endTime}`}
       onClick={onSelect}
       className={cn(
         "rounded-[var(--radius-input)] border px-3 py-2.5 text-sm font-medium transition-colors duration-[var(--dur-short)]",
@@ -131,6 +141,8 @@ function SlotButton({
       )}
     >
       {slot.startTime}
+      <span className="mx-0.5 text-[10px] opacity-70">–</span>
+      {slot.endTime}
     </button>
   );
 }

@@ -10,9 +10,7 @@ import { HolidayForm } from "@/components/admin/HolidayForm";
 import { showSuccess, showError } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { WorkingHour } from "@/app/generated/prisma/client";
 import { formatFaDate } from "@/lib/dates";
-import type { Holiday } from "@/app/generated/prisma/client";
 import {
   EmptyState,
   PageHeader,
@@ -31,11 +29,30 @@ const DAY_LABELS: Record<string, string> = {
   FRIDAY: "جمعه",
 };
 
+type WorkingHourRow = {
+  id: string;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  isRecurring: boolean;
+  specificDateStr: string | null;
+  isActive: boolean;
+};
+
+type HolidayRow = {
+  id: string;
+  title: string;
+  date: Date;
+  type: string;
+  startTime: string | null;
+  endTime: string | null;
+};
+
 export default function SchedulePage() {
   const [barbers, setBarbers] = useState<BarberWithUser[]>([]);
   const [selectedBarber, setSelectedBarber] = useState<string>("shop");
-  const [workingHours, setWorkingHours] = useState<WorkingHour[]>([]);
-  const [holidays, setHolidays] = useState<Holiday[]>([]);
+  const [workingHours, setWorkingHours] = useState<WorkingHourRow[]>([]);
+  const [holidays, setHolidays] = useState<HolidayRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [whDialogOpen, setWhDialogOpen] = useState(false);
   const [holDialogOpen, setHolDialogOpen] = useState(false);
@@ -191,9 +208,9 @@ export default function SchedulePage() {
                       <p className="text-sm text-[var(--color-ink-muted)]">
                         {wh.startTime} – {wh.endTime}
                       </p>
-                      {wh.specificDate ? (
+                      {wh.specificDateStr ? (
                         <p className="mt-1 text-xs text-[var(--color-ink-faint)]">
-                          تاریخ خاص: {formatFaDate(wh.specificDate)}
+                          تاریخ خاص: {formatFaDate(wh.specificDateStr)}
                         </p>
                       ) : null}
                     </div>

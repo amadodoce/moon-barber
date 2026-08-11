@@ -11,105 +11,137 @@ import {
   createHolidaySchema,
   updateHolidaySchema,
   holidayIdSchema,
+  toHolidayMinutes,
   type CreateHolidayInput,
   type UpdateHolidayInput,
 } from "@/lib/validations/holiday";
+import { parseBookingDate } from "@/lib/booking/timezone";
+import { minutesToTime } from "@/lib/booking/time";
 import type { Holiday } from "@/app/generated/prisma/client";
-import { parseLocalDate } from "@/lib/dates";
 
-/** Create a new holiday (ADMIN only) */
+type HolidayWithLabels = Holiday & {
+  startTime: string | null;
+  endTime: string | null;
+};
+
+function labelHoliday(h: Holiday): HolidayWithLabels {
+  return {
+    ...h,
+    startTime: h.startMinute != null ? minutesToTime(h.startMinute) : null,
+    endTime: h.endMinute != null ? minutesToTime(h.endMinute) : null,
+  };
+}
+
 export async function createHoliday(
   input: CreateHolidayInput
-): Promise<ActionResponse<Holiday>> {
+): Promise<ActionResponse<HolidayWithLabels>> {
   try {
     await requireAdmin();
-
     const data = createHolidaySchema.parse(input);
 
     if (data.barberId) {
       const barber = await prisma.barber.findUnique({
         where: { id: data.barberId },
       });
-      if (!barber) {
-        throw new Error("آرایشگر یافت نشد");
-      }
+      if (!barber) throw new Error("آرایشگر یافت نشد");
     }
+
+    const { startMinute, endMinute } = toHolidayMinutes({
+      type: data.type ?? "FULL_DAY",
+      startTime: data.startTime,
+      endTime: data.endTime,
+    });
 
     const holiday = await prisma.holiday.create({
       data: {
         barberId: data.barberId ?? null,
         title: data.title,
-        date: parseLocalDate(data.date),
-        startTime: data.startTime ?? null,
-        endTime: data.endTime ?? null,
+        date: parseBookingDate(data.date),
+        startMinute,
+        endMinute,
         type: data.type ?? "FULL_DAY",
       },
     });
 
-    revalidatePath("/admin/holidays");
-    return { success: true, data: holiday };
+    revalidatePath("/admin/schedule");
+    return { success: true, data: labelHoliday(holiday) };
   } catch (error) {
     return handleActionError(error);
   }
 }
 
-/** Update a holiday (ADMIN only) */
 export async function updateHoliday(
   input: UpdateHolidayInput
-): Promise<ActionResponse<Holiday>> {
+): Promise<ActionResponse<HolidayWithLabels>> {
   try {
     await requireAdmin();
-
     const data = updateHolidaySchema.parse(input);
     const { id, ...updateData } = data;
 
     const existing = await prisma.holiday.findUnique({ where: { id } });
-    if (!existing) {
-      throw new Error("تعطیلات یافت نشد");
+    if (!existing) throw new Error("تعطیلات یافت نشد");
+
+    const type = updateData.type ?? existing.type;
+    let startMinute = existing.startMinute;
+    let endMinute = existing.endMinute;
+
+    if (type === "FULL_DAY") {
+      startMinute = null;
+      endMinute = null;
+    } else if (updateData.startTime || updateData.endTime) {
+      const startTime =
+        updateData.startTime ??
+        (existing.startMinute != null
+          ? minutesToTime(existing.startMinute)
+          : "09:00");
+      const endTime =
+        updateData.endTime ??
+        (existing.endMinute != null
+          ? minutesToTime(existing.endMinute)
+          : "17:00");
+      const mins = toHolidayMinutes({ type: "TIME_RANGE", startTime, endTime });
+      startMinute = mins.startMinute;
+      endMinute = mins.endMinute;
     }
 
     const holiday = await prisma.holiday.update({
       where: { id },
       data: {
-        ...updateData,
-        date: updateData.date ? parseLocalDate(updateData.date) : undefined,
+        title: updateData.title,
+        date: updateData.date ? parseBookingDate(updateData.date) : undefined,
+        type: updateData.type,
+        startMinute,
+        endMinute,
       },
     });
 
-    revalidatePath("/admin/holidays");
-    return { success: true, data: holiday };
+    revalidatePath("/admin/schedule");
+    return { success: true, data: labelHoliday(holiday) };
   } catch (error) {
     return handleActionError(error);
   }
 }
 
-/** Delete a holiday (ADMIN only) */
 export async function deleteHoliday(
   input: { id: string }
 ): Promise<ActionResponse> {
   try {
     await requireAdmin();
-
     const { id } = holidayIdSchema.parse(input);
-
     const existing = await prisma.holiday.findUnique({ where: { id } });
-    if (!existing) {
-      throw new Error("تعطیلات یافت نشد");
-    }
+    if (!existing) throw new Error("تعطیلات یافت نشد");
 
     await prisma.holiday.delete({ where: { id } });
-
-    revalidatePath("/admin/holidays");
+    revalidatePath("/admin/schedule");
     return { success: true };
   } catch (error) {
     return handleActionError(error);
   }
 }
 
-/** Get all holidays, optionally filtered by barberId */
 export async function getHolidays(
   barberId?: string
-): Promise<ActionResponse<Holiday[]>> {
+): Promise<ActionResponse<HolidayWithLabels[]>> {
   try {
     const holidays = await prisma.holiday.findMany({
       where: barberId
@@ -117,8 +149,7 @@ export async function getHolidays(
         : { barberId: null },
       orderBy: { date: "asc" },
     });
-
-    return { success: true, data: holidays };
+    return { success: true, data: holidays.map(labelHoliday) };
   } catch (error) {
     return handleActionError(error);
   }
