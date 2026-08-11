@@ -6,7 +6,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Stack
 
-- **Next.js 16.2** App Router, **React 19.2**, **TypeScript 5**
+- **Next.js 16** App Router, **React 19.2**, **TypeScript 5**
 - **Tailwind CSS v4** — uses `@import "tailwindcss"` and `@theme inline` in CSS, NOT the old `@tailwind` directives
 - **Prisma 7.8** with Neon serverless Postgres (`@prisma/adapter-neon`)
 - **next-auth v4** for auth
@@ -21,10 +21,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 npm run dev          # Start dev server (Turbopack is default in v16)
 npm run build        # Production build (Turbopack by default)
 npm run lint         # ESLint directly — `next lint` was removed in v16
+npm run typecheck    # TypeScript check
+npm run test         # Vitest unit tests
 ```
-
-There is **no `typecheck` script**. Run `npx tsc --noEmit` to type-check.
-There is **no test script**. No test framework is configured yet.
 
 ## Prisma
 
@@ -57,17 +56,16 @@ Full reference: `node_modules/next/dist/docs/01-app/02-guides/upgrading/version-
 
 ## Project Structure
 
-Early-stage scaffold. Key directories:
-
 ```
-app/           # App Router pages and layouts
-components/    # (empty) — shared React components go here
-lib/           # (empty) — shared utilities, DB clients, helpers
-hooks/         # (empty) — custom React hooks
-stores/        # (empty) — Zustand stores
-types/         # (empty) — shared TypeScript types
-utils/         # (empty) — utility functions
-prisma/        # Prisma schema and migrations
+app/           # App Router pages, actions, API routes
+components/    # Shared React components
+lib/           # Utilities, auth, Prisma client, validations
+hooks/         # Custom React hooks
+stores/        # Zustand stores
+types/         # Shared TypeScript types
+prisma/        # Prisma schema
+__tests__/     # Vitest unit tests
+docs/          # Audit backlog and project docs
 ```
 
 Path alias: `@/*` maps to project root.
@@ -78,4 +76,5 @@ Path alias: `@/*` maps to project root.
 - The Prisma client import path is `@/app/generated/prisma` (after `npx prisma generate`). This directory is gitignored.
 - `.env` files are gitignored (`.env*` pattern). Never commit secrets.
 - Dev and build now use separate output directories (`.next/dev` vs `.next`), so they can run concurrently.
-- No CI, no pre-commit hooks, no linting in build. Lint is manual via `npm run lint`.
+- CI runs lint, typecheck, test, and build via `.github/workflows/ci.yml`.
+- Bug audit backlog: `docs/AUDIT_BACKLOG.md`.

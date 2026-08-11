@@ -8,14 +8,17 @@ import {
   SheetContent,
 } from "@/components/ui/sheet";
 
+function readSidebarExpanded(): boolean {
+  if (typeof window === "undefined") return true;
+  const saved = localStorage.getItem("admin-sidebar-expanded");
+  return saved !== null ? saved === "true" : true;
+}
+
 export function AdminHeader() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [sidebarExpanded, setSidebarExpanded] = useState(readSidebarExpanded);
 
   useEffect(() => {
-    const saved = localStorage.getItem("admin-sidebar-expanded");
-    if (saved !== null) setSidebarExpanded(saved === "true");
-
     const observer = new MutationObserver(() => {
       const sidebar = document.querySelector("[data-admin-sidebar]");
       if (sidebar) {
@@ -87,12 +90,9 @@ export function AdminHeader() {
 }
 
 export function AdminSidebarSpacer() {
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [sidebarExpanded, setSidebarExpanded] = useState(readSidebarExpanded);
 
   useEffect(() => {
-    const saved = localStorage.getItem("admin-sidebar-expanded");
-    if (saved !== null) setSidebarExpanded(saved === "true");
-
     const observer = new MutationObserver(() => {
       const sidebar = document.querySelector("[data-admin-sidebar]");
       if (sidebar) {
