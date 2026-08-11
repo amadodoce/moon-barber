@@ -82,6 +82,6 @@ Path alias: `@/*` maps to project root.
 ## Git workflow
 
 - Use focused branches (`fix/`, `feat/`, `chore/`) for changes.
-- When a task is verified, **merge into `main` and push `origin main` automatically** so Vercel deploys.
+- When a task is verified, **merge into `main` and push `origin main`**, then **merge `main` into `master` and push `origin master`** — Vercel production deploys from `master`, not `main`.
 - Run `npm run typecheck`, `npm run lint`, `npm run test`, and `npm run build` before merging when the change affects build/runtime.
 - Do not leave completed fixes unmerged on feature branches.
