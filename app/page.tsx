@@ -9,6 +9,8 @@ import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
 import { getLandingData } from "@/lib/landing";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const data = await getLandingData();
 
@@ -16,10 +18,10 @@ export default async function Home() {
     <main>
       <Navbar />
       <Hero shopName={data.content.shop_name} subtitle={data.content.hero_subtitle} />
-      <Services services={data.services.map(s => ({
+      <Services services={data.services.map((s) => ({
         name: s.name,
         description: s.description,
-        price: Number(s.price).toLocaleString("fa-IR"),
+        price: s.price.toLocaleString("fa-IR"),
         duration: `${s.durationMinutes} دقیقه`,
       }))} />
       <HowItWorks />
