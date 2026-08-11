@@ -8,9 +8,13 @@ import { Button } from "@/components/ui/button";
 
 interface PaymentRetryButtonProps {
   appointmentId: string;
+  label?: string;
 }
 
-export function PaymentRetryButton({ appointmentId }: PaymentRetryButtonProps) {
+export function PaymentRetryButton({
+  appointmentId,
+  label = "تلاش مجدد پرداخت",
+}: PaymentRetryButtonProps) {
   const [loading, setLoading] = useState(false);
 
   const handleRetry = async () => {
@@ -27,12 +31,12 @@ export function PaymentRetryButton({ appointmentId }: PaymentRetryButtonProps) {
   return (
     <Button
       variant="brand"
-      className="w-full"
+      className="w-full min-h-11"
       onClick={() => void handleRetry()}
       disabled={loading}
     >
-      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-      تلاش مجدد پرداخت
+      {loading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
+      {label}
     </Button>
   );
 }

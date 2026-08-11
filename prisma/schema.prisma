@@ -36,6 +36,14 @@ enum PaymentMethod {
   ZARINPAL
 }
 
+enum PaymentAttemptStatus {
+  INITIATED
+  REDIRECTED
+  CANCELLED
+  VERIFIED
+  FAILED
+}
+
 enum DayOfWeek {
   MONDAY
   TUESDAY
@@ -200,19 +208,41 @@ model AppointmentService {
 /// Payment record for an appointment. One-to-one relationship.
 /// Integrates with Zarinpal for online payment processing.
 model Payment {
-  id               String        @id @default(cuid())
-  appointmentId    String        @unique
-  amount           Decimal       @db.Decimal(10, 2)
-  status           PaymentStatus @default(PENDING)
-  method           PaymentMethod @default(ZARINPAL)
-  zarinpalAuthority String?      // Authority code from Zarinpal redirect
-  zarinpalRefId    String?       // Reference ID from Zarinpal verification
-  paidAt           DateTime?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  id                String        @id @default(cuid())
+  appointmentId     String        @unique
+  amount            Decimal       @db.Decimal(10, 2)
+  status            PaymentStatus @default(PENDING)
+  method            PaymentMethod @default(ZARINPAL)
+  zarinpalAuthority String?       // Latest authority (legacy + quick lookup)
+  zarinpalRefId     String?       // Reference ID from Zarinpal verification
+  paidAt            DateTime?
+  needsReview       Boolean       @default(false)
+  reviewNote        String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 
   // Relations
-  appointment Appointment @relation(fields: [appointmentId], references: [id])
+  appointment Appointment      @relation(fields: [appointmentId], references: [id])
+  attempts    PaymentAttempt[]
+}
+
+/// Individual Zarinpal gateway attempt for a payment aggregate.
+model PaymentAttempt {
+  id             String               @id @default(cuid())
+  paymentId      String
+  authority      String               @unique
+  amountRials    Int
+  status         PaymentAttemptStatus @default(INITIATED)
+  gatewayCode    Int?
+  gatewayMessage String?
+  refId          String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  completedAt    DateTime?
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId])
 }
 
 /// Simple CMS key-value store for the landing page content.

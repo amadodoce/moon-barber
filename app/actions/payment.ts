@@ -22,6 +22,8 @@ import {
   type PaginatedResult,
 } from "@/lib/pagination";
 import type { Prisma } from "@/app/generated/prisma/client";
+import { logPaymentEvent } from "@/lib/payment-log";
+import { releaseStalePendingAppointments } from "@/lib/appointment-lifecycle";
 
 /** Payment with nested appointment, user, and barber relations */
 export type PaymentWithRelations = Payment & {
@@ -40,32 +42,64 @@ export interface PaymentUrlResult {
   appointmentId: string;
 }
 
+export type PaymentCallbackOutcome =
+  | "success"
+  | "failed"
+  | "cancelled"
+  | "late_paid"
+  | "pending_review";
+
+export interface PaymentCallbackResult {
+  outcome: PaymentCallbackOutcome;
+  appointmentId: string;
+}
+
+async function findPaymentContextByAuthority(authority: string) {
+  const attempt = await prisma.paymentAttempt.findUnique({
+    where: { authority },
+    include: {
+      payment: {
+        include: { appointment: true },
+      },
+    },
+  });
+
+  if (attempt) {
+    return {
+      attempt,
+      payment: attempt.payment,
+      appointment: attempt.payment.appointment,
+    };
+  }
+
+  const payment = await prisma.payment.findFirst({
+    where: { zarinpalAuthority: authority },
+    include: { appointment: true },
+  });
+
+  if (!payment) return null;
+
+  return { attempt: null, payment, appointment: payment.appointment };
+}
+
 /**
  * Initiate a Zarinpal payment for an appointment.
- *
- * Flow:
- * 1. Verify user owns the appointment
- * 2. Calculate total amount from AppointmentService records
- * 3. Request authority from Zarinpal
- * 4. Save authority to Payment record
- * 5. Return payment URL for client-side redirect
+ * Creates a new PaymentAttempt per gateway session so retries never overwrite authority.
  */
 export async function initiatePayment(
   input: InitiatePaymentInput
 ): Promise<ActionResponse<PaymentUrlResult>> {
   try {
     const user = await requireAuth();
+    await releaseStalePendingAppointments();
 
     const data = initiatePaymentSchema.parse(input);
 
-    // Find the appointment with its payment and services
     const appointment = await prisma.appointment.findUnique({
       where: { id: data.appointmentId },
       include: {
         payment: true,
-        appointmentServices: {
-          include: { service: true },
-        },
+        appointmentServices: { include: { service: true } },
       },
     });
 
@@ -73,34 +107,32 @@ export async function initiatePayment(
       throw new Error("نوبت یافت نشد");
     }
 
-    // Only the appointment owner can pay
     if (appointment.userId !== user.userId) {
       throw new Error("FORBIDDEN");
     }
 
-    // Appointment must be PENDING
     if (appointment.status !== "PENDING") {
       throw new Error("این نوبت قابل پرداخت نیست");
     }
 
-    // Payment must exist and be PENDING (created with appointment)
-    if (!appointment.payment || appointment.payment.status !== "PENDING") {
+    if (!appointment.payment) {
+      throw new Error("پرداخت برای این نوبت یافت نشد");
+    }
+
+    if (appointment.payment.status === "PAID") {
+      throw new Error("این نوبت قبلاً پرداخت شده است");
+    }
+
+    if (appointment.payment.status !== "PENDING") {
       throw new Error("پرداخت برای این نوبت فعال نیست");
     }
 
-    // Calculate total amount from services
-    const totalAmount = appointment.appointmentServices.reduce(
-      (sum, as) => sum + Number(as.priceAtBooking),
-      0
-    );
-
-    // Build description for Zarinpal
+    const totalAmount = Number(appointment.payment.amount);
     const serviceNames = appointment.appointmentServices
       .map((as) => as.service.name)
       .join(", ");
     const description = `رزرو مون باربر - ${serviceNames}`;
 
-    // Request payment from Zarinpal
     const result = await requestPayment(
       totalAmount,
       description,
@@ -109,15 +141,44 @@ export async function initiatePayment(
     );
 
     if (!result.success) {
+      logPaymentEvent("initiate_failed", {
+        appointmentId: appointment.id,
+        paymentId: appointment.payment.id,
+        gatewayCode: result.code,
+        errorKind: result.kind,
+      });
       throw new Error(
         result.errors[0] || "خطا در ارتباط با درگاه پرداخت"
       );
     }
 
-    // Save authority to Payment record
-    await prisma.payment.update({
-      where: { id: appointment.payment.id },
-      data: { zarinpalAuthority: result.authority },
+    const amountRials = Math.round(totalAmount * 10);
+
+    const attempt = await prisma.$transaction(async (tx) => {
+      const created = await tx.paymentAttempt.create({
+        data: {
+          paymentId: appointment.payment!.id,
+          authority: result.authority,
+          amountRials,
+          status: "INITIATED",
+          gatewayCode: result.code ?? 100,
+          gatewayMessage: result.message,
+        },
+      });
+
+      await tx.payment.update({
+        where: { id: appointment.payment!.id },
+        data: { zarinpalAuthority: result.authority },
+      });
+
+      return created;
+    });
+
+    logPaymentEvent("initiate_success", {
+      appointmentId: appointment.id,
+      paymentId: appointment.payment.id,
+      attemptId: attempt.id,
+      authority: result.authority,
     });
 
     return {
@@ -134,113 +195,178 @@ export async function initiatePayment(
 
 /**
  * Handle the payment callback from Zarinpal.
- *
- * Called by the API route when Zarinpal redirects back.
- * Verifies the payment and updates statuses accordingly.
- *
- * @param authority - Authority code from callback
- * @param status - "OK" for success, anything else for failure
+ * NOK cancels only the attempt; appointment stays payable until TTL expiry.
  */
 export async function handlePaymentCallback(
   authority: string,
   status: string
-): Promise<ActionResponse<{ success: boolean; appointmentId: string }>> {
+): Promise<ActionResponse<PaymentCallbackResult>> {
   try {
-    // Find payment by authority code
-    const payment = await prisma.payment.findFirst({
-      where: { zarinpalAuthority: authority },
-      include: { appointment: true },
-    });
+    const ctx = await findPaymentContextByAuthority(authority);
 
-    if (!payment) {
+    if (!ctx) {
+      logPaymentEvent("callback_unknown_authority", { authority });
       throw new Error("پرداخت یافت نشد");
     }
 
-    // Idempotent: if already processed, return current status
+    const { payment, appointment, attempt } = ctx;
+
+    logPaymentEvent("callback_received", {
+      appointmentId: appointment.id,
+      paymentId: payment.id,
+      attemptId: attempt?.id,
+      authority,
+      status,
+    });
+
     if (payment.status === "PAID") {
+      const outcome: PaymentCallbackOutcome = payment.needsReview
+        ? "late_paid"
+        : "success";
       return {
         success: true,
-        data: { success: true, appointmentId: payment.appointmentId },
+        data: { outcome, appointmentId: payment.appointmentId },
       };
     }
 
-    if (payment.status === "FAILED" || payment.status === "REFUNDED") {
-      return {
-        success: true,
-        data: { success: false, appointmentId: payment.appointmentId },
-      };
-    }
-
-    // User cancelled or failed on gateway
     if (status !== "OK") {
-      await prisma.$transaction([
-        prisma.payment.update({
-          where: { id: payment.id },
-          data: { status: "FAILED" },
-        }),
-        prisma.appointment.update({
-          where: { id: payment.appointmentId },
-          data: { status: "CANCELLED" },
-        }),
-      ]);
-
-      revalidatePath("/customer");
-      return {
-        success: true,
-        data: { success: false, appointmentId: payment.appointmentId },
-      };
-    }
-
-    // Verify payment with Zarinpal
-    const verifyResult = await verifyPayment(
-      Number(payment.amount),
-      authority
-    );
-
-    if (verifyResult.success) {
-      // Payment verified — update both records in a transaction
-      await prisma.$transaction([
-        prisma.payment.update({
-          where: { id: payment.id },
+      if (attempt) {
+        await prisma.paymentAttempt.update({
+          where: { id: attempt.id },
           data: {
-            status: "PAID",
-            zarinpalRefId: verifyResult.refId,
-            paidAt: new Date(),
+            status: "CANCELLED",
+            gatewayMessage: "User cancelled on gateway",
+            completedAt: new Date(),
           },
-        }),
-        prisma.appointment.update({
-          where: { id: payment.appointmentId },
-          data: { status: "CONFIRMED" },
-        }),
-      ]);
+        });
+      }
+
+      logPaymentEvent("callback_cancelled", {
+        appointmentId: appointment.id,
+        paymentId: payment.id,
+        attemptId: attempt?.id,
+        authority,
+      });
 
       revalidatePath("/customer");
-
-      // Send notification (non-blocking)
-      void notifyPaymentConfirmed(payment.appointmentId);
-
       return {
         success: true,
-        data: { success: true, appointmentId: payment.appointmentId },
+        data: { outcome: "cancelled", appointmentId: payment.appointmentId },
       };
     }
 
-    // Verification failed
-    await prisma.$transaction([
-      prisma.payment.update({
-        where: { id: payment.id },
-        data: { status: "FAILED" },
-      }),
-      prisma.appointment.update({
-        where: { id: payment.appointmentId },
-        data: { status: "CANCELLED" },
-      }),
-    ]);
+    const verifyResult = await verifyPayment(Number(payment.amount), authority);
 
-    revalidatePath("/dashboard");
+    if (attempt) {
+      await prisma.paymentAttempt.update({
+        where: { id: attempt.id },
+        data: {
+          gatewayCode: verifyResult.code,
+          gatewayMessage: verifyResult.message ?? verifyResult.errors[0],
+        },
+      });
+    }
+
+    if (!verifyResult.success) {
+      if (attempt) {
+        await prisma.paymentAttempt.update({
+          where: { id: attempt.id },
+          data: {
+            status: "FAILED",
+            completedAt: new Date(),
+          },
+        });
+      }
+
+      logPaymentEvent("verify_failed", {
+        appointmentId: appointment.id,
+        paymentId: payment.id,
+        attemptId: attempt?.id,
+        authority,
+        gatewayCode: verifyResult.code,
+        errorKind: verifyResult.kind,
+      });
+
+      revalidatePath("/customer");
+      return {
+        success: true,
+        data: { outcome: "failed", appointmentId: payment.appointmentId },
+      };
+    }
+
+    const now = new Date();
+    const appointmentCancelled = appointment.status === "CANCELLED";
+    const appointmentPending = appointment.status === "PENDING";
+
+    const paidUpdate = await prisma.payment.updateMany({
+      where: { id: payment.id, status: "PENDING" },
+      data: {
+        status: "PAID",
+        zarinpalRefId: verifyResult.refId,
+        zarinpalAuthority: authority,
+        paidAt: now,
+        needsReview: appointmentCancelled,
+        reviewNote: appointmentCancelled
+          ? "پرداخت پس از لغو خودکار نوبت انجام شد — نیاز به بررسی پشتیبانی"
+          : null,
+      },
+    });
+
+    if (paidUpdate.count === 0) {
+      const current = await prisma.payment.findUnique({
+        where: { id: payment.id },
+      });
+      if (current?.status === "PAID") {
+        const outcome: PaymentCallbackOutcome = current.needsReview
+          ? "late_paid"
+          : "success";
+        return {
+          success: true,
+          data: { outcome, appointmentId: payment.appointmentId },
+        };
+      }
+      throw new Error("وضعیت پرداخت قابل به‌روزرسانی نیست");
+    }
+
+    if (attempt) {
+      await prisma.paymentAttempt.update({
+        where: { id: attempt.id },
+        data: {
+          status: "VERIFIED",
+          refId: verifyResult.refId,
+          gatewayCode: verifyResult.code ?? 100,
+          completedAt: now,
+        },
+      });
+    }
+
+    if (appointmentPending) {
+      await prisma.appointment.update({
+        where: { id: appointment.id, status: "PENDING" },
+        data: { status: "CONFIRMED" },
+      });
+      void notifyPaymentConfirmed(appointment.id);
+    }
+
+    logPaymentEvent("verify_success", {
+      appointmentId: appointment.id,
+      paymentId: payment.id,
+      attemptId: attempt?.id,
+      authority,
+      gatewayCode: verifyResult.code,
+      status: appointmentCancelled ? "late_paid" : "confirmed",
+    });
+
+    revalidatePath("/customer");
+    revalidatePath("/admin/payments");
+
+    const outcome: PaymentCallbackOutcome = appointmentCancelled
+      ? "late_paid"
+      : "success";
+
     return {
       success: true,
-      data: { success: false, appointmentId: payment.appointmentId },
+      data: { outcome, appointmentId: payment.appointmentId },
     };
   } catch (error) {
     return handleActionError(error);
@@ -262,7 +388,6 @@ export async function getPayment(
       throw new Error("پرداخت یافت نشد");
     }
 
-    // Check ownership or admin
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
       select: { userId: true },
