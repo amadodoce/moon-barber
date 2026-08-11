@@ -156,7 +156,7 @@ export async function createAppointment(
       return appt;
     });
 
-    revalidatePath("/dashboard");
+    revalidatePath("/customer");
     revalidatePath("/admin/appointments");
 
     // Send notification (non-blocking)
@@ -203,7 +203,7 @@ export async function cancelAppointment(
       data: { status: "CANCELLED" },
     });
 
-    revalidatePath("/dashboard");
+    revalidatePath("/customer");
     revalidatePath("/admin/appointments");
 
     // Send notification (non-blocking)

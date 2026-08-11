@@ -177,7 +177,7 @@ export async function handlePaymentCallback(
         }),
       ]);
 
-      revalidatePath("/dashboard");
+      revalidatePath("/customer");
       return {
         success: true,
         data: { success: false, appointmentId: payment.appointmentId },
@@ -207,7 +207,7 @@ export async function handlePaymentCallback(
         }),
       ]);
 
-      revalidatePath("/dashboard");
+      revalidatePath("/customer");
 
       // Send notification (non-blocking)
       void notifyPaymentConfirmed(payment.appointmentId);

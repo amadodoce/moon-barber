@@ -2,16 +2,20 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-// Routes that don't require authentication
-const publicRoutes = ["/", "/login", "/register", "/book", "/dashboard/payment/result", "/book/payment-gateway"];
+const publicRoutes = [
+  "/",
+  "/login",
+  "/register",
+  "/book",
+  "/customer/payment/result",
+  "/book/payment-gateway",
+  "/api/payment/callback",
+];
 const authApiRoutes = ["/api/auth"];
 
 function isPublicRoute(pathname: string): boolean {
-  // Exact matches for public pages
   if (publicRoutes.includes(pathname)) return true;
-  // Prefix matches for nested public routes
   if (publicRoutes.some((route) => pathname.startsWith(route + "/"))) return true;
-  // Auth API routes (login, register, callback, etc.)
   if (authApiRoutes.some((route) => pathname.startsWith(route))) return true;
   return false;
 }
@@ -23,7 +27,6 @@ function isAdminRoute(pathname: string): boolean {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow public routes and static assets
   if (isPublicRoute(pathname)) {
     return NextResponse.next();
   }
@@ -33,16 +36,14 @@ export async function proxy(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  // Redirect unauthenticated users to login
   if (!token) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Check admin-only routes
   const role = token.role as string | undefined;
-  if (isAdminRoute(pathname) && role !== "ADMIN" && role !== "BARBER") {
+  if (isAdminRoute(pathname) && role !== "ADMIN") {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
@@ -51,7 +52,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match all routes except static files and Next.js internals
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.png$|.*\\.svg$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|fonts/|.*\\.png$|.*\\.svg$|.*\\.woff2$|.*\\.woff$|.*\\.ttf$).*)",
   ],
 };

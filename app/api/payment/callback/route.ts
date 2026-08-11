@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server";
 import { handlePaymentCallback } from "@/app/actions/payment";
 
+const RESULT_PATH = "/customer/payment/result";
+
 /**
  * Zarinpal payment callback endpoint.
  *
  * After the user completes (or fails) payment on Zarinpal,
  * they are redirected here with Authority and Status query params.
- *
- * This route:
- * 1. Extracts Authority and Status from URL
- * 2. Calls handlePaymentCallback to verify and update DB
- * 3. Redirects to the result page with status
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -20,7 +17,7 @@ export async function GET(request: Request) {
 
   if (!authority || !status) {
     return NextResponse.redirect(
-      new URL("/dashboard/payment/result?status=error", request.url)
+      new URL(`${RESULT_PATH}?status=error`, request.url)
     );
   }
 
@@ -28,14 +25,14 @@ export async function GET(request: Request) {
 
   if (!result.success || !result.data) {
     return NextResponse.redirect(
-      new URL("/dashboard/payment/result?status=error", request.url)
+      new URL(`${RESULT_PATH}?status=error`, request.url)
     );
   }
 
   if (result.data.success) {
     return NextResponse.redirect(
       new URL(
-        `/dashboard/payment/result?status=success&appointmentId=${result.data.appointmentId}`,
+        `${RESULT_PATH}?status=success&appointmentId=${result.data.appointmentId}`,
         request.url
       )
     );
@@ -43,7 +40,7 @@ export async function GET(request: Request) {
 
   return NextResponse.redirect(
     new URL(
-      `/dashboard/payment/result?status=failed&appointmentId=${result.data.appointmentId}`,
+      `${RESULT_PATH}?status=failed&appointmentId=${result.data.appointmentId}`,
       request.url
     )
   );
