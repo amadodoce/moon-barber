@@ -1,6 +1,7 @@
 "use client";
 
 import { Clock, Sun, Moon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useBookingStore } from "@/stores/booking";
 import type { AvailableSlot } from "@/lib/availability";
 
@@ -10,18 +11,21 @@ interface TimeSlotPickerProps {
   error: string | null;
 }
 
+const shimmerClass =
+  "animate-[shimmer_1.5s_infinite] bg-[length:200%_100%] bg-gradient-to-r from-[var(--color-paper-3)] via-[var(--color-paper-2)] to-[var(--color-paper-3)]";
+
 export function TimeSlotPicker({ slots, loading, error }: TimeSlotPickerProps) {
   const { startTime, setTime } = useBookingStore();
 
   if (loading) {
     return (
-      <div className="space-y-3">
-        <div className="h-4 w-24 rounded bg-zinc-200 dark:bg-zinc-700 animate-[shimmer_1.5s_infinite] bg-[length:200%_100] bg-gradient-to-r from-zinc-200 via-zinc-100 to-zinc-200 dark:from-zinc-700 dark:via-zinc-600 dark:to-zinc-700" />
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+      <div className="space-y-[var(--space-xs)]">
+        <div className={cn("h-4 w-24 rounded-[var(--radius-input)]", shimmerClass)} />
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="h-11 rounded-xl bg-zinc-200 dark:bg-zinc-700 animate-[shimmer_1.5s_infinite] bg-[length:200%_100] bg-gradient-to-r from-zinc-200 via-zinc-100 to-zinc-200 dark:from-zinc-700 dark:via-zinc-600 dark:to-zinc-700"
+              className={cn("h-11 rounded-[var(--radius-input)]", shimmerClass)}
               style={{ animationDelay: `${i * 100}ms` }}
             />
           ))}
@@ -32,39 +36,43 @@ export function TimeSlotPicker({ slots, loading, error }: TimeSlotPickerProps) {
 
   if (error) {
     return (
-      <div className="py-12 text-center text-sm text-red-500 dark:text-red-400">{error}</div>
+      <div className="py-[var(--space-xl)] text-center text-sm text-[var(--status-failed-fg)]">
+        {error}
+      </div>
     );
   }
 
   if (slots.length === 0) {
     return (
-      <div className="py-12 text-center text-sm text-zinc-400 dark:text-zinc-500">
-        <Clock className="mx-auto h-10 w-10 mb-3 text-zinc-300 dark:text-zinc-600" />
+      <div className="py-[var(--space-xl)] text-center text-sm text-[var(--color-ink-muted)]">
+        <Clock
+          className="mx-auto mb-3 h-10 w-10 text-[var(--color-ink-faint)]"
+          aria-hidden="true"
+        />
         <p>ساعت خالی برای این تاریخ وجود ندارد</p>
-        <p className="mt-1">لطفاً تاریخ دیگری انتخاب کنید</p>
+        <p className="mt-1 text-[var(--color-ink-faint)]">لطفاً تاریخ دیگری انتخاب کنید</p>
       </div>
     );
   }
 
-  // Split into morning and afternoon
   const morningSlots = slots.filter((s) => {
-    const hour = parseInt(s.startTime.split(":")[0]);
+    const hour = parseInt(s.startTime.split(":")[0], 10);
     return hour < 12;
   });
   const afternoonSlots = slots.filter((s) => {
-    const hour = parseInt(s.startTime.split(":")[0]);
+    const hour = parseInt(s.startTime.split(":")[0], 10);
     return hour >= 12;
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-[var(--space-sm)]">
       {morningSlots.length > 0 && (
         <div className="animate-[fade-in-up_0.3s_ease-out_both]">
-          <div className="flex items-center gap-2 mb-2 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            <Sun className="h-4 w-4 text-[#D4A853]" />
+          <div className="mb-2 flex items-center gap-2 text-sm font-medium text-[var(--color-ink-muted)]">
+            <Sun className="h-4 w-4 text-[var(--color-accent)]" aria-hidden="true" />
             صبح
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
             {morningSlots.map((slot) => (
               <SlotButton
                 key={slot.startTime}
@@ -79,11 +87,11 @@ export function TimeSlotPicker({ slots, loading, error }: TimeSlotPickerProps) {
 
       {afternoonSlots.length > 0 && (
         <div className="animate-[fade-in-up_0.3s_ease-out_both]">
-          <div className="flex items-center gap-2 mb-2 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            <Moon className="h-4 w-4 text-[#D4A853]" />
+          <div className="mb-2 flex items-center gap-2 text-sm font-medium text-[var(--color-ink-muted)]">
+            <Moon className="h-4 w-4 text-[var(--color-accent)]" aria-hidden="true" />
             بعدازظهر
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
             {afternoonSlots.map((slot) => (
               <SlotButton
                 key={slot.startTime}
@@ -112,12 +120,15 @@ function SlotButton({
     <button
       type="button"
       aria-pressed={isSelected}
+      aria-label={`ساعت ${slot.startTime}`}
       onClick={onSelect}
-      className={`rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-colors duration-150 ${
+      className={cn(
+        "rounded-[var(--radius-input)] border px-3 py-2.5 text-sm font-medium transition-colors duration-[var(--dur-short)]",
+        "min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)]",
         isSelected
-          ? "border-[#D4A853] bg-[#D4A853] text-white"
-          : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-[#D4A853]/40 dark:hover:border-[#D4A853]/40 hover:bg-[#D4A853]/5 dark:hover:bg-[#D4A853]/10"
-      }`}
+          ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-accent-ink)]"
+          : "border-[var(--color-rule)] bg-[var(--color-paper-2)] text-[var(--color-ink-2)] hover:border-[color-mix(in_oklch,var(--color-accent)_40%,var(--color-rule))] hover:bg-[var(--color-accent-soft)]"
+      )}
     >
       {slot.startTime}
     </button>

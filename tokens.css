@@ -1,0 +1,68 @@
+:root {
+  /* Paper & ink */
+  --color-paper: oklch(14% 0.012 65);
+  --color-paper-2: oklch(18% 0.014 65);
+  --color-paper-3: oklch(22% 0.016 65);
+  --color-ink: oklch(95% 0.008 85);
+  --color-ink-2: oklch(82% 0.012 75);
+  --color-ink-muted: oklch(62% 0.012 70);
+  --color-ink-faint: oklch(48% 0.01 65);
+  --color-rule: oklch(28% 0.014 65);
+
+  /* Accent */
+  --color-accent: oklch(78% 0.12 85);
+  --color-accent-hover: oklch(72% 0.12 85);
+  --color-accent-ink: oklch(18% 0.02 65);
+  --color-accent-soft: color-mix(in oklch, var(--color-accent) 12%, transparent);
+  --color-focus: oklch(78% 0.14 85);
+
+  /* Status */
+  --status-pending-bg: color-mix(in oklch, oklch(82% 0.14 95) 14%, transparent);
+  --status-pending-fg: oklch(82% 0.14 95);
+  --status-confirmed-bg: color-mix(in oklch, oklch(72% 0.16 145) 14%, transparent);
+  --status-confirmed-fg: oklch(72% 0.16 145);
+  --status-cancelled-bg: color-mix(in oklch, oklch(65% 0.18 25) 14%, transparent);
+  --status-cancelled-fg: oklch(65% 0.18 25);
+  --status-completed-bg: color-mix(in oklch, oklch(70% 0.12 250) 14%, transparent);
+  --status-completed-fg: oklch(70% 0.12 250);
+  --status-paid-bg: color-mix(in oklch, oklch(72% 0.16 145) 14%, transparent);
+  --status-paid-fg: oklch(72% 0.16 145);
+  --status-failed-bg: color-mix(in oklch, oklch(65% 0.18 25) 14%, transparent);
+  --status-failed-fg: oklch(65% 0.18 25);
+
+  /* Typography */
+  --font-display: "Yekan", system-ui, sans-serif;
+  --font-body: "Yekan", system-ui, sans-serif;
+  --font-wordmark: "Yekan", system-ui, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+  --text-display: clamp(2.25rem, 5vw, 3.75rem);
+  --text-display-s: clamp(1.75rem, 4vw, 2.75rem);
+
+  /* Spacing (4pt scale) */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 7rem;
+
+  /* Radii */
+  --radius-input: 0.75rem;
+  --radius-card: 1rem;
+  --radius-pill: 9999px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-short: 180ms;
+  --dur-medium: 280ms;
+}

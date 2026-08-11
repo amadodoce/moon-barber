@@ -8,6 +8,9 @@ import { getServices } from "@/app/actions/service";
 import { ServiceCard } from "@/components/book/ServiceCard";
 import { Spinner } from "@/components/ui/Spinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { PageHeader } from "@/components/brand/PageHeader";
+import { EmptyState } from "@/components/brand/EmptyState";
+import { Button } from "@/components/ui/button";
 import {
   BookingBottomBar,
   BOOKING_BOTTOM_BAR_PADDING,
@@ -53,34 +56,33 @@ export default function BookPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
+      <div className="flex flex-col items-center justify-center py-[var(--space-2xl)]">
         <Spinner size="lg" />
-        <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">در حال بارگذاری سرویس‌ها...</p>
+        <p className="mt-4 text-sm text-[var(--color-ink-muted)]">در حال بارگذاری سرویس‌ها…</p>
       </div>
     );
   }
 
   if (error) {
-    return <ErrorMessage message={error} className="mt-8" />;
+    return <ErrorMessage message={error} className="mt-[var(--space-md)]" />;
   }
 
   return (
-    <div className={`space-y-6 ${serviceIds.length > 0 ? BOOKING_BOTTOM_BAR_PADDING : ""}`}>
-      <div>
-        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">انتخاب سرویس</h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          سرویس‌های مورد نظر خود را انتخاب کنید
-        </p>
-      </div>
+    <div className={`space-y-[var(--space-md)] ${serviceIds.length > 0 ? BOOKING_BOTTOM_BAR_PADDING : ""}`}>
+      <PageHeader
+        eyebrow="مرحله ۱ از ۴"
+        title="انتخاب سرویس"
+        description="یک یا چند سرویس را برای نوبت خود انتخاب کنید."
+      />
 
-      {/* Service list */}
       {services.length === 0 ? (
-        <div className="py-16 text-center text-sm text-zinc-400 dark:text-zinc-500">
-          <Scissors className="mx-auto h-10 w-10 mb-3 text-zinc-300 dark:text-zinc-600" />
-          <p>هیچ سرویسی موجود نیست</p>
-        </div>
+        <EmptyState
+          icon={<Scissors className="h-10 w-10" />}
+          title="سرویسی موجود نیست"
+          description="در حال حاضر سرویسی برای رزرو فعال نشده است."
+        />
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-[var(--space-xs)]">
           {services.map((service, i) => (
             <ServiceCard
               key={service.id}
@@ -99,26 +101,20 @@ export default function BookPage() {
       {serviceIds.length > 0 && (
         <BookingBottomBar>
           <div className="mb-3 flex items-center justify-between text-sm">
-            <span className="text-zinc-500 dark:text-zinc-400">
+            <span className="text-[var(--color-ink-muted)]">
               {serviceIds.length} سرویس انتخاب شده
             </span>
-            <div className="flex items-center gap-4">
-              <span className="text-zinc-500 dark:text-zinc-400">
-                {totalDuration} دقیقه
-              </span>
-              <span className="font-bold" style={{ color: "var(--booking-gold)" }}>
+            <div className="flex items-center gap-[var(--space-sm)]">
+              <span className="text-[var(--color-ink-muted)]">{totalDuration} دقیقه</span>
+              <span className="font-bold text-[var(--color-accent)]">
                 {totalPrice.toLocaleString("fa-IR")} تومان
               </span>
             </div>
           </div>
-          <button
-            onClick={handleNext}
-            className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-150 hover:opacity-90"
-            style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
-          >
+          <Button variant="brand" className="w-full gap-2" onClick={handleNext}>
             ادامه
-            <ArrowLeft className="h-4 w-4" />
-          </button>
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          </Button>
         </BookingBottomBar>
       )}
     </div>

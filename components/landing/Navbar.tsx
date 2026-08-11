@@ -1,18 +1,37 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Scissors, Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { BrandMark } from "@/components/brand/BrandMark";
+import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+
+const sectionLinks = [
+  { href: "#services", label: "خدمات" },
+  { href: "#how-it-works", label: "نحوه رزرو" },
+  { href: "#team", label: "تیم" },
+  { href: "#contact", label: "تماس" },
+] as const;
+
+function navLinkClass(active: boolean) {
+  return `inline-flex min-h-11 items-center px-[var(--space-xs)] text-[var(--text-sm)] transition-colors duration-[var(--dur-short)] ${
+    active
+      ? "text-[var(--color-accent)]"
+      : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+  }`;
+}
 
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, isAuthenticated } = useCurrentUser();
   const pathname = usePathname();
   const menuId = useId();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
 
   useBodyScrollLock(menuOpen);
 
@@ -22,177 +41,187 @@ export function Navbar() {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setMenuOpen(false);
+        menuButtonRef.current?.focus();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
+    firstMenuLinkRef.current?.focus();
+
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [menuOpen]);
 
+  const roleLinks = (
+    <>
+      {isAuthenticated && user?.role === "ADMIN" && (
+        <Link
+          href="/admin"
+          className={navLinkClass(pathname.startsWith("/admin"))}
+        >
+          پنل مدیریت
+        </Link>
+      )}
+      {isAuthenticated && user?.role === "BARBER" && (
+        <Link
+          href="/barber"
+          className={navLinkClass(pathname.startsWith("/barber"))}
+        >
+          پنل آرایشگر
+        </Link>
+      )}
+      {isAuthenticated && user?.role === "CUSTOMER" && (
+        <Link
+          href="/customer"
+          className={navLinkClass(pathname === "/customer")}
+        >
+          نوبت‌های من
+        </Link>
+      )}
+    </>
+  );
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)]">
-      <div className="mx-auto max-w-6xl px-6 py-4">
-        <div className="flex items-center justify-between rounded-full border border-[var(--surface-border)] bg-[var(--surface-base)]/90 px-5 py-2.5 backdrop-blur-md">
-          {/* Logo — left */}
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--booking-gold)]">
-              <Scissors className="h-4 w-4 text-[var(--surface-base)]" />
-            </div>
-            <span className="text-base font-bold text-[var(--text-primary)]">مون باربر</span>
-          </Link>
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--color-rule)] bg-[var(--color-paper)]/95 pt-[env(safe-area-inset-top)] backdrop-blur-sm">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-[var(--space-sm)] px-[var(--space-md)] py-[var(--space-2xs)]">
+        <BrandMark size="md" />
 
-          {/* Nav links — hidden on mobile */}
-          <nav className="hidden items-center gap-1 md:flex">
-            <Link
-              href="/"
-              className={`rounded-full px-3.5 py-1.5 text-sm transition-colors duration-150 ${
-                pathname === "/"
-                  ? "bg-[var(--booking-gold)]/10 text-[var(--booking-gold)]"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-              }`}
-            >
-              صفحه اصلی
+        <nav
+          className="hidden items-center gap-[var(--space-3xs)] md:flex"
+          aria-label="ناوبری اصلی"
+        >
+          {sectionLinks.map((link) => (
+            <Link key={link.href} href={link.href} className={navLinkClass(false)}>
+              {link.label}
             </Link>
-            {isAuthenticated && user?.role === "ADMIN" && (
-                <Link
-                  href="/admin"
-                  className={`rounded-full px-3.5 py-1.5 text-sm transition-colors duration-150 ${
-                    pathname.startsWith("/admin")
-                      ? "bg-[var(--booking-gold)]/10 text-[var(--booking-gold)]"
-                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                  }`}
-                >
-                  پنل مدیریت
-                </Link>
-              )}
-            {isAuthenticated && user?.role === "BARBER" && (
-                <Link
-                  href="/barber"
-                  className={`rounded-full px-3.5 py-1.5 text-sm transition-colors duration-150 ${
-                    pathname.startsWith("/barber")
-                      ? "bg-[var(--booking-gold)]/10 text-[var(--booking-gold)]"
-                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                  }`}
-                >
-                  پنل آرایشگر
-                </Link>
-              )}
-            {isAuthenticated && user?.role === "CUSTOMER" && (
-              <Link
-                href="/customer"
-                className={`rounded-full px-3.5 py-1.5 text-sm transition-colors duration-150 ${
-                  pathname === "/customer"
-                    ? "bg-[var(--booking-gold)]/10 text-[var(--booking-gold)]"
-                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                }`}
-              >
-                نوبت‌های من
-              </Link>
-            )}
-          </nav>
+          ))}
+          {roleLinks}
+        </nav>
 
-          {/* Right side — CTA + auth */}
-          <div className="flex items-center gap-2">
-            {isAuthenticated ? (
-              <button
-                onClick={() => signOut({ callbackUrl: "/" })}
-                className="hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-[var(--text-secondary)] transition-colors duration-150 hover:text-[var(--text-primary)] md:flex"
-              >
-                <LogOut className="h-3.5 w-3.5" />
-                خروج
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                className="hidden rounded-full px-3.5 py-1.5 text-sm text-[var(--text-secondary)] transition-colors duration-150 hover:text-[var(--text-primary)] md:inline"
-              >
-                ورود
-              </Link>
-            )}
-            <Link
-              href="/book"
-              className="rounded-full bg-[var(--booking-gold)] px-4 py-2 text-sm font-semibold text-[var(--surface-base)] transition-colors duration-150 hover:bg-[var(--booking-gold-hover)]"
-            >
-              رزرو نوبت
-            </Link>
-
-            {/* Mobile hamburger */}
+        <div className="flex items-center gap-[var(--space-2xs)]">
+          {isAuthenticated ? (
             <button
               type="button"
-              onClick={() => setMenuOpen((prev) => !prev)}
-              className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:hidden touch-manipulation active:opacity-70"
-              aria-expanded={menuOpen}
-              aria-controls={menuId}
-              aria-label={menuOpen ? "بستن منو" : "باز کردن منو"}
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="hidden min-h-11 items-center gap-[var(--space-3xs)] px-[var(--space-xs)] text-[var(--text-sm)] text-[var(--color-ink-muted)] transition-colors duration-[var(--dur-short)] hover:text-[var(--color-ink)] md:inline-flex"
             >
-              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              خروج
             </button>
-          </div>
+          ) : (
+            <Link
+              href="/login"
+              className={`${navLinkClass(false)} hidden md:inline-flex`}
+            >
+              ورود
+            </Link>
+          )}
+          <Button
+            variant="brand"
+            size="sm"
+            className="hidden sm:inline-flex"
+            render={<Link href="/book" />}
+          >
+            رزرو نوبت
+          </Button>
+
+          <button
+            ref={menuButtonRef}
+            type="button"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className="inline-flex min-h-11 min-w-11 items-center justify-center text-[var(--color-ink-muted)] transition-colors duration-[var(--dur-short)] hover:text-[var(--color-ink)] md:hidden touch-manipulation"
+            aria-expanded={menuOpen}
+            aria-controls={menuId}
+            aria-label={menuOpen ? "بستن منو" : "باز کردن منو"}
+          >
+            {menuOpen ? (
+              <X className="h-5 w-5" aria-hidden="true" />
+            ) : (
+              <Menu className="h-5 w-5" aria-hidden="true" />
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
       {menuOpen && (
         <div
           id={menuId}
-          className="mx-6 mb-4 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-base)]/95 p-4 backdrop-blur-md md:hidden"
+          className="border-t border-[var(--color-rule)] bg-[var(--color-paper)] md:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="منوی موبایل"
         >
-          <nav className="flex flex-col gap-1">
-            <Link
-              href="/"
-              onClick={() => setMenuOpen(false)}
-              className="rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
-            >
-              صفحه اصلی
-            </Link>
+          <nav
+            className="mx-auto flex max-w-6xl flex-col px-[var(--space-md)] py-[var(--space-sm)]"
+            aria-label="ناوبری موبایل"
+          >
+            {sectionLinks.map((link, index) => (
+              <Link
+                key={link.href}
+                ref={index === 0 ? firstMenuLinkRef : undefined}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className="inline-flex min-h-11 items-center border-b border-[var(--color-rule)]/60 px-[var(--space-2xs)] text-[var(--text-sm)] text-[var(--color-ink-muted)] transition-colors duration-[var(--dur-short)] last:border-b-0 hover:text-[var(--color-ink)]"
+              >
+                {link.label}
+              </Link>
+            ))}
             {isAuthenticated && user?.role === "ADMIN" && (
-                <Link
-                  href="/admin"
-                  onClick={() => setMenuOpen(false)}
-                  className="rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
-                >
-                  پنل مدیریت
-                </Link>
-              )}
+              <Link
+                href="/admin"
+                onClick={() => setMenuOpen(false)}
+                className="inline-flex min-h-11 items-center border-b border-[var(--color-rule)]/60 px-[var(--space-2xs)] text-[var(--text-sm)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+              >
+                پنل مدیریت
+              </Link>
+            )}
             {isAuthenticated && user?.role === "BARBER" && (
-                <Link
-                  href="/barber"
-                  onClick={() => setMenuOpen(false)}
-                  className="rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
-                >
-                  پنل آرایشگر
-                </Link>
-              )}
+              <Link
+                href="/barber"
+                onClick={() => setMenuOpen(false)}
+                className="inline-flex min-h-11 items-center border-b border-[var(--color-rule)]/60 px-[var(--space-2xs)] text-[var(--text-sm)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+              >
+                پنل آرایشگر
+              </Link>
+            )}
             {isAuthenticated && user?.role === "CUSTOMER" && (
               <Link
                 href="/customer"
                 onClick={() => setMenuOpen(false)}
-                className="rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
+                className="inline-flex min-h-11 items-center border-b border-[var(--color-rule)]/60 px-[var(--space-2xs)] text-[var(--text-sm)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
               >
                 نوبت‌های من
               </Link>
             )}
-            <div className="my-1 h-px bg-[var(--surface-border)]" />
-            {isAuthenticated ? (
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  signOut({ callbackUrl: "/" });
-                }}
-                className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
+            <div className="mt-[var(--space-sm)] flex flex-col gap-[var(--space-2xs)]">
+              {isAuthenticated ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    signOut({ callbackUrl: "/" });
+                  }}
+                  className="inline-flex min-h-11 items-center gap-[var(--space-2xs)] px-[var(--space-2xs)] text-[var(--text-sm)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+                >
+                  <LogOut className="h-4 w-4" aria-hidden="true" />
+                  خروج
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="inline-flex min-h-11 items-center px-[var(--space-2xs)] text-[var(--text-sm)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+                >
+                  ورود
+                </Link>
+              )}
+              <Button
+                variant="brand"
+                className="w-full"
+                render={<Link href="/book" onClick={() => setMenuOpen(false)} />}
               >
-                <LogOut className="h-4 w-4" />
-                خروج
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                onClick={() => setMenuOpen(false)}
-                className="rounded-xl px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--booking-gold)]/10 hover:text-[var(--text-primary)]"
-              >
-                ورود
-              </Link>
-            )}
+                رزرو نوبت
+              </Button>
+            </div>
           </nav>
         </div>
       )}

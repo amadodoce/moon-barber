@@ -5,19 +5,23 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Scissors, Loader2, ArrowRight, CheckCircle } from "lucide-react";
+import { Loader2, CheckCircle, Eye, EyeOff } from "lucide-react";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 import { showSuccess, showError } from "@/lib/toast";
+import { AuthShell } from "@/components/layout/AuthShell";
+import { FormField } from "@/components/brand/FormField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
+const inputClassName =
+  "min-h-11 h-11 rounded-[var(--radius-input)] border-[var(--color-rule)] bg-[var(--color-paper)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-faint)]";
 
 export default function RegisterPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--booking-gold)" }} />
+        <div className="flex min-h-screen min-h-dvh items-center justify-center bg-[var(--color-paper)]">
+          <Loader2 className="h-6 w-6 animate-spin text-[var(--color-accent)]" />
         </div>
       }
     >
@@ -32,6 +36,8 @@ function RegisterForm() {
   const callbackUrl = searchParams.get("callbackUrl");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -78,130 +84,29 @@ function RegisterForm() {
 
   if (success) {
     return (
-      <div className="flex min-h-screen min-h-dvh items-center justify-center px-4 py-12" style={{ backgroundColor: "var(--surface-base)" }}>
-        <div className="w-full max-w-sm text-center">
-          <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full" style={{ backgroundColor: "var(--booking-gold)", opacity: 0.15 }}>
-            <CheckCircle className="h-7 w-7" style={{ color: "var(--booking-gold)" }} />
+      <div className="flex min-h-screen min-h-dvh flex-col items-center justify-center bg-[var(--color-paper)] px-[var(--space-md)]">
+        <div className="w-full max-w-md text-center">
+          <div className="mx-auto mb-[var(--space-md)] flex h-14 w-14 items-center justify-center rounded-full bg-[var(--status-paid-bg)]">
+            <CheckCircle className="h-7 w-7 text-[var(--status-paid-fg)]" />
           </div>
-          <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>ثبت‌نام موفق</h1>
-          <p className="mt-2 text-sm" style={{ color: "var(--text-muted)" }}>
+          <h1 className="text-[var(--text-xl)] font-semibold text-[var(--color-ink)]">
+            ثبت‌نام موفق
+          </h1>
+          <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
             در حال انتقال به صفحه ورود...
           </p>
-          <div className="mt-4">
-            <Loader2 className="h-5 w-5 animate-spin mx-auto" style={{ color: "var(--booking-gold)" }} />
-          </div>
+          <Loader2 className="mx-auto mt-4 h-5 w-5 animate-spin text-[var(--color-accent)]" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen min-h-dvh items-center justify-center px-4 py-12" style={{ backgroundColor: "var(--surface-base)" }}>
-      <div className="w-full max-w-sm">
-        {/* Back to home */}
-        <Link
-          href="/"
-          className="mb-8 inline-flex items-center gap-1.5 text-sm transition-colors duration-150"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          <ArrowRight className="h-4 w-4" />
-          بازگشت به صفحه اصلی
-        </Link>
-
-        {/* Card */}
-        <div className="rounded-2xl border p-6 sm:p-8" style={{ borderColor: "var(--surface-border)", backgroundColor: "var(--surface-overlay)" }}>
-          {/* Logo */}
-          <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl" style={{ backgroundColor: "var(--booking-gold)" }}>
-            <Scissors className="h-6 w-6" style={{ color: "var(--surface-base)" }} />
-          </div>
-
-          <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
-            ثبت‌نام
-          </h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
-            حساب کاربری جدید بسازید
-          </p>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
-            <div>
-              <Label htmlFor="name" className="text-sm font-medium text-[var(--text-primary)]">
-                نام
-              </Label>
-              <Input
-                id="name"
-                placeholder="نام خود را وارد کنید"
-                {...register("name")}
-                className="mt-1.5 h-11 rounded-xl border-[var(--surface-border)] bg-[var(--surface-overlay)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]"
-              />
-              {errors.name && (
-                <p className="mt-1.5 text-xs text-red-500">{errors.name.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="phone" className="text-sm font-medium text-[var(--text-primary)]">
-                شماره موبایل
-              </Label>
-              <Input
-                id="phone"
-                placeholder="09123456789"
-                {...register("phone")}
-                className="mt-1.5 h-11 rounded-xl border-[var(--surface-border)] bg-[var(--surface-overlay)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]"
-                dir="ltr"
-              />
-              {errors.phone && (
-                <p className="mt-1.5 text-xs text-red-500">{errors.phone.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="password" className="text-sm font-medium text-[var(--text-primary)]">
-                رمز عبور
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="حداقل ۶ کاراکتر"
-                {...register("password")}
-                className="mt-1.5 h-11 rounded-xl border-[var(--surface-border)] bg-[var(--surface-overlay)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]"
-                dir="ltr"
-              />
-              {errors.password && (
-                <p className="mt-1.5 text-xs text-red-500">{errors.password.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="confirmPassword" className="text-sm font-medium text-[var(--text-primary)]">
-                تکرار رمز عبور
-              </Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="رمز عبور را دوباره وارد کنید"
-                {...register("confirmPassword")}
-                className="mt-1.5 h-11 rounded-xl border-[var(--surface-border)] bg-[var(--surface-overlay)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]"
-                dir="ltr"
-              />
-              {errors.confirmPassword && (
-                <p className="mt-1.5 text-xs text-red-500">{errors.confirmPassword.message}</p>
-              )}
-            </div>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="h-11 w-full rounded-xl text-sm font-semibold transition-colors duration-150 hover:opacity-90"
-              style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
-            >
-              {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              ثبت‌نام
-            </Button>
-          </form>
-        </div>
-
-        {/* Login link */}
-        <p className="mt-6 text-center text-sm" style={{ color: "var(--text-muted)" }}>
+    <AuthShell
+      title="ثبت‌نام"
+      description="حساب کاربری جدید بسازید"
+      footer={
+        <p className="mt-[var(--space-md)] text-center text-sm text-[var(--color-ink-muted)]">
           قبلاً ثبت‌نام کرده‌اید؟{" "}
           <Link
             href={
@@ -209,13 +114,109 @@ function RegisterForm() {
                 ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
                 : "/login"
             }
-            className="font-medium transition-colors duration-150 hover:opacity-80"
-            style={{ color: "var(--booking-gold)" }}
+            className="font-medium text-[var(--color-accent)] transition-colors hover:text-[var(--color-accent-hover)]"
           >
             وارد شوید
           </Link>
         </p>
-      </div>
-    </div>
+      }
+    >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-[var(--space-sm)]">
+        <FormField id="name" label="نام" required error={errors.name?.message}>
+          <Input
+            id="name"
+            placeholder="نام خود را وارد کنید"
+            {...register("name")}
+            className={inputClassName}
+          />
+        </FormField>
+
+        <FormField
+          id="phone"
+          label="شماره موبایل"
+          required
+          error={errors.phone?.message}
+        >
+          <Input
+            id="phone"
+            placeholder="09123456789"
+            {...register("phone")}
+            className={inputClassName}
+            dir="ltr"
+          />
+        </FormField>
+
+        <FormField
+          id="password"
+          label="رمز عبور"
+          required
+          hint="حداقل ۶ کاراکتر"
+          error={errors.password?.message}
+        >
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="حداقل ۶ کاراکتر"
+              {...register("password")}
+              className={`${inputClassName} pe-11`}
+              dir="ltr"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute inset-y-0 end-0 flex min-h-11 min-w-11 items-center justify-center text-[var(--color-ink-muted)] transition-colors hover:text-[var(--color-ink)]"
+              aria-label={showPassword ? "مخفی کردن رمز" : "نمایش رمز"}
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+        </FormField>
+
+        <FormField
+          id="confirmPassword"
+          label="تکرار رمز عبور"
+          required
+          error={errors.confirmPassword?.message}
+        >
+          <div className="relative">
+            <Input
+              id="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="رمز عبور را دوباره وارد کنید"
+              {...register("confirmPassword")}
+              className={`${inputClassName} pe-11`}
+              dir="ltr"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword((v) => !v)}
+              className="absolute inset-y-0 end-0 flex min-h-11 min-w-11 items-center justify-center text-[var(--color-ink-muted)] transition-colors hover:text-[var(--color-ink)]"
+              aria-label={showConfirmPassword ? "مخفی کردن رمز" : "نمایش رمز"}
+            >
+              {showConfirmPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+        </FormField>
+
+        <Button
+          type="submit"
+          variant="brand"
+          className="mt-[var(--space-sm)] w-full"
+          disabled={loading}
+        >
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          ثبت‌نام
+        </Button>
+      </form>
+    </AuthShell>
   );
 }

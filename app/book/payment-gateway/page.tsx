@@ -3,6 +3,8 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { CreditCard, Loader2, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SurfaceCard } from "@/components/brand/SurfaceCard";
 
 function MockGateway() {
   const searchParams = useSearchParams();
@@ -22,56 +24,41 @@ function MockGateway() {
   };
 
   return (
-    <div className="flex min-h-screen min-h-dvh items-center justify-center bg-zinc-100 dark:bg-zinc-900 px-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-zinc-800 shadow-xl p-6 space-y-6">
-        {/* Header */}
+    <div className="flex min-h-[60vh] items-center justify-center px-[var(--space-sm)]">
+      <SurfaceCard className="w-full max-w-sm space-y-[var(--space-md)]" padding="lg">
         <div className="flex items-center justify-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#D4A853]">
-            <CreditCard className="h-6 w-6 text-white" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-[var(--radius-input)] bg-[var(--color-accent)]">
+            <CreditCard className="h-6 w-6 text-[var(--color-accent-ink)]" aria-hidden="true" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+            <h1 className="text-[var(--text-lg)] font-semibold text-[var(--color-ink)]">
               درگاه پرداخت
             </h1>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              Zarinpal Sandbox
-            </p>
+            <p className="text-xs text-[var(--color-ink-muted)]">Zarinpal Sandbox</p>
           </div>
         </div>
 
-        {/* Info */}
-        <div className="rounded-xl bg-zinc-50 dark:bg-zinc-700/50 p-4 space-y-2">
+        <div className="space-y-2 rounded-[var(--radius-input)] bg-[var(--color-paper-3)] p-[var(--space-sm)]">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-zinc-500 dark:text-zinc-400">وضعیت</span>
-            <span className="font-medium text-[#D4A853]">
-              در انتظار پرداخت
-            </span>
+            <span className="text-[var(--color-ink-muted)]">وضعیت</span>
+            <span className="font-medium text-[var(--color-accent)]">در انتظار پرداخت</span>
           </div>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-zinc-500 dark:text-zinc-400">نوع</span>
-            <span className="font-medium text-zinc-900 dark:text-zinc-100">
-              تست (Mock)
-            </span>
+            <span className="text-[var(--color-ink-muted)]">نوع</span>
+            <span className="font-medium text-[var(--color-ink)]">تست (Mock)</span>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="space-y-3">
-          <button
-            onClick={handlePay}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-white hover:bg-green-600 transition-colors"
-          >
+        <div className="space-y-[var(--space-xs)]">
+          <Button variant="brand" className="w-full bg-[var(--status-confirmed-fg)] hover:bg-[color-mix(in_oklch,var(--status-confirmed-fg)_85%,black)]" onClick={handlePay}>
             پرداخت موفق
-          </button>
-          <button
-            onClick={handleCancel}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
-          >
-            <X className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" className="w-full gap-2" onClick={handleCancel}>
+            <X className="h-4 w-4" aria-hidden="true" />
             لغو پرداخت
-          </button>
+          </Button>
         </div>
-      </div>
+      </SurfaceCard>
     </div>
   );
 }
@@ -80,8 +67,8 @@ export default function PaymentGatewayPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen min-h-dvh items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-[#D4A853]" />
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-[var(--color-accent)]" aria-hidden="true" />
         </div>
       }
     >

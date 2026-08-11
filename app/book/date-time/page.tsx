@@ -8,6 +8,8 @@ import { useBookingGuard } from "@/hooks/useBookingGuard";
 import { getAvailableBookingSlots } from "@/app/actions/appointment";
 import { DatePicker } from "@/components/book/DatePicker";
 import { TimeSlotPicker } from "@/components/book/TimeSlotPicker";
+import { PageHeader } from "@/components/brand/PageHeader";
+import { Button } from "@/components/ui/button";
 import type { AvailableSlot } from "@/lib/availability";
 import {
   BookingBottomBar,
@@ -67,40 +69,34 @@ export default function DateTimePage() {
 
   return (
     <div
-      className={`space-y-6 ${date && startTime ? BOOKING_BOTTOM_BAR_PADDING : ""}`}
+      className={`space-y-[var(--space-md)] ${date && startTime ? BOOKING_BOTTOM_BAR_PADDING : ""}`}
     >
-      <div>
-        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">تاریخ و ساعت</h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          تاریخ و ساعت مورد نظر خود را انتخاب کنید
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="مرحله ۳ از ۴"
+        title="تاریخ و ساعت"
+        description="روز و ساعت مناسب را از تقویم انتخاب کنید."
+      />
 
-      {/* Date picker */}
-      <div>
-        <DatePicker />
-      </div>
+      <DatePicker />
 
-      {/* Time slots */}
       {date && barberId && (
-        <div>
-          <h3 className="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+        <section aria-labelledby="time-slots-heading">
+          <h3
+            id="time-slots-heading"
+            className="mb-3 text-sm font-medium text-[var(--color-ink-muted)]"
+          >
             ساعات خالی
           </h3>
           <TimeSlotPicker slots={slots} loading={loading} error={error} />
-        </div>
+        </section>
       )}
 
       {date && startTime && (
         <BookingBottomBar>
-          <button
-            onClick={handleNext}
-            className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-150 hover:opacity-90"
-            style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
-          >
+          <Button variant="brand" className="w-full gap-2" onClick={handleNext}>
             ادامه
-            <ArrowLeft className="h-4 w-4" />
-          </button>
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          </Button>
         </BookingBottomBar>
       )}
     </div>

@@ -1,3 +1,7 @@
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { SurfaceCard } from "@/components/brand/SurfaceCard";
+
 const steps = [
   {
     number: "۱",
@@ -18,38 +22,53 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="bg-[var(--surface-raised)] py-20 md:py-32">
-      <div className="mx-auto max-w-6xl px-6">
-        {/* Section header — left-aligned */}
-        <div className="mb-12 max-w-md">
-          <h2 className="text-3xl font-bold text-[var(--text-primary)] md:text-4xl">
+    <section
+      id="how-it-works"
+      className="scroll-mt-24 bg-[var(--color-paper)] py-[var(--space-2xl)] md:py-[var(--space-3xl)]"
+    >
+      <div className="mx-auto max-w-6xl px-[var(--space-md)]">
+        <div className="mb-[var(--space-xl)] max-w-md">
+          <p className="text-[var(--text-xs)] uppercase tracking-[0.14em] text-[var(--color-accent)]">
+            فرآیند رزرو
+          </p>
+          <h2
+            className="mt-[var(--space-2xs)] font-semibold text-[var(--color-ink)]"
+            style={{ fontSize: "var(--text-display-s)" }}
+          >
             چگونه کار می‌کند؟
           </h2>
-          <p className="mt-3 text-[var(--text-muted)]">
-            فرآیند رزرو
+          <p className="mt-[var(--space-sm)] text-[var(--text-sm)] text-[var(--color-ink-muted)]">
+            سه گام تا نوبت شما
           </p>
         </div>
 
-        {/* Steps — staggered list, not centred grid */}
-        <div className="max-w-2xl space-y-4">
+        <div className="max-w-2xl space-y-[var(--space-sm)]">
           {steps.map((step, index) => (
-            <div
+            <SurfaceCard
               key={index}
-              className="flex items-start gap-5 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-overlay)] p-6 transition-colors duration-200 hover:border-[var(--booking-gold)]/20"
+              className="transition-colors duration-[var(--dur-short)] hover:border-[color-mix(in_oklch,var(--color-accent)_25%,var(--color-rule))]"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--booking-gold)]/30 bg-[var(--booking-gold)]/5 text-sm font-bold text-[var(--booking-gold)]">
-                {step.number}
+              <div className="flex items-start gap-[var(--space-md)]">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[color-mix(in_oklch,var(--color-accent)_35%,var(--color-rule))] bg-[var(--color-accent-soft)] text-[var(--text-sm)] font-bold text-[var(--color-accent)]">
+                  {step.number}
+                </div>
+                <div>
+                  <h3 className="text-[var(--text-md)] font-semibold text-[var(--color-ink)]">
+                    {step.title}
+                  </h3>
+                  <p className="mt-[var(--space-3xs)] text-[var(--text-sm)] text-[var(--color-ink-muted)]">
+                    {step.description}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-base font-bold text-[var(--text-primary)]">
-                  {step.title}
-                </h3>
-                <p className="mt-1 text-sm text-[var(--text-muted)]">
-                  {step.description}
-                </p>
-              </div>
-            </div>
+            </SurfaceCard>
           ))}
+        </div>
+
+        <div className="mt-[var(--space-xl)]">
+          <Button variant="brand" render={<Link href="/book" />}>
+            شروع رزرو
+          </Button>
         </div>
       </div>
     </section>

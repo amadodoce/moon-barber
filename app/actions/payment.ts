@@ -15,6 +15,13 @@ import {
   type InitiatePaymentInput,
 } from "@/lib/validations/payment";
 import type { Payment } from "@/app/generated/prisma/client";
+import {
+  buildPaginatedResult,
+  normalizeListQuery,
+  type ListQueryParams,
+  type PaginatedResult,
+} from "@/lib/pagination";
+import type { Prisma } from "@/app/generated/prisma/client";
 
 /** Payment with nested appointment, user, and barber relations */
 export type PaymentWithRelations = Payment & {
@@ -274,26 +281,58 @@ export async function getPayment(
   }
 }
 
-/** Get all payments with appointment info (ADMIN only) */
-export async function getPayments(): Promise<ActionResponse<PaymentWithRelations[]>> {
+/** Get payments for admin with optional pagination, search, and status filter */
+export async function getPayments(
+  params: ListQueryParams = {}
+): Promise<ActionResponse<PaginatedResult<PaymentWithRelations>>> {
   try {
     await requireAdmin();
 
-    const payments = await prisma.payment.findMany({
-      include: {
-        appointment: {
-          include: {
-            user: { select: { name: true, phone: true } },
-            barber: {
-              include: { user: { select: { name: true } } },
+    const { page, pageSize, status, search } = normalizeListQuery(params);
+
+    const where: Prisma.PaymentWhereInput = {
+      ...(status !== "all" ? { status: status as Payment["status"] } : {}),
+      ...(search
+        ? {
+            OR: [
+              {
+                appointment: {
+                  user: { name: { contains: search, mode: "insensitive" } },
+                },
+              },
+              {
+                appointment: { user: { phone: { contains: search } } },
+              },
+              { zarinpalRefId: { contains: search } },
+            ],
+          }
+        : {}),
+    };
+
+    const [total, payments] = await Promise.all([
+      prisma.payment.count({ where }),
+      prisma.payment.findMany({
+        where,
+        include: {
+          appointment: {
+            include: {
+              user: { select: { name: true, phone: true } },
+              barber: {
+                include: { user: { select: { name: true } } },
+              },
             },
           },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+    ]);
 
-    return { success: true, data: payments };
+    return {
+      success: true,
+      data: buildPaginatedResult(payments, total, page, pageSize),
+    };
   } catch (error) {
     return handleActionError(error);
   }

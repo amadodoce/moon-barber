@@ -14,30 +14,19 @@ import {
   getDay,
 } from "date-fns";
 import { ChevronRight, ChevronLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useBookingStore } from "@/stores/booking";
-import { parseLocalDate } from "@/lib/dates";
+import { formatJalaliMonthYear, parseLocalDate } from "@/lib/dates";
 
-const WEEKDAYS = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
+const WEEKDAYS = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنج‌شنبه", "جمعه"];
 
-// Gregorian month names in Persian (aligned with JS month indices 0-11)
-const GREGORIAN_MONTHS_FA = [
-  "ژانویه",   // January
-  "فوریه",    // February
-  "مارس",     // March
-  "آوریل",    // April
-  "مه",       // May
-  "ژوئن",     // June
-  "ژوئیه",    // July
-  "اوت",      // August
-  "سپتامبر",  // September
-  "اکتبر",    // October
-  "نوامبر",   // November
-  "دسامبر",   // December
-];
-
-function toPersianDigits(num: number): string {
+function toPersianDigits(num: number | string): string {
   const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
-  return num.toString().replace(/\d/g, (d) => persianDigits[parseInt(d)]);
+  return num.toString().replace(/\d/g, (d) => persianDigits[parseInt(d, 10)]);
+}
+
+function formatJalaliDay(date: Date): string {
+  return date.toLocaleDateString("fa-IR-u-ca-persian", { day: "numeric" });
 }
 
 export function DatePicker() {
@@ -49,76 +38,93 @@ export function DatePicker() {
   const monthEnd = endOfMonth(currentMonth);
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  // Shift getDay() so Saturday = 0 (Iranian week starts Saturday)
   const startDayOfWeek = (getDay(monthStart) + 1) % 7;
   const paddingDays = Array.from({ length: startDayOfWeek });
 
   const selectedDate = date ? parseLocalDate(date) : null;
+  const monthLabel = formatJalaliMonthYear(currentMonth);
+
+  const goToPreviousMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
+  const goToNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
 
   return (
-    <div className="rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-4">
-      {/* Month navigation */}
-      <div className="flex items-center justify-between mb-4">
+    <div className="rounded-[var(--radius-card)] border border-[var(--color-rule)] bg-[var(--color-paper-2)] p-[var(--space-md)]">
+      <div className="mb-[var(--space-sm)] flex items-center justify-between">
         <button
           type="button"
-          onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-          className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors"
+          aria-label={`ماه قبل، ${monthLabel}`}
+          onClick={goToPreviousMonth}
+          className="rounded-[var(--radius-input)] p-2 transition-colors duration-[var(--dur-short)] hover:bg-[var(--color-paper-3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)]"
         >
-          <ChevronRight className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
+          <ChevronRight className="h-5 w-5 text-[var(--color-ink-2)]" aria-hidden="true" />
         </button>
-        <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
-          {GREGORIAN_MONTHS_FA[currentMonth.getMonth()]} {toPersianDigits(currentMonth.getFullYear())}
-        </h3>
+        <h3 className="font-semibold text-[var(--color-ink)]">{monthLabel}</h3>
         <button
           type="button"
-          onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-          className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition-colors"
+          aria-label={`ماه بعد، ${monthLabel}`}
+          onClick={goToNextMonth}
+          className="rounded-[var(--radius-input)] p-2 transition-colors duration-[var(--dur-short)] hover:bg-[var(--color-paper-3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)]"
         >
-          <ChevronLeft className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
+          <ChevronLeft className="h-5 w-5 text-[var(--color-ink-2)]" aria-hidden="true" />
         </button>
       </div>
 
-      {/* Weekday headers */}
-      <div className="grid grid-cols-7 mb-2">
+      <div className="mb-2 grid grid-cols-7">
         {WEEKDAYS.map((day) => (
           <div
             key={day}
-            className="text-center text-xs font-medium text-zinc-400 dark:text-zinc-500 py-2"
+            className="py-2 text-center text-xs font-medium text-[var(--color-ink-muted)]"
           >
-            {day}
+            {day.slice(0, 2)}
           </div>
         ))}
       </div>
 
-      {/* Day grid */}
       <div className="grid grid-cols-7 gap-1">
         {paddingDays.map((_, i) => (
-          <div key={`pad-${i}`} />
+          <div key={`pad-${i}`} aria-hidden="true" />
         ))}
         {days.map((day) => {
           const isPast = isBefore(day, today);
           const isSelected = selectedDate && isSameDay(day, selectedDate);
           const isToday = isSameDay(day, today);
+          const dayLabel = formatJalaliDay(day);
+          const isoDate = format(day, "yyyy-MM-dd");
 
           return (
             <button
               key={day.toISOString()}
               type="button"
               disabled={isPast}
-              onClick={() => setDate(format(day, "yyyy-MM-dd"))}
-              className={`relative flex h-11 items-center justify-center rounded-lg text-sm font-medium transition-colors duration-150 ${
+              aria-label={
                 isPast
-                  ? "text-zinc-300 dark:text-zinc-600 cursor-not-allowed"
+                  ? `${dayLabel}، غیرفعال`
                   : isSelected
-                    ? "bg-[#D4A853] text-white"
+                    ? `${dayLabel}، انتخاب شده`
                     : isToday
-                      ? "bg-[#D4A853]/10 text-[#D4A853] font-bold"
-                      : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700"
-              }`}
+                      ? `${dayLabel}، امروز`
+                      : dayLabel
+              }
+              aria-pressed={isSelected ?? false}
+              onClick={() => setDate(isoDate)}
+              className={cn(
+                "relative flex h-11 items-center justify-center rounded-[var(--radius-input)] text-sm font-medium transition-colors duration-[var(--dur-short)]",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)]",
+                isPast
+                  ? "cursor-not-allowed text-[var(--color-ink-faint)]"
+                  : isSelected
+                    ? "bg-[var(--color-accent)] text-[var(--color-accent-ink)]"
+                    : isToday
+                      ? "bg-[var(--color-accent-soft)] font-bold text-[var(--color-accent)]"
+                      : "text-[var(--color-ink-2)] hover:bg-[var(--color-paper-3)]"
+              )}
             >
-              {toPersianDigits(parseInt(format(day, "d"), 10))}
+              {toPersianDigits(dayLabel)}
               {isToday && !isSelected && (
-                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-[#D4A853]" />
+                <span
+                  aria-hidden="true"
+                  className="absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-[var(--color-accent)]"
+                />
               )}
             </button>
           );

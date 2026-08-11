@@ -9,6 +9,8 @@ import { useBookingGuard } from "@/hooks/useBookingGuard";
 import { createAppointment } from "@/app/actions/appointment";
 import { initiatePayment } from "@/app/actions/payment";
 import { BookingSummary } from "@/components/book/BookingSummary";
+import { PageHeader } from "@/components/brand/PageHeader";
+import { Button } from "@/components/ui/button";
 import { showError } from "@/lib/toast";
 import {
   BookingBottomBar,
@@ -80,36 +82,35 @@ export default function SummaryPage() {
   };
 
   return (
-    <div className={`space-y-6 ${canSubmit ? BOOKING_BOTTOM_BAR_PADDING : ""}`}>
-      <div>
-        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">خلاصه رزرو</h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          اطلاعات رزرو خود را بررسی کنید
-        </p>
-      </div>
+    <div className={`space-y-[var(--space-md)] ${canSubmit ? BOOKING_BOTTOM_BAR_PADDING : ""}`}>
+      <PageHeader
+        eyebrow="مرحله ۴ از ۴"
+        title="تأیید و پرداخت"
+        description="جزئیات نوبت را بررسی کنید و برای پرداخت ادامه دهید."
+      />
 
       <BookingSummary />
 
       {canSubmit && (
         <BookingBottomBar>
-          <button
+          <Button
+            variant="brand"
+            className="w-full gap-2"
             onClick={handlePayment}
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-150 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-            style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
           >
             {loading ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                در حال پردازش...
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                در حال پردازش…
               </>
             ) : (
               <>
-                <CreditCard className="h-4 w-4" />
+                <CreditCard className="h-4 w-4" aria-hidden="true" />
                 تأیید و پرداخت
               </>
             )}
-          </button>
+          </Button>
         </BookingBottomBar>
       )}
     </div>

@@ -24,6 +24,24 @@ import {
 import { getAvailableSlots, parseLocalDate, type AvailableSlot } from "@/lib/availability";
 import { releaseStalePendingAppointments, canBarberUpdateAppointmentStatus } from "@/lib/appointment-lifecycle";
 import type { Appointment } from "@/app/generated/prisma/client";
+import {
+  buildPaginatedResult,
+  normalizeListQuery,
+  type ListQueryParams,
+  type PaginatedResult,
+} from "@/lib/pagination";
+import type { Prisma } from "@/app/generated/prisma/client";
+
+/** Appointment with admin list relations */
+export type AdminAppointment = Appointment & {
+  appointmentServices: Array<{
+    service: { name: string };
+    priceAtBooking: unknown;
+  }>;
+  user: { name: string; phone: string };
+  barber: { user: { name: string } };
+  payment: { status: string; amount: unknown } | null;
+};
 
 /** Get available booking slots for a barber + services + date */
 export async function getAvailableBookingSlots(
@@ -323,26 +341,57 @@ export async function getMyAppointments(): Promise<ActionResponse<Appointment[]>
   }
 }
 
-/** Get all appointments (ADMIN only) */
-export async function getAllAppointments(): Promise<ActionResponse<Appointment[]>> {
+/** Get appointments for admin with optional pagination, search, and status filter */
+export async function getAllAppointments(
+  params: ListQueryParams = {}
+): Promise<ActionResponse<PaginatedResult<AdminAppointment>>> {
   try {
     await requireAdmin();
 
-    const appointments = await prisma.appointment.findMany({
-      where: { deletedAt: null },
-      include: {
-        appointmentServices: {
-          include: { service: true },
-        },
-        user: { select: { name: true, phone: true } },
-        barber: {
-          include: { user: { select: { name: true } } },
-        },
-      },
-      orderBy: [{ date: "desc" }, { startTime: "desc" }],
-    });
+    const { page, pageSize, status, search } = normalizeListQuery(params);
 
-    return { success: true, data: appointments };
+    const where: Prisma.AppointmentWhereInput = {
+      deletedAt: null,
+      ...(status !== "all" ? { status: status as Appointment["status"] } : {}),
+      ...(search
+        ? {
+            OR: [
+              { user: { name: { contains: search, mode: "insensitive" } } },
+              { user: { phone: { contains: search } } },
+              {
+                barber: {
+                  user: { name: { contains: search, mode: "insensitive" } },
+                },
+              },
+            ],
+          }
+        : {}),
+    };
+
+    const [total, appointments] = await Promise.all([
+      prisma.appointment.count({ where }),
+      prisma.appointment.findMany({
+        where,
+        include: {
+          appointmentServices: {
+            include: { service: { select: { name: true } } },
+          },
+          user: { select: { name: true, phone: true } },
+          barber: {
+            include: { user: { select: { name: true } } },
+          },
+          payment: { select: { status: true, amount: true } },
+        },
+        orderBy: [{ date: "desc" }, { startTime: "desc" }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+    ]);
+
+    return {
+      success: true,
+      data: buildPaginatedResult(appointments, total, page, pageSize),
+    };
   } catch (error) {
     return handleActionError(error);
   }

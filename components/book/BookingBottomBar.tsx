@@ -16,8 +16,8 @@ export function BookingBottomBar({ children, className }: BookingBottomBarProps)
         className
       )}
     >
-      <div className="h-8 bg-gradient-to-t from-zinc-50 dark:from-zinc-900 to-transparent pointer-events-none" />
-      <div className="border-t border-zinc-100 bg-white px-4 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+      <div className="pointer-events-none h-8 bg-gradient-to-t from-[var(--color-paper)] to-transparent" />
+      <div className="border-t border-[var(--color-rule)] bg-[color-mix(in_oklch,var(--color-paper-2)_95%,transparent)] px-[var(--space-sm)] py-[var(--space-sm)] backdrop-blur-sm">
         {children}
       </div>
     </div>

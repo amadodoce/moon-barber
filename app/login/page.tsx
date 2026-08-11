@@ -6,13 +6,17 @@ import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Scissors, Loader2, ArrowRight } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
 import { getSafeCallbackUrl } from "@/lib/auth-redirect";
 import { showError } from "@/lib/toast";
+import { AuthShell } from "@/components/layout/AuthShell";
+import { FormField } from "@/components/brand/FormField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
+const inputClassName =
+  "min-h-11 h-11 rounded-[var(--radius-input)] border-[var(--color-rule)] bg-[var(--color-paper)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-faint)]";
 
 function LoginForm() {
   const router = useRouter();
@@ -52,47 +56,40 @@ function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div>
-        <Label htmlFor="phone" className="text-sm font-medium text-[var(--text-primary)]">
-          شماره موبایل
-        </Label>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-[var(--space-md)]">
+      <FormField
+        id="phone"
+        label="شماره موبایل"
+        required
+        error={errors.phone?.message}
+      >
         <Input
           id="phone"
           placeholder="09123456789"
           {...register("phone")}
-          className="mt-1.5 h-11 rounded-xl border-[var(--surface-border)] bg-[var(--surface-overlay)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]"
+          className={inputClassName}
           dir="ltr"
         />
-        {errors.phone && (
-          <p className="mt-1.5 text-xs text-red-500">{errors.phone.message}</p>
-        )}
-      </div>
+      </FormField>
 
-      <div>
-        <Label htmlFor="password" className="text-sm font-medium text-[var(--text-primary)]">
-          رمز عبور
-        </Label>
+      <FormField
+        id="password"
+        label="رمز عبور"
+        required
+        error={errors.password?.message}
+      >
         <Input
           id="password"
           type="password"
           placeholder="••••••"
           {...register("password")}
-          className="mt-1.5 h-11 rounded-xl border-[var(--surface-border)] bg-[var(--surface-overlay)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:border-[var(--booking-gold)] focus:ring-[var(--booking-gold)]"
+          className={inputClassName}
           dir="ltr"
         />
-        {errors.password && (
-          <p className="mt-1.5 text-xs text-red-500">{errors.password.message}</p>
-        )}
-      </div>
+      </FormField>
 
-      <Button
-        type="submit"
-        disabled={loading}
-        className="h-11 w-full rounded-xl text-sm font-semibold transition-colors duration-150 hover:opacity-90"
-        style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
-      >
-        {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+      <Button type="submit" variant="brand" className="w-full" disabled={loading}>
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
         ورود
       </Button>
     </form>
@@ -104,7 +101,7 @@ function RegisterLink() {
   const callbackUrl = searchParams.get("callbackUrl");
 
   return (
-    <p className="mt-6 text-center text-sm" style={{ color: "var(--text-muted)" }}>
+    <p className="mt-[var(--space-md)] text-center text-sm text-[var(--color-ink-muted)]">
       حساب ندارید؟{" "}
       <Link
         href={
@@ -112,8 +109,7 @@ function RegisterLink() {
             ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}`
             : "/register"
         }
-        className="font-medium transition-colors duration-150 hover:opacity-80"
-        style={{ color: "var(--booking-gold)" }}
+        className="font-medium text-[var(--color-accent)] transition-colors hover:text-[var(--color-accent-hover)]"
       >
         ثبت‌نام کنید
       </Link>
@@ -123,50 +119,24 @@ function RegisterLink() {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen min-h-dvh items-center justify-center px-4 py-12" style={{ backgroundColor: "var(--surface-base)" }}>
-      <div className="w-full max-w-sm">
-        {/* Back to home */}
-        <Link
-          href="/"
-          className="mb-8 inline-flex items-center gap-1.5 text-sm transition-colors duration-150"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          <ArrowRight className="h-4 w-4" />
-          بازگشت به صفحه اصلی
-        </Link>
-
-        {/* Card */}
-        <div className="rounded-2xl border p-6 sm:p-8" style={{ borderColor: "var(--surface-border)", backgroundColor: "var(--surface-overlay)" }}>
-          {/* Logo */}
-          <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl" style={{ backgroundColor: "var(--booking-gold)" }}>
-            <Scissors className="h-6 w-6" style={{ color: "var(--surface-base)" }} />
-          </div>
-
-          <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
-            ورود به حساب
-          </h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
-            شماره موبایل و رمز عبور خود را وارد کنید
-          </p>
-
-          <div className="mt-6">
-            <Suspense
-              fallback={
-                <div className="flex justify-center py-12">
-                  <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--booking-gold)" }} />
-                </div>
-              }
-            >
-              <LoginForm />
-            </Suspense>
-          </div>
-        </div>
-
-        {/* Register link */}
+    <AuthShell
+      title="ورود به حساب"
+      description="شماره موبایل و رمز عبور خود را وارد کنید"
+      footer={
         <Suspense fallback={null}>
           <RegisterLink />
         </Suspense>
-      </div>
-    </div>
+      }
+    >
+      <Suspense
+        fallback={
+          <div className="flex justify-center py-[var(--space-xl)]">
+            <Loader2 className="h-6 w-6 animate-spin text-[var(--color-accent)]" />
+          </div>
+        }
+      >
+        <LoginForm />
+      </Suspense>
+    </AuthShell>
   );
 }

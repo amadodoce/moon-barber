@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, UserX, Users } from "lucide-react";
+import { ArrowLeft, UserCheck, Users } from "lucide-react";
 import { useBookingStore } from "@/stores/booking";
 import { useBookingGuard } from "@/hooks/useBookingGuard";
 import { getBarbers, type PublicBarber } from "@/app/actions/barber";
 import { BarberCard } from "@/components/book/BarberCard";
 import { Spinner } from "@/components/ui/Spinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { PageHeader } from "@/components/brand/PageHeader";
+import { EmptyState } from "@/components/brand/EmptyState";
+import { Button } from "@/components/ui/button";
 import {
   BookingBottomBar,
   BOOKING_BOTTOM_BAR_PADDING,
@@ -45,7 +48,7 @@ export default function BarberPage() {
     router.push("/book/date-time");
   };
 
-  const handleSkip = () => {
+  const handleAutoAssign = () => {
     if (barbers.length === 0) {
       setError("هیچ آرایشگری موجود نیست");
       return;
@@ -56,36 +59,35 @@ export default function BarberPage() {
 
   if (loading && barbers.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
+      <div className="flex flex-col items-center justify-center py-[var(--space-2xl)]">
         <Spinner size="lg" />
-        <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
-          در حال بارگذاری آرایشگرها...
+        <p className="mt-4 text-sm text-[var(--color-ink-muted)]">
+          در حال بارگذاری آرایشگرها…
         </p>
       </div>
     );
   }
 
   if (error) {
-    return <ErrorMessage message={error} className="mt-8" />;
+    return <ErrorMessage message={error} className="mt-[var(--space-md)]" />;
   }
 
   return (
-    <div className={`space-y-6 ${barberId ? BOOKING_BOTTOM_BAR_PADDING : ""}`}>
-      <div>
-        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">انتخاب آرایشگر</h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          آرایشگر مورد نظر خود را انتخاب کنید
-        </p>
-      </div>
+    <div className={`space-y-[var(--space-md)] ${barberId ? BOOKING_BOTTOM_BAR_PADDING : ""}`}>
+      <PageHeader
+        eyebrow="مرحله ۲ از ۴"
+        title="انتخاب آرایشگر"
+        description="آرایشگر مورد نظر را انتخاب کنید یا تخصیص خودکار را بپذیرید."
+      />
 
-      {/* Barber list */}
       {barbers.length === 0 ? (
-        <div className="py-16 text-center text-sm text-zinc-400 dark:text-zinc-500">
-          <Users className="mx-auto h-10 w-10 mb-3 text-zinc-300 dark:text-zinc-600" />
-          <p>هیچ آرایشگری موجود نیست</p>
-        </div>
+        <EmptyState
+          icon={<Users className="h-10 w-10" />}
+          title="آرایشگری موجود نیست"
+          description="در حال حاضر امکان رزرو با آرایشگر وجود ندارد."
+        />
       ) : (
-        <div className="space-y-3" role="radiogroup" aria-label="انتخاب آرایشگر">
+        <div className="space-y-[var(--space-xs)]" role="radiogroup" aria-label="انتخاب آرایشگر">
           {barbers.map((barber, i) => (
             <BarberCard
               key={barber.id}
@@ -100,27 +102,23 @@ export default function BarberPage() {
         </div>
       )}
 
-      {/* Skip option */}
       {barbers.length > 0 && (
-        <button
-          onClick={handleSkip}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+        <Button
+          variant="outline"
+          className="w-full gap-2"
+          onClick={handleAutoAssign}
         >
-          <UserX className="h-4 w-4" />
-          آرایشگر خاصی مد نظر نیست
-        </button>
+          <UserCheck className="h-4 w-4" aria-hidden="true" />
+          تخصیص خودکار به {barbers[0].user.name}
+        </Button>
       )}
 
       {barberId && (
         <BookingBottomBar>
-          <button
-            onClick={handleNext}
-            className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-150 hover:opacity-90"
-            style={{ backgroundColor: "var(--booking-gold)", color: "var(--surface-base)" }}
-          >
+          <Button variant="brand" className="w-full gap-2" onClick={handleNext}>
             ادامه
-            <ArrowLeft className="h-4 w-4" />
-          </button>
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          </Button>
         </BookingBottomBar>
       )}
     </div>

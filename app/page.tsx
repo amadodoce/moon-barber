@@ -15,7 +15,7 @@ export default async function Home() {
   const data = await getLandingData();
 
   return (
-    <main>
+    <main id="main-content">
       <Navbar />
       <Hero shopName={data.content.shop_name} subtitle={data.content.hero_subtitle} />
       <Services services={data.services.map((s) => ({

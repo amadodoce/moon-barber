@@ -1,0 +1,18 @@
+---
+description: Merge completed work into main and push for Vercel deployment
+alwaysApply: true
+---
+
+# GitFlow — always merge to main
+
+When a task is complete and verified:
+
+1. Work on a focused branch (`fix/`, `feat/`, `chore/`).
+2. Run gates before merge: `npm run typecheck`, `npm run lint`, `npm run test`, and `npm run build` when relevant.
+3. **Automatically merge into `main`** — do not leave fixes only on feature branches.
+4. **Push `origin main`** after merge so Vercel deploys from the updated default branch.
+5. Prefer fast-forward merge when possible; one focused commit per branch is fine.
+
+Do not ask the user to merge manually unless merge/push is blocked by permissions.
+
+After push, confirm `main` matches `origin/main` (`git status` shows clean and up to date).

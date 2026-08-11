@@ -1,4 +1,7 @@
+import Link from "next/link";
 import { Quote } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SurfaceCard } from "@/components/brand/SurfaceCard";
 
 const testimonials = [
   {
@@ -15,37 +18,49 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="bg-[var(--surface-raised)] py-24 md:py-36">
-      <div className="mx-auto max-w-6xl px-6">
-        {/* Section header — right-aligned for variety */}
-        <div className="mb-12 text-right md:ml-auto md:max-w-md">
-          <h2 className="text-3xl font-bold text-[var(--text-primary)] md:text-4xl">
+    <section className="bg-[var(--color-paper-2)] py-[var(--space-2xl)] md:py-[var(--space-3xl)]">
+      <div className="mx-auto max-w-6xl px-[var(--space-md)]">
+        <div className="mb-[var(--space-xl)] md:ms-auto md:max-w-md md:text-end">
+          <p className="text-[var(--text-xs)] uppercase tracking-[0.14em] text-[var(--color-accent)]">
+            نظرات مشتریان
+          </p>
+          <h2
+            className="mt-[var(--space-2xs)] font-semibold text-[var(--color-ink)]"
+            style={{ fontSize: "var(--text-display-s)" }}
+          >
             مشتریان ما چه می‌گویند؟
           </h2>
-          <p className="mt-3 text-[var(--text-muted)]">
-            نظرات مشتریان
+          <p className="mt-[var(--space-sm)] text-[var(--text-sm)] text-[var(--color-ink-muted)]">
+            تجربه واقعی مراجعین
           </p>
         </div>
 
-        {/* Testimonials — asymmetric, no equal columns */}
-        <div className="grid gap-4 md:grid-cols-[1fr_1.2fr]">
+        <div className="grid gap-[var(--space-sm)] md:grid-cols-[1fr_1.2fr]">
           {testimonials.map((testimonial) => (
-            <div
-              key={testimonial.name}
-              className="rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-overlay)] p-6"
-            >
-              <Quote className="mb-3 h-6 w-6 text-[var(--booking-gold)]/30" />
-              <p className="text-base leading-relaxed text-[var(--text-accent)]">
+            <SurfaceCard key={testimonial.name}>
+              <Quote
+                className="mb-[var(--space-sm)] h-6 w-6 text-[var(--color-accent)]/30"
+                aria-hidden="true"
+              />
+              <p className="text-[var(--text-md)] leading-relaxed text-[var(--color-ink-2)]">
                 {testimonial.quote}
               </p>
-              <div className="mt-5 border-t border-[var(--surface-border)] pt-4">
-                <p className="text-sm font-semibold text-[var(--text-primary)]">{testimonial.name}</p>
-                <p className="mt-0.5 text-xs text-[var(--booking-gold)]">
+              <div className="mt-[var(--space-md)] border-t border-[var(--color-rule)] pt-[var(--space-sm)]">
+                <p className="text-[var(--text-sm)] font-semibold text-[var(--color-ink)]">
+                  {testimonial.name}
+                </p>
+                <p className="mt-[var(--space-3xs)] text-[var(--text-xs)] text-[var(--color-accent)]">
                   {testimonial.service}
                 </p>
               </div>
-            </div>
+            </SurfaceCard>
           ))}
+        </div>
+
+        <div className="mt-[var(--space-xl)] md:text-end">
+          <Button variant="brand" render={<Link href="/book" />}>
+            رزرو نوبت
+          </Button>
         </div>
       </div>
     </section>

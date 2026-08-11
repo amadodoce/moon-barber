@@ -37,6 +37,28 @@ export function formatFaDate(
   return date.toLocaleDateString("fa-IR", options);
 }
 
+/** Jalali calendar presentation while preserving Gregorian storage */
+export function formatJalaliDate(
+  value: Date | string,
+  options?: Intl.DateTimeFormatOptions
+): string {
+  const date = toLocalDate(value);
+  return date.toLocaleDateString("fa-IR-u-ca-persian", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    ...options,
+  });
+}
+
+/** Jalali month + year label for calendar headers */
+export function formatJalaliMonthYear(date: Date): string {
+  return date.toLocaleDateString("fa-IR-u-ca-persian", {
+    year: "numeric",
+    month: "long",
+  });
+}
+
 /** Compare calendar day equality in local timezone */
 export function isSameLocalDate(a: Date | string, b: Date | string): boolean {
   return toLocalDateString(toLocalDate(a)) === toLocalDateString(toLocalDate(b));

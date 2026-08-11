@@ -1,120 +1,52 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Scissors, Menu } from "lucide-react";
-import { Sidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from "./Sidebar";
-import {
-  Sheet,
-  SheetContent,
-} from "@/components/ui/sheet";
-
-function readSidebarExpanded(): boolean {
-  if (typeof window === "undefined") return true;
-  const saved = localStorage.getItem("admin-sidebar-expanded");
-  return saved !== null ? saved === "true" : true;
-}
+import { Menu } from "lucide-react";
+import { BrandMark } from "@/components/brand";
+import { Sidebar } from "./Sidebar";
+import { useAdminSidebar } from "./AdminSidebarContext";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 export function AdminHeader() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarExpanded, setSidebarExpanded] = useState(readSidebarExpanded);
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const sidebar = document.querySelector("[data-admin-sidebar]");
-      if (sidebar) {
-        const w = sidebar.getBoundingClientRect().width;
-        setSidebarExpanded(w > SIDEBAR_COLLAPSED_WIDTH + 20);
-      }
-    });
-
-    const target = document.querySelector("[data-admin-sidebar]");
-    if (target) {
-      observer.observe(target, { attributes: true, attributeFilter: ["style"] });
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  const sidebarWidth = sidebarExpanded ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH;
+  const { sidebarWidth, mobileOpen, setMobileOpen } = useAdminSidebar();
 
   return (
     <>
       {/* Mobile header */}
-      <header
-        className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b px-4 pt-[env(safe-area-inset-top)] backdrop-blur-sm sm:hidden"
-        style={{
-          borderColor: "var(--surface-border)",
-          backgroundColor: "color-mix(in srgb, var(--surface-overlay) 80%, transparent)",
-        }}
-      >
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-[var(--space-sm)] border-b border-[var(--color-rule)] bg-[color-mix(in_oklch,var(--color-paper-2)_85%,transparent)] px-[var(--space-sm)] pt-[env(safe-area-inset-top)] backdrop-blur-sm sm:hidden">
         <button
           type="button"
-          onClick={() => setSidebarOpen(true)}
-          className="rounded-lg p-2 transition-colors hover:bg-[var(--surface-border)]"
+          onClick={() => setMobileOpen(true)}
+          className="rounded-[var(--radius-input)] p-2 text-[var(--color-ink-2)] transition-colors hover:bg-[var(--color-paper-3)]"
           aria-label="باز کردن منو"
+          aria-expanded={mobileOpen}
+          aria-controls="admin-mobile-sidebar"
         >
-          <Menu className="h-5 w-5" style={{ color: "var(--text-secondary)" }} />
+          <Menu className="h-5 w-5" />
         </button>
-        <div className="flex items-center gap-2">
-          <div
-            className="flex h-8 w-8 items-center justify-center rounded-lg"
-            style={{ backgroundColor: "var(--booking-gold)" }}
-          >
-            <Scissors className="h-4 w-4" style={{ color: "var(--surface-base)" }} />
-          </div>
-          <span className="font-bold" style={{ color: "var(--text-primary)" }}>پنل مدیریت</span>
-        </div>
+        <BrandMark size="sm" asLink={false} />
       </header>
 
-      {/* Desktop sidebar (fixed) */}
+      {/* Desktop sidebar (fixed, RTL right) */}
       <aside
         data-admin-sidebar
         className="hidden sm:fixed sm:inset-y-0 sm:right-0 sm:z-20 sm:flex sm:flex-col sm:overflow-hidden sm:transition-[width] sm:duration-200 sm:ease-in-out"
         style={{ width: sidebarWidth }}
+        aria-label="نوار کناری مدیریت"
       >
         <Sidebar />
       </aside>
 
       {/* Mobile sidebar */}
-      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent
+          id="admin-mobile-sidebar"
           side="right"
           showCloseButton={false}
           className="w-64 max-w-[85vw] gap-0 p-0 pr-[env(safe-area-inset-right)] sm:hidden"
         >
-          <Sidebar onClose={() => setSidebarOpen(false)} mobile />
+          <Sidebar mobile />
         </SheetContent>
       </Sheet>
     </>
-  );
-}
-
-export function AdminSidebarSpacer() {
-  const [sidebarExpanded, setSidebarExpanded] = useState(readSidebarExpanded);
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const sidebar = document.querySelector("[data-admin-sidebar]");
-      if (sidebar) {
-        const w = sidebar.getBoundingClientRect().width;
-        setSidebarExpanded(w > SIDEBAR_COLLAPSED_WIDTH + 20);
-      }
-    });
-
-    const target = document.querySelector("[data-admin-sidebar]");
-    if (target) {
-      observer.observe(target, { attributes: true, attributeFilter: ["style"] });
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  const sidebarWidth = sidebarExpanded ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH;
-
-  return (
-    <div
-      className="hidden sm:block sm:shrink-0 sm:transition-[width] sm:duration-200 sm:ease-in-out"
-      style={{ width: sidebarWidth }}
-    />
   );
 }
