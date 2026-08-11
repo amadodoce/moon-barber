@@ -47,4 +47,4 @@ npm run test
 npm run build
 ```
 
-Last verified: 2026-08-11 on branch `fix/booking-integrity` (pre-merge to `main`).
+Last verified: 2026-08-11 on `main` @ `410b7fa` (merged from `fix/booking-integrity`, pushed to `origin/main` for Vercel).
