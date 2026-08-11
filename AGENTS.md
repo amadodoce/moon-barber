@@ -78,3 +78,10 @@ Path alias: `@/*` maps to project root.
 - Dev and build now use separate output directories (`.next/dev` vs `.next`), so they can run concurrently.
 - CI runs lint, typecheck, test, and build via `.github/workflows/ci.yml`.
 - Bug audit backlog: `docs/AUDIT_BACKLOG.md`.
+
+## Git workflow
+
+- Use focused branches (`fix/`, `feat/`, `chore/`) for changes.
+- When a task is verified, **merge into `main` and push `origin main` automatically** so Vercel deploys.
+- Run `npm run typecheck`, `npm run lint`, `npm run test`, and `npm run build` before merging when the change affects build/runtime.
+- Do not leave completed fixes unmerged on feature branches.
