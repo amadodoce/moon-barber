@@ -22,6 +22,7 @@ import {
   type GetAvailableSlotsInput,
 } from "@/lib/validations/appointment";
 import { getAvailableSlots, parseLocalDate, type AvailableSlot } from "@/lib/availability";
+import { releaseStalePendingAppointments, canBarberUpdateAppointmentStatus } from "@/lib/appointment-lifecycle";
 import type { Appointment } from "@/app/generated/prisma/client";
 
 /** Get available booking slots for a barber + services + date */
@@ -30,6 +31,7 @@ export async function getAvailableBookingSlots(
 ): Promise<ActionResponse<AvailableSlot[]>> {
   try {
     const data = getAvailableSlotsSchema.parse(input);
+    await releaseStalePendingAppointments();
     const slots = await getAvailableSlots(
       data.barberId,
       data.serviceIds,
@@ -54,12 +56,14 @@ export async function createAppointment(
     const barber = await prisma.barber.findUnique({
       where: { id: data.barberId },
     });
-    if (!barber || barber.deletedAt) {
+    if (!barber) {
       throw new Error("آرایشگر یافت نشد");
     }
     if (!barber.isActive) {
       throw new Error("این آرایشگر در حال حاضر فعال نیست");
     }
+
+    await releaseStalePendingAppointments();
 
     // Verify all services exist and are active
     const services = await prisma.service.findMany({
@@ -264,11 +268,14 @@ export async function updateAppointmentStatus(
         where: { userId: user.userId },
       });
 
-      if (!barber || appointment.barberId !== barber.id) {
-        throw new Error("FORBIDDEN");
-      }
-
-      if (!["COMPLETED", "NO_SHOW"].includes(data.status)) {
+      if (
+        !barber ||
+        !canBarberUpdateAppointmentStatus(
+          barber.id,
+          appointment.barberId,
+          data.status
+        )
+      ) {
         throw new Error("FORBIDDEN");
       }
     } else {

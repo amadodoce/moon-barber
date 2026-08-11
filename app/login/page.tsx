@@ -99,6 +99,28 @@ function LoginForm() {
   );
 }
 
+function RegisterLink() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
+
+  return (
+    <p className="mt-6 text-center text-sm" style={{ color: "var(--text-muted)" }}>
+      حساب ندارید؟{" "}
+      <Link
+        href={
+          callbackUrl && callbackUrl !== "/"
+            ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}`
+            : "/register"
+        }
+        className="font-medium transition-colors duration-150 hover:opacity-80"
+        style={{ color: "var(--booking-gold)" }}
+      >
+        ثبت‌نام کنید
+      </Link>
+    </p>
+  );
+}
+
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen min-h-dvh items-center justify-center px-4 py-12" style={{ backgroundColor: "var(--surface-base)" }}>
@@ -141,16 +163,9 @@ export default function LoginPage() {
         </div>
 
         {/* Register link */}
-        <p className="mt-6 text-center text-sm" style={{ color: "var(--text-muted)" }}>
-          حساب ندارید؟{" "}
-          <Link
-            href="/register"
-            className="font-medium transition-colors duration-150 hover:opacity-80"
-            style={{ color: "var(--booking-gold)" }}
-          >
-            ثبت‌نام کنید
-          </Link>
-        </p>
+        <Suspense fallback={null}>
+          <RegisterLink />
+        </Suspense>
       </div>
     </div>
   );

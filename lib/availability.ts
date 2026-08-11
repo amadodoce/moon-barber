@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { DayOfWeek } from "@/app/generated/prisma/enums";
 import { parseLocalDate, getTodayLocalDateString } from "@/lib/dates";
+import { releaseStalePendingAppointments } from "@/lib/appointment-lifecycle";
 
 export { parseLocalDate } from "@/lib/dates";
 
@@ -141,6 +142,8 @@ export async function getAvailableSlots(
   serviceIds: string[],
   date: string
 ): Promise<AvailableSlot[]> {
+  await releaseStalePendingAppointments();
+
   // Parse date string and create Date at local midnight (not UTC)
   const dateObj = parseLocalDate(date);
   const dayOfWeek = DAY_MAP[dateObj.getDay()];

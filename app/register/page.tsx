@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Scissors, Loader2, ArrowRight, CheckCircle } from "lucide-react";
@@ -13,7 +13,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--booking-gold)" }} />
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
+  );
+}
+
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -50,7 +66,10 @@ export default function RegisterPage() {
 
       showSuccess("ثبت‌نام موفق — در حال انتقال...");
       setSuccess(true);
-      setTimeout(() => router.push("/login"), 2000);
+      const loginUrl = callbackUrl
+        ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+        : "/login";
+      setTimeout(() => router.push(loginUrl), 2000);
     } catch {
       showError("خطای ارتباط با سرور");
       setLoading(false);
@@ -185,7 +204,11 @@ export default function RegisterPage() {
         <p className="mt-6 text-center text-sm" style={{ color: "var(--text-muted)" }}>
           قبلاً ثبت‌نام کرده‌اید؟{" "}
           <Link
-            href="/login"
+            href={
+              callbackUrl
+                ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                : "/login"
+            }
             className="font-medium transition-colors duration-150 hover:opacity-80"
             style={{ color: "var(--booking-gold)" }}
           >
