@@ -215,12 +215,12 @@ export async function cancelAppointment(
   }
 }
 
-/** Update appointment status (ADMIN only) */
+/** Update appointment status (ADMIN or owning BARBER for COMPLETED/NO_SHOW) */
 export async function updateAppointmentStatus(
   input: UpdateAppointmentStatusInput
 ): Promise<ActionResponse<Appointment>> {
   try {
-    await requireAdmin();
+    const user = await requireAuth();
 
     const data = updateAppointmentStatusSchema.parse(input);
 
@@ -232,12 +232,31 @@ export async function updateAppointmentStatus(
       throw new Error("نوبت یافت نشد");
     }
 
+    if (user.role === "ADMIN") {
+      // Full status control for admins
+    } else if (user.role === "BARBER") {
+      const barber = await prisma.barber.findUnique({
+        where: { userId: user.userId },
+      });
+
+      if (!barber || appointment.barberId !== barber.id) {
+        throw new Error("FORBIDDEN");
+      }
+
+      if (!["COMPLETED", "NO_SHOW"].includes(data.status)) {
+        throw new Error("FORBIDDEN");
+      }
+    } else {
+      throw new Error("FORBIDDEN");
+    }
+
     const updated = await prisma.appointment.update({
       where: { id: data.id },
       data: { status: data.status },
     });
 
     revalidatePath("/admin/appointments");
+    revalidatePath("/barber");
     return { success: true, data: updated };
   } catch (error) {
     return handleActionError(error);
