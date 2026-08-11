@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { useBookingStore } from "@/stores/booking";
+import { useBookingGuard } from "@/hooks/useBookingGuard";
 import { getAvailableBookingSlots } from "@/app/actions/appointment";
 import { DatePicker } from "@/components/book/DatePicker";
 import { TimeSlotPicker } from "@/components/book/TimeSlotPicker";
@@ -19,6 +20,8 @@ export default function DateTimePage() {
   const [slots, setSlots] = useState<AvailableSlot[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useBookingGuard(3);
 
   const shouldLoad = !!date && serviceIds.length > 0 && !!barberId;
 

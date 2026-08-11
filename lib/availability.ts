@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { DayOfWeek } from "@/app/generated/prisma/enums";
-import { parseLocalDate } from "@/lib/dates";
+import { parseLocalDate, getTodayLocalDateString } from "@/lib/dates";
+import { releaseStalePendingAppointments } from "@/lib/appointment-lifecycle";
 
 export { parseLocalDate } from "@/lib/dates";
 
@@ -28,25 +29,25 @@ const DAY_MAP: DayOfWeek[] = [
 ];
 
 /** Convert "HH:mm" string to minutes since midnight */
-function timeToMinutes(time: string): number {
+export function timeToMinutes(time: string): number {
   const [h, m] = time.split(":").map(Number);
   return h * 60 + m;
 }
 
 /** Convert minutes since midnight back to "HH:mm" */
-function minutesToTime(minutes: number): string {
+export function minutesToTime(minutes: number): string {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
 /** Check if two time ranges overlap */
-function rangesOverlap(a: TimeRange, b: TimeRange): boolean {
+export function rangesOverlap(a: TimeRange, b: TimeRange): boolean {
   return timeToMinutes(a.start) < timeToMinutes(b.end) && timeToMinutes(b.start) < timeToMinutes(a.end);
 }
 
 /** Subtract a list of blocked ranges from an available range, returning free sub-ranges */
-function subtractRanges(
+export function subtractRanges(
   available: TimeRange[],
   blocked: TimeRange[]
 ): TimeRange[] {
@@ -91,8 +92,18 @@ function subtractRanges(
   return result;
 }
 
+/** Filter out elapsed slots when the selected date is today */
+export function filterPastSlots(slots: AvailableSlot[], date: string): AvailableSlot[] {
+  if (date !== getTodayLocalDateString()) {
+    return slots;
+  }
+
+  const nowMinutes = new Date().getHours() * 60 + new Date().getMinutes();
+  return slots.filter((slot) => timeToMinutes(slot.startTime) > nowMinutes);
+}
+
 /** Generate time slots from available ranges given a service duration */
-function generateSlots(
+export function generateSlots(
   ranges: TimeRange[],
   durationMinutes: number,
   stepMinutes: number = 15
@@ -131,6 +142,8 @@ export async function getAvailableSlots(
   serviceIds: string[],
   date: string
 ): Promise<AvailableSlot[]> {
+  await releaseStalePendingAppointments();
+
   // Parse date string and create Date at local midnight (not UTC)
   const dateObj = parseLocalDate(date);
   const dayOfWeek = DAY_MAP[dateObj.getDay()];
@@ -262,5 +275,5 @@ export async function getAvailableSlots(
   freeRanges = subtractRanges(freeRanges, appointmentRanges);
 
   // 5. Generate bookable slots
-  return generateSlots(freeRanges, totalDuration);
+  return filterPastSlots(generateSlots(freeRanges, totalDuration), date);
 }

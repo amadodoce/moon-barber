@@ -26,6 +26,8 @@ export function BarberCard({
   return (
     <button
       type="button"
+      role="radio"
+      aria-checked={isSelected}
       onClick={() => setBarber(id, name)}
       className={`relative flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-right transition-colors duration-150 ${
         isSelected

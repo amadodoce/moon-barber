@@ -15,6 +15,7 @@ import {
   type UpdateServiceInput,
 } from "@/lib/validations/service";
 import type { Service } from "@/app/generated/prisma/client";
+import { serializeForClient, serializeManyForClient } from "@/lib/serialize";
 
 /** Create a new service (ADMIN only) */
 export async function createService(
@@ -37,7 +38,7 @@ export async function createService(
     });
 
     revalidatePath("/admin/services");
-    return { success: true, data: service };
+    return { success: true, data: serializeForClient(service) };
   } catch (error) {
     return handleActionError(error);
   }
@@ -65,7 +66,7 @@ export async function updateService(
     });
 
     revalidatePath("/admin/services");
-    return { success: true, data: service };
+    return { success: true, data: serializeForClient(service) };
   } catch (error) {
     return handleActionError(error);
   }
@@ -122,7 +123,7 @@ export async function getServices(): Promise<ActionResponse<Service[]>> {
       orderBy: { name: "asc" },
     });
 
-    return { success: true, data: services };
+    return { success: true, data: serializeManyForClient(services) };
   } catch (error) {
     return handleActionError(error);
   }
@@ -138,7 +139,7 @@ export async function getAllServices(): Promise<ActionResponse<Service[]>> {
       orderBy: { createdAt: "desc" },
     });
 
-    return { success: true, data: services };
+    return { success: true, data: serializeManyForClient(services) };
   } catch (error) {
     return handleActionError(error);
   }
@@ -156,7 +157,7 @@ export async function getService(
       throw new Error("سرویس یافت نشد");
     }
 
-    return { success: true, data: service };
+    return { success: true, data: serializeForClient(service) };
   } catch (error) {
     return handleActionError(error);
   }

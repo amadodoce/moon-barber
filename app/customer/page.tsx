@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Calendar, CreditCard, Scissors, LogOut, Clock, CheckCircle } from "lucide-react";
+import { Calendar, CreditCard, Scissors, LogOut, Clock } from "lucide-react";
 import Link from "next/link";
 import { getMyAppointments } from "@/app/actions/appointment";
 import { getMyPayments } from "@/app/actions/payment";
@@ -188,8 +188,18 @@ export default function CustomerDashboardPage() {
         </div>
 
         {/* Tabs */}
-        <div className="mb-4 flex gap-1 rounded-lg p-1" style={{ backgroundColor: "var(--surface-overlay)" }}>
+        <div
+          className="mb-4 flex gap-1 rounded-lg p-1"
+          style={{ backgroundColor: "var(--surface-overlay)" }}
+          role="tablist"
+          aria-label="بخش‌های داشبورد"
+        >
           <button
+            type="button"
+            role="tab"
+            id="tab-appointments"
+            aria-selected={activeTab === "appointments"}
+            aria-controls="panel-appointments"
             onClick={() => setActiveTab("appointments")}
             className="flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors"
             style={activeTab === "appointments"
@@ -200,6 +210,11 @@ export default function CustomerDashboardPage() {
             نوبت‌ها
           </button>
           <button
+            type="button"
+            role="tab"
+            id="tab-payments"
+            aria-selected={activeTab === "payments"}
+            aria-controls="panel-payments"
             onClick={() => setActiveTab("payments")}
             className="flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors"
             style={activeTab === "payments"
@@ -213,7 +228,7 @@ export default function CustomerDashboardPage() {
 
         {/* Appointments tab */}
         {activeTab === "appointments" && (
-          <div>
+          <div id="panel-appointments" role="tabpanel" aria-labelledby="tab-appointments">
             {appointments.length === 0 ? (
               <div
                 className="rounded-xl border p-8 text-center"
@@ -247,7 +262,7 @@ export default function CustomerDashboardPage() {
 
         {/* Payments tab */}
         {activeTab === "payments" && (
-          <div>
+          <div id="panel-payments" role="tabpanel" aria-labelledby="tab-payments">
             {payments.length === 0 ? (
               <div
                 className="rounded-xl border p-8 text-center"

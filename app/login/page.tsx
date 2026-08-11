@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Scissors, Loader2, ArrowRight } from "lucide-react";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
+import { getSafeCallbackUrl } from "@/lib/auth-redirect";
 import { showError } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,15 +47,7 @@ function LoginForm() {
     const session = await sessionRes.json();
     const role = session?.user?.role;
 
-    if (role === "ADMIN") {
-      router.push("/admin");
-    } else if (role === "BARBER") {
-      router.push("/barber");
-    } else if (role === "CUSTOMER") {
-      router.push("/customer");
-    } else {
-      router.push(callbackUrl);
-    }
+    router.push(getSafeCallbackUrl(callbackUrl, role));
     router.refresh();
   };
 
@@ -106,6 +99,28 @@ function LoginForm() {
   );
 }
 
+function RegisterLink() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
+
+  return (
+    <p className="mt-6 text-center text-sm" style={{ color: "var(--text-muted)" }}>
+      حساب ندارید؟{" "}
+      <Link
+        href={
+          callbackUrl && callbackUrl !== "/"
+            ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}`
+            : "/register"
+        }
+        className="font-medium transition-colors duration-150 hover:opacity-80"
+        style={{ color: "var(--booking-gold)" }}
+      >
+        ثبت‌نام کنید
+      </Link>
+    </p>
+  );
+}
+
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen min-h-dvh items-center justify-center px-4 py-12" style={{ backgroundColor: "var(--surface-base)" }}>
@@ -148,16 +163,9 @@ export default function LoginPage() {
         </div>
 
         {/* Register link */}
-        <p className="mt-6 text-center text-sm" style={{ color: "var(--text-muted)" }}>
-          حساب ندارید؟{" "}
-          <Link
-            href="/register"
-            className="font-medium transition-colors duration-150 hover:opacity-80"
-            style={{ color: "var(--booking-gold)" }}
-          >
-            ثبت‌نام کنید
-          </Link>
-        </p>
+        <Suspense fallback={null}>
+          <RegisterLink />
+        </Suspense>
       </div>
     </div>
   );

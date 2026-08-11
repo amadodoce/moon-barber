@@ -110,12 +110,18 @@ export const useBookingStore = create<BookingState>()(
               0
             ),
             totalPrice: newDetails.reduce((sum, s) => sum + s.price, 0),
+            date: null,
+            startTime: null,
+            endTime: null,
+            barberId: null,
+            barberName: null,
           };
         }),
 
       setDate: (date) => set({ date, startTime: null, endTime: null }),
       setTime: (start, end) => set({ startTime: start, endTime: end }),
-      setBarber: (id, name) => set({ barberId: id, barberName: name }),
+      setBarber: (id, name) =>
+        set({ barberId: id, barberName: name, date: null, startTime: null, endTime: null }),
       setNotes: (notes) => set({ notes }),
       reset: () => set({ ...initialState, _hasHydrated: true }),
     }),

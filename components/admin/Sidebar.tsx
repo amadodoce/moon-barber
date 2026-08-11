@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -30,15 +30,18 @@ const navItems = [
 const SIDEBAR_WIDTH = 256;
 const SIDEBAR_COLLAPSED_WIDTH = 72;
 
+function readSidebarExpanded(): boolean {
+  if (typeof window === "undefined") return true;
+  const saved = localStorage.getItem("admin-sidebar-expanded");
+  return saved !== null ? saved === "true" : true;
+}
+
 export function Sidebar({ onClose, mobile }: { onClose?: () => void; mobile?: boolean }) {
   const pathname = usePathname();
-  const [expanded, setExpanded] = useState(true);
-
-  useEffect(() => {
-    if (mobile) return;
-    const saved = localStorage.getItem("admin-sidebar-expanded");
-    if (saved !== null) setExpanded(saved === "true");
-  }, [mobile]);
+  const [expanded, setExpanded] = useState(() => {
+    if (mobile) return true;
+    return readSidebarExpanded();
+  });
 
   const toggle = () => {
     const next = !expanded;

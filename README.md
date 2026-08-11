@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Moon Barber
 
-## Getting Started
+Barbershop booking platform built with Next.js 16 App Router, Prisma, and Zarinpal payments.
 
-First, run the development server:
+## Stack
+
+- Next.js 16, React 19, TypeScript 5
+- Tailwind CSS v4
+- Prisma 7.8 + Neon Postgres
+- next-auth v4, Zustand, react-hook-form + Zod
+
+## Setup
 
 ```bash
+cp .env.example .env
+# Edit .env with your DATABASE_URL and secrets
+
+npm install
+npx prisma db push
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev        # Development server (Turbopack)
+npm run build      # Production build
+npm run lint       # ESLint
+npm run typecheck  # TypeScript check
+npm run test       # Vitest unit tests
+```
 
-## Learn More
+## Environment variables
 
-To learn more about Next.js, take a look at the following resources:
+See [.env.example](.env.example) for required variables:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `DATABASE_URL` — Postgres connection string
+- `NEXTAUTH_SECRET`, `NEXTAUTH_URL` — Authentication
+- `ZARINPAL_*`, `CALLBACK_URL` — Payment gateway
+- `NEXT_PUBLIC_BASE_URL` — Public app URL (mock gateway in dev)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project structure
 
-## Deploy on Vercel
+```
+app/           # App Router pages, actions, API routes
+components/    # Shared UI components
+lib/           # Utilities, auth, Prisma client, validations
+stores/        # Zustand client state
+prisma/        # Database schema
+__tests__/     # Vitest unit tests
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Bug audit
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [docs/AUDIT_BACKLOG.md](docs/AUDIT_BACKLOG.md) for the living defect checklist and verification gates.
