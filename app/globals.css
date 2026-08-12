@@ -452,7 +452,7 @@
     0 0 0 1px color-mix(in oklch, var(--color-accent) 25%, transparent),
     0 8px 32px oklch(0% 0 0 / 35%),
     0 0 48px color-mix(in oklch, var(--color-accent) 18%, transparent);
-  transform: translateY(calc(var(--hero-progress) * -58vh));
+  transform: translateY(calc(var(--hero-progress) * -72vh));
   width: min(100%, 16rem);
   transition:
     border-radius var(--dur-medium) var(--ease-out),
