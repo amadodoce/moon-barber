@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 const HERO_COVER_IMAGE = "/images/hero-image.jpg";
@@ -66,19 +65,14 @@ export function HeroParallax({
       aria-label={shopName}
     >
       <div className="hero-parallax-stage">
-        <div className="hero-parallax-scene">
-          <div className="hero-parallax-image-wrap">
-            <Image
-              src={HERO_COVER_IMAGE}
-              alt=""
-              fill
-              priority
-              unoptimized
-              sizes="100vw"
-              className="hero-parallax-image"
-            />
-          </div>
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={HERO_COVER_IMAGE}
+          alt=""
+          className="hero-parallax-cover"
+          decoding="async"
+          fetchPriority="high"
+        />
 
         <div className="hero-parallax-content">
           <h1
