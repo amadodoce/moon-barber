@@ -291,86 +291,23 @@
   overflow: hidden;
 }
 
-.hero-parallax-fallback {
+.hero-parallax-image-wrap {
+  position: absolute;
+  inset: -12%;
+  will-change: transform;
+  transform:
+    translate3d(
+      calc(var(--hero-progress) * -6vw),
+      calc(var(--hero-progress) * -18vh),
+      0
+    )
+    scale(calc(1.18 - var(--hero-progress) * 0.1));
+}
+
+.hero-parallax-image {
   object-fit: cover;
   object-position: center 42%;
 }
-
-.hero-layer {
-  position: absolute;
-  inset: 0;
-  will-change: transform;
-  pointer-events: none;
-}
-
-.hero-layer-image {
-  object-position: center bottom;
-}
-
-.hero-layer-image-fit {
-  object-fit: contain;
-}
-
-.hero-layer-sky .hero-layer-image {
-  object-fit: cover;
-  object-position: center center;
-}
-
-.hero-layer-left-hill {
-  inset: auto auto 18% 2%;
-  width: min(42vw, 22rem);
-  height: min(18vw, 9rem);
-  transform: translate(
-    calc(var(--hero-progress) * -18vw * 0.2),
-    calc(var(--hero-progress) * -6vh * 0.1)
-  );
-}
-
-.hero-layer-right-hill {
-  inset: auto 4% 20% auto;
-  width: min(34vw, 18rem);
-  height: min(14vw, 7rem);
-  transform: translate(
-    calc(var(--hero-progress) * 16vw * 0.18),
-    calc(var(--hero-progress) * -5vh * 0.1)
-  );
-}
-
-.hero-layer-moon {
-  inset: 8% 50% auto auto;
-  width: min(52vw, 28rem);
-  height: min(52vw, 28rem);
-  transform: translate(
-    calc(50% + var(--hero-progress) * -8vw * 0.12),
-    calc(var(--hero-progress) * 4vh * 0.12)
-  );
-}
-
-.hero-layer-main-hill {
-  inset: auto 0 0;
-  height: 42%;
-  transform: translate(
-    calc(var(--hero-progress) * -28vw * 0.78),
-    calc(var(--hero-progress) * -8vh * 0.5)
-  );
-}
-
-.hero-cloud {
-  width: min(var(--cloud-w, 20vw), 20rem);
-  height: min(var(--cloud-h, 8vw), 8rem);
-}
-
-.hero-cloud-6 { --cloud-w: 8vw; --cloud-h: 3vw; inset: 14% 68% auto auto; transform: translate(calc(var(--hero-progress) * 12vw * 0.25), calc(var(--hero-progress) * -3vh * 0.18)); }
-.hero-cloud-3 { --cloud-w: 10vw; --cloud-h: 4vw; inset: 18% 22% auto auto; transform: translate(calc(var(--hero-progress) * -14vw * 0.35), calc(var(--hero-progress) * -4vh * 0.22)); }
-.hero-cloud-1 { --cloud-w: 9vw; --cloud-h: 4vw; inset: 12% 38% auto auto; transform: translate(calc(var(--hero-progress) * 10vw * 0.4), calc(var(--hero-progress) * -2vh * 0.2)); }
-.hero-cloud-7 { --cloud-w: 28vw; --cloud-h: 10vw; inset: 22% 46% auto auto; transform: translate(calc(var(--hero-progress) * -20vw * 0.32), calc(var(--hero-progress) * -5vh * 0.28)); }
-.hero-cloud-2 { --cloud-w: 16vw; --cloud-h: 7vw; inset: 26% 18% auto auto; transform: translate(calc(var(--hero-progress) * 18vw * 0.38), calc(var(--hero-progress) * -4vh * 0.25)); }
-.hero-cloud-11 { --cloud-w: 14vw; --cloud-h: 8vw; inset: 30% 58% auto auto; transform: translate(calc(var(--hero-progress) * -16vw * 0.42), calc(var(--hero-progress) * -6vh * 0.3)); }
-.hero-cloud-4 { --cloud-w: 22vw; --cloud-h: 5vw; inset: 34% 32% auto auto; transform: translate(calc(var(--hero-progress) * 22vw * 0.45), calc(var(--hero-progress) * -5vh * 0.32)); }
-.hero-cloud-8 { --cloud-w: 18vw; --cloud-h: 4vw; inset: 38% 52% auto auto; transform: translate(calc(var(--hero-progress) * -24vw * 0.4), calc(var(--hero-progress) * -4vh * 0.28)); }
-.hero-cloud-9 { --cloud-w: 28vw; --cloud-h: 10vw; inset: 24% 8% auto auto; transform: translate(calc(var(--hero-progress) * 26vw * 0.36), calc(var(--hero-progress) * -6vh * 0.3)); }
-.hero-cloud-5 { --cloud-w: 12vw; --cloud-h: 4vw; inset: 42% 42% auto auto; transform: translate(calc(var(--hero-progress) * -18vw * 0.48), calc(var(--hero-progress) * -7vh * 0.35)); }
-.hero-cloud-10 { --cloud-w: 18vw; --cloud-h: 4vw; inset: 40% 72% auto auto; transform: translate(calc(var(--hero-progress) * 20vw * 0.44), calc(var(--hero-progress) * -5vh * 0.32)); }
 
 .hero-parallax-vignette {
   position: absolute;
@@ -406,20 +343,21 @@
 
 .hero-parallax-title {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 11vw, 7.5rem);
-  font-weight: 900;
-  line-height: 0.95;
-  letter-spacing: -0.03em;
+  font-family: var(--font-script);
+  font-size: clamp(4rem, 16vw, 10rem);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: 0.02em;
   text-align: center;
   color: var(--hero-moon-light);
   text-shadow:
-    0 0 40px color-mix(in oklch, var(--color-accent) 40%, transparent),
-    0 4px 24px oklch(0% 0 0 / 55%);
+    0 0 48px color-mix(in oklch, var(--color-accent) 45%, transparent),
+    0 2px 16px oklch(0% 0 0 / 50%),
+    0 6px 32px oklch(0% 0 0 / 35%);
   opacity: calc(1 - var(--hero-progress) * 1.35);
   transform:
     translateY(calc(var(--hero-progress) * -12vh))
-    scale(calc(1 - var(--hero-progress) * 0.08));
+    scale(calc(1 - var(--hero-progress) * 0.06));
   transition: opacity 80ms linear;
 }
 
@@ -505,8 +443,8 @@
     height: 100svh;
   }
 
-  .hero-layer {
-    transform: none !important;
+  .hero-parallax-image-wrap {
+    transform: none;
   }
 
   .hero-parallax-title {
