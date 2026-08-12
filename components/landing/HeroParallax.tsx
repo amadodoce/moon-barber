@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 interface HeroParallaxProps {
@@ -65,18 +64,7 @@ export function HeroParallax({
     >
       <div className="hero-parallax-stage">
         <div className="hero-parallax-scene" aria-hidden="true">
-          <div className="hero-parallax-image-wrap">
-            <Image
-              src="/images/hero-image.jpg"
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="hero-parallax-image"
-            />
-          </div>
-          <div className="hero-parallax-vignette" />
-          <div className="hero-parallax-moon-glow" />
+          <div className="hero-parallax-image-wrap" role="img" aria-label="" />
         </div>
 
         <div className="hero-parallax-content">
