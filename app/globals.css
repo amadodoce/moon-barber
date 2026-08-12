@@ -250,34 +250,22 @@
   }
 }
 
-/* ─── Moon Hero Parallax ─────────────────────────────────────────────────── */
+/* ─── Hero ───────────────────────────────────────────────────────────────── */
 :root {
   --hero-nav-offset: calc(3.25rem + env(safe-area-inset-top, 0px));
-  --hero-moon-deep: oklch(12% 0.035 265);
-  --hero-moon-mist: oklch(22% 0.04 260);
   --hero-moon-light: oklch(88% 0.06 95);
-  --hero-moon-glow: color-mix(in oklch, var(--color-accent) 35%, oklch(75% 0.08 260));
 }
 
-.hero-parallax-runway {
-  --hero-progress: 0;
+.hero-section {
   position: relative;
-  height: 240vh;
-  height: 240svh;
-  isolation: isolate;
-}
-
-.hero-parallax-stage {
-  position: sticky;
-  top: 0;
   z-index: 10;
+  width: 100%;
   height: 100vh;
   height: 100svh;
-  width: 100%;
   overflow: hidden;
 }
 
-.hero-parallax-cover {
+.hero-cover {
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -286,18 +274,11 @@
   height: 100%;
   object-fit: cover;
   object-position: center center;
-  will-change: transform;
-  transform: translate3d(
-    calc(var(--hero-progress) * -4vw),
-    calc(var(--hero-progress) * -10vh),
-    0
-  );
-  backface-visibility: hidden;
   pointer-events: none;
   user-select: none;
 }
 
-.hero-parallax-content {
+.hero-content {
   position: relative;
   z-index: 1;
   display: flex;
@@ -311,7 +292,7 @@
   padding-block: var(--hero-nav-offset) var(--space-xl);
 }
 
-.hero-parallax-title {
+.hero-title {
   margin: 0;
   font-family: var(--font-script);
   font-size: clamp(4rem, 16vw, 10rem);
@@ -324,15 +305,10 @@
     0 0 48px color-mix(in oklch, var(--color-accent) 45%, transparent),
     0 2px 16px oklch(0% 0 0 / 50%),
     0 6px 32px oklch(0% 0 0 / 35%);
-  opacity: calc(1 - var(--hero-progress) * 1.35);
-  transform:
-    translateY(calc(var(--hero-progress) * -12vh))
-    scale(calc(1 - var(--hero-progress) * 0.06));
-  transition: opacity 80ms linear;
   pointer-events: none;
 }
 
-.hero-parallax-cta {
+.hero-cta {
   min-height: 3rem;
   padding-inline: var(--space-lg);
   border-radius: var(--radius-pill);
@@ -341,41 +317,19 @@
     0 0 0 1px color-mix(in oklch, var(--color-accent) 25%, transparent),
     0 8px 32px oklch(0% 0 0 / 35%),
     0 0 48px color-mix(in oklch, var(--color-accent) 18%, transparent);
-  opacity: calc(1 - var(--hero-progress) * 1.35);
-  transform:
-    translateY(calc(var(--hero-progress) * -12vh))
-    scale(calc(1 - var(--hero-progress) * 0.06));
-  transition: opacity 80ms linear;
   width: min(100%, 16rem);
 }
 
 @media (min-width: 640px) {
-  .hero-parallax-cta {
+  .hero-cta {
     width: auto;
     min-width: 13rem;
   }
 
-  .hero-parallax-cta:hover {
+  .hero-cta:hover {
     box-shadow:
       0 0 0 1px color-mix(in oklch, var(--color-accent) 55%, transparent),
       0 16px 48px oklch(0% 0 0 / 45%),
       0 0 72px color-mix(in oklch, var(--color-accent) 30%, transparent);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-parallax-runway {
-    height: 100vh;
-    height: 100svh;
-  }
-
-  .hero-parallax-cover {
-    transform: none;
-  }
-
-  .hero-parallax-title,
-  .hero-parallax-cta {
-    opacity: 1;
-    transform: none;
   }
 }
