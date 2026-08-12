@@ -17,6 +17,7 @@ cp .env.example .env
 
 npm install
 npx prisma db push
+npm run db:seed          # or: npm run db:setup (push + comments table + seed)
 npm run dev
 ```
 
@@ -30,6 +31,9 @@ npm run build      # Production build
 npm run lint       # ESLint
 npm run typecheck  # TypeScript check
 npm run test       # Vitest unit tests
+npm run db:push    # Sync Prisma schema to Postgres
+npm run db:seed    # Seed demo data (users, services, appointments)
+npm run db:setup   # db:push + comments table + seed
 ```
 
 ## Environment variables

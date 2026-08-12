@@ -1,5 +1,7 @@
-import "dotenv/config";
+import { loadEnvFiles } from "./lib/load-env";
 import { PrismaClient } from "./app/generated/prisma/client";
+
+loadEnvFiles();
 import { neonConfig } from "@neondatabase/serverless";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import bcrypt from "bcryptjs";

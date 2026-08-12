@@ -1,12 +1,7 @@
-import { config } from "dotenv";
-import { existsSync } from "fs";
-import { resolve } from "path";
+import { loadEnvFiles } from "../lib/load-env";
 import { getSql } from "../lib/neon-sql";
 
-for (const file of [".env", ".env.local", ".env.development.local"]) {
-  const path = resolve(file);
-  if (existsSync(path)) config({ path, override: true });
-}
+loadEnvFiles();
 
 async function main() {
   const sql = getSql();
