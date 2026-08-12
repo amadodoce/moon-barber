@@ -17,7 +17,6 @@ export function HeroParallax({
   const runwayRef = useRef<HTMLElement>(null);
   const rafRef = useRef<number | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [pinned, setPinned] = useState(false);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -38,7 +37,6 @@ export function HeroParallax({
       const scrolled = Math.min(Math.max(-rect.top, 0), Math.max(scrollable, 1));
       const progress = scrollable > 0 ? scrolled / scrollable : 0;
       runway.style.setProperty("--hero-progress", progress.toFixed(4));
-      setPinned(progress >= 0.82);
     };
 
     const onScroll = () => {
@@ -88,11 +86,6 @@ export function HeroParallax({
           >
             Moonbarber
           </h1>
-        </div>
-
-        <div
-          className={`hero-parallax-cta-wrap${pinned ? " hero-parallax-cta-wrap--pinned" : ""}`}
-        >
           <Button
             variant="brand"
             size="lg"
