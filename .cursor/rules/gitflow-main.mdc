@@ -5,7 +5,7 @@ alwaysApply: true
 
 # GitFlow — merge to main, deploy via master
 
-When a task is complete and verified:
+When **any task** is complete and verified (do this automatically — do not wait for the user to ask):
 
 1. Work on a focused branch (`fix/`, `feat/`, `chore/`).
 2. Run gates before merge: `npm run typecheck`, `npm run lint`, `npm run test`, and `npm run build` when relevant.
