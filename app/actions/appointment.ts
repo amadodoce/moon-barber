@@ -339,7 +339,9 @@ export async function updateAppointmentStatus(
   }
 }
 
-export async function getMyAppointments(): Promise<
+export async function getMyAppointments(
+  params: { page?: number; pageSize?: number } = {}
+): Promise<
   ActionResponse<(AppointmentWithLabels & {
     payment: unknown;
     appointmentServices: unknown;
@@ -348,6 +350,9 @@ export async function getMyAppointments(): Promise<
 > {
   try {
     const user = await requireAuth();
+    const page = Math.max(1, params.page ?? 1);
+    const pageSize = Math.min(50, Math.max(1, params.pageSize ?? 50));
+
     const appointments = await prisma.appointment.findMany({
       where: { userId: user.userId, deletedAt: null },
       include: {
@@ -356,6 +361,8 @@ export async function getMyAppointments(): Promise<
         barber: { include: { user: { select: { name: true } } } },
       },
       orderBy: [{ date: "desc" }, { startMinute: "desc" }],
+      skip: (page - 1) * pageSize,
+      take: pageSize,
     });
     return { success: true, data: labelAppointments(appointments) };
   } catch (error) {

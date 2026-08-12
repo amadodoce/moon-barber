@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { CreditCard, Loader2 } from "lucide-react";
@@ -26,16 +26,12 @@ export default function SummaryPage() {
     startTime,
     barberId,
     notes,
-    setStep,
   } = useBookingStore();
 
   useBookingGuard(4);
 
-  useEffect(() => {
-    setStep(4);
-  }, [setStep]);
-
   const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const canSubmit = serviceIds.length > 0 && date && startTime && barberId;
 
@@ -48,6 +44,7 @@ export default function SummaryPage() {
     }
 
     setLoading(true);
+    setSubmitError(null);
 
     try {
       const appointmentResult = await createAppointment({
@@ -59,7 +56,9 @@ export default function SummaryPage() {
       });
 
       if (!appointmentResult.success) {
-        showError(appointmentResult.error || "خطا در ایجاد نوبت");
+        const msg = appointmentResult.error || "خطا در ایجاد نوبت";
+        setSubmitError(msg);
+        showError(msg);
         setLoading(false);
         return;
       }
@@ -69,14 +68,18 @@ export default function SummaryPage() {
       });
 
       if (!paymentResult.success) {
-        showError(paymentResult.error || "خطا در ایجاد پرداخت");
+        const msg = paymentResult.error || "خطا در ایجاد پرداخت";
+        setSubmitError(msg);
+        showError(msg);
         setLoading(false);
         return;
       }
 
       window.location.href = paymentResult.data!.paymentUrl;
     } catch (err) {
-      showError(err instanceof Error ? err.message : "خطای داخلی سرور");
+      const msg = err instanceof Error ? err.message : "خطای داخلی سرور";
+      setSubmitError(msg);
+      showError(msg);
       setLoading(false);
     }
   };
@@ -90,6 +93,21 @@ export default function SummaryPage() {
       />
 
       <BookingSummary />
+
+      {submitError && (
+        <div className="rounded-[var(--radius-input)] border border-[var(--status-failed-border)] bg-[var(--status-failed-bg)] p-[var(--space-sm)] text-sm text-[var(--status-failed-fg)]">
+          <p>{submitError}</p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="mt-3"
+            onClick={() => setSubmitError(null)}
+          >
+            بستن
+          </Button>
+        </div>
+      )}
 
       {canSubmit && (
         <BookingBottomBar>

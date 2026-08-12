@@ -28,7 +28,6 @@ const safeLocalStorage = {
 };
 
 export interface BookingState {
-  step: 1 | 2 | 3 | 4;
   serviceIds: string[];
   serviceDetails: Array<{
     id: string;
@@ -44,12 +43,9 @@ export interface BookingState {
   notes: string;
   _hasHydrated: boolean;
 
-  // Computed
   totalDuration: number;
   totalPrice: number;
 
-  // Actions
-  setStep: (step: 1 | 2 | 3 | 4) => void;
   toggleService: (service: {
     id: string;
     name: string;
@@ -65,7 +61,6 @@ export interface BookingState {
 }
 
 const initialState = {
-  step: 1 as const,
   serviceIds: [] as string[],
   serviceDetails: [] as Array<{
     id: string;
@@ -89,7 +84,6 @@ export const useBookingStore = create<BookingState>()(
     (set) => ({
       ...initialState,
 
-      setStep: (step) => set({ step }),
       setHasHydrated: (value) => set({ _hasHydrated: value }),
 
       toggleService: (service) =>

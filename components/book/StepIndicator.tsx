@@ -1,8 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useBookingStore } from "@/stores/booking";
 
 const steps = [
   { num: 1, label: "انتخاب سرویس", route: "/book" },
@@ -11,14 +10,20 @@ const steps = [
   { num: 4, label: "تأیید و پرداخت", route: "/book/summary" },
 ] as const;
 
+const stepRoutes = steps.map((s) => s.route);
+
+function routeToStep(pathname: string): 1 | 2 | 3 | 4 {
+  const idx = stepRoutes.findIndex((route) => route === pathname);
+  return Math.max(1, idx + 1) as 1 | 2 | 3 | 4;
+}
+
 export function StepIndicator() {
   const router = useRouter();
-  const currentStep = useBookingStore((s) => s.step);
-  const setStep = useBookingStore((s) => s.setStep);
+  const pathname = usePathname();
+  const currentStep = routeToStep(pathname);
 
   const goToStep = (stepNum: 1 | 2 | 3 | 4) => {
     if (currentStep <= stepNum) return;
-    setStep(stepNum);
     router.push(steps[stepNum - 1].route);
   };
 

@@ -83,10 +83,21 @@ export default function CustomerDashboardPage() {
     })();
   }, [status]);
 
-  const handleCancel = useCallback((id: string) => {
+  const handleCancel = useCallback(async (id: string) => {
     setAppointments((prev) =>
       prev.map((a) => (a.id === id ? { ...a, status: "CANCELLED" } : a))
     );
+    setPayments((prev) =>
+      prev.map((p) =>
+        p.appointment.id === id && p.status === "PENDING"
+          ? { ...p, status: "FAILED" }
+          : p
+      )
+    );
+    const paymentResult = await getMyPayments();
+    if (paymentResult.success) {
+      setPayments((paymentResult.data ?? []) as unknown as Payment[]);
+    }
   }, []);
 
   if (status === "loading" || loading) {
@@ -165,7 +176,7 @@ export default function CustomerDashboardPage() {
                 <AppointmentCard
                   key={appt.id}
                   appointment={appt}
-                  onCancel={() => handleCancel(appt.id)}
+                  onCancel={() => void handleCancel(appt.id)}
                 />
               ))}
             </div>

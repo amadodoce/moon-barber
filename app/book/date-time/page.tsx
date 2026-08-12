@@ -18,7 +18,7 @@ import {
 
 export default function DateTimePage() {
   const router = useRouter();
-  const { date, startTime, barberId, serviceIds, setStep } = useBookingStore();
+  const { date, startTime, barberId, serviceIds } = useBookingStore();
   const [slots, setSlots] = useState<AvailableSlot[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,10 +26,6 @@ export default function DateTimePage() {
   useBookingGuard(3);
 
   const shouldLoad = !!date && serviceIds.length > 0 && !!barberId;
-
-  useEffect(() => {
-    setStep(3);
-  }, [setStep]);
 
   useEffect(() => {
     if (!shouldLoad) return;
